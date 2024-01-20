@@ -10,8 +10,11 @@ namespace Infrastructure.Persistence
         {
         }
 
-        public DbSet<TestTable> TestTables { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<PortofolioContent> PortofolioContents { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Asset> Assets { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,3 +22,5 @@ namespace Infrastructure.Persistence
         }
     }
 }
+
+    // "DefaultConnection": "Host=cocreatedb.postgres.database.azure.com;Port=5432;Database=cocreate;Username=cocreate;Password=Abitha2001!;SSL Mode=Require;"

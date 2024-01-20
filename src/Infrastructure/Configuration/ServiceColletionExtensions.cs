@@ -22,7 +22,6 @@ public static class ServiceColletionExtensions
 
         services.AddDbContext<CoCreateDbContext>(options => options.UseNpgsql(GetConnectionString));
 
-        services.AddScoped<ITestTableRepository, TestTableRepository>();
         services.AddScoped<IUserRepository, UserRepository>();
 
         return services;

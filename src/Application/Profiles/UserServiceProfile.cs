@@ -11,7 +11,5 @@ public class UserServiceProfile : Profile
         CreateMap<UserDTO, User>();
         CreateMap<UserCreateDTO, User>();
         CreateMap<User, UserDTO>();
-        CreateMap<TestTableDTO, TestTable>();
-        CreateMap<TestTable, TestTableDTO>();
     }
 }
