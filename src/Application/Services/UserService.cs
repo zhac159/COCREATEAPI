@@ -1,6 +1,6 @@
-using Application.DTOs;
+using Application.DTOs.UserDtos;
+using Application.Extensions;
 using Application.Interfaces;
-using AutoMapper;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
@@ -10,12 +10,10 @@ namespace Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository userRepository;
-    private readonly IMapper mapper;
 
-    public UserService(IUserRepository userRepository, IMapper mapper)
+    public UserService(IUserRepository userRepository)
     {
         this.userRepository = userRepository;
-        this.mapper = mapper;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -33,12 +31,12 @@ public class UserService : IUserService
             throw new InvalidPasswordException();
         }
 
-        return mapper.Map<UserDTO>(user);
+        return user.ToDTO();
     }
 
     public async Task<UserDTO> CreateAsync(UserCreateDTO userCreateDTO)
     {
-        var user = mapper.Map<User>(userCreateDTO);
+        var user = userCreateDTO.ToEntity();
 
         if (await userRepository.GetByUsernameAsync(user.Username) is not null)
         {
@@ -47,7 +45,36 @@ public class UserService : IUserService
 
         var createdUser = await userRepository.CreateAsync(user);
 
-        return mapper.Map<UserDTO>(createdUser);
+        return createdUser.ToDTO();
+    }
+
+    public async Task<UserDTO> GetByIdAsync(int id)
+    {
+        var user = await userRepository.GetByIdAsync(id);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return user.ToDTO();
+    }
+
+    public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)
+    {
+
+        var user = await userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.UpdateFromDTO(userUpdateDTO);
+
+        var updatedUser = await userRepository.UpdateAsync(user);
+
+        return updatedUser.ToDTO();
     }
 
 }

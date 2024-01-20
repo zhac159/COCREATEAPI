@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    [Migration("20240119234441_initial_migration")]
+    [Migration("20240120191953_initial_migration")]
     partial class initial_migration
     {
         /// <inheritdoc />
@@ -149,10 +149,7 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("text")
-                        .HasDefaultValue("");
+                        .HasColumnType("text");
 
                     b.Property<int>("Level")
                         .HasColumnType("integer");
@@ -182,11 +179,8 @@ namespace Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
                     b.Property<string>("AboutYou")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
                         .HasMaxLength(2000)
-                        .HasColumnType("character varying(2000)")
-                        .HasDefaultValue("");
+                        .HasColumnType("character varying(2000)");
 
                     b.Property<string>("BannerPictureSrc")
                         .HasColumnType("text");

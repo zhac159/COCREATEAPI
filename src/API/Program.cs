@@ -33,6 +33,8 @@ try
             };
         });
 
+    builder.Services.AddHttpContextAccessor();
+
     builder
         .Services.AddDatabaseInfrastracture(builder.Configuration)
         .AddApplicationServices()

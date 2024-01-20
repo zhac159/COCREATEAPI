@@ -21,9 +21,9 @@ namespace Infrastructure.Migrations
                     Password = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Location = table.Column<string>(type: "text", nullable: false),
-                    AboutYou = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: false, defaultValue: ""),
                     Rating = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     TotalReviews = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
+                    AboutYou = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     ProfilePictureSrc = table.Column<string>(type: "text", nullable: true),
                     BannerPictureSrc = table.Column<string>(type: "text", nullable: true)
                 },
@@ -116,7 +116,7 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     SkillType = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false, defaultValue: ""),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     Level = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false)
                 },

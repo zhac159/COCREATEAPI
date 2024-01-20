@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using API.Models;
 using Application.DTOs;
+using Application.DTOs.UserDtos;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -24,14 +25,13 @@ namespace JwtInDotnetCore.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<APIResponse<string>>> Post(UserLoginDTO userLoginDTO)
+        public async Task<ActionResult<APIResponse<LoginResponseDTO>>> Post(
+            UserLoginDTO userLoginDTO
+        )
         {
             var user = await userService.AuthenticateAsync(userLoginDTO);
 
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-            };
+            var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()), new Claim(JwtRegisteredClaimNames.Email, user.Email ) };
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -46,11 +46,15 @@ namespace JwtInDotnetCore.Controllers
 
             var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
-            return Ok(token);
+            var response = new LoginResponseDTO { User = user, Token = token };
+
+            return Ok(response);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<APIResponse<string>>> Post(UserCreateDTO userCreateDTO)
+        public async Task<ActionResult<APIResponse<LoginResponseDTO>>> Post(
+            UserCreateDTO userCreateDTO
+        )
         {
             var createdUser = await userService.CreateAsync(userCreateDTO);
 
@@ -72,7 +76,9 @@ namespace JwtInDotnetCore.Controllers
 
             var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
 
-            return Ok(token);
+            var response = new LoginResponseDTO { User = createdUser, Token = token };
+
+            return Ok(response);
         }
     }
 }

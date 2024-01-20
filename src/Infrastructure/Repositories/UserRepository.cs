@@ -7,34 +7,54 @@ namespace Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-        private readonly CoCreateDbContext _context;
+    private readonly CoCreateDbContext context;
 
     public UserRepository(CoCreateDbContext context)
-        {
-            _context = context;
-        }
-
+    {
+        this.context = context;
+    }
 
     public async Task<User?> GetByUsernameAsync(string name)
     {
-        var user = await _context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
+        var user = await context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
 
         return user;
     }
 
     public async Task<User> CreateAsync(User user)
     {
-
-        await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
+        await context.Users.AddAsync(user);
+        await context.SaveChangesAsync();
 
         return user;
     }
 
     public async Task<bool> ExistsByNameAsync(string name)
     {
-        var user = await _context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
+        var user = await context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
 
         return user != null;
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        var user = await context
+            .Users.Where(u => u.UserId == id)
+            .Include(u => u.PortofolioContents)
+            .Include(u => u.Skills)
+            .Include(u => u.ReviewsGiven)
+            .Include(u => u.ReviewsReceived)
+            .Include(u => u.Assets)
+            .FirstOrDefaultAsync();
+
+        return user;
+    }
+
+    public async Task<User> UpdateAsync(User user)
+    {
+        context.Users.Update(user);
+        await context.SaveChangesAsync();
+
+        return user;
     }
 }
