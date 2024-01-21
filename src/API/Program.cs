@@ -37,6 +37,7 @@ try
 
     builder
         .Services.AddDatabaseInfrastracture(builder.Configuration)
+        .AddBlobStorageService(builder.Configuration)
         .AddApplicationServices()
         .AddAPI();
 
@@ -55,7 +56,7 @@ try
 
     using (var scope = app.Services.CreateScope())
     {
-        var dbContext = scope.ServiceProvider.GetRequiredService<CoCreateDbContext>(); // Replace YourDbContext with your actual DbContext class
+        var dbContext = scope.ServiceProvider.GetRequiredService<CoCreateDbContext>();
         dbContext.Database.Migrate();
     }
 

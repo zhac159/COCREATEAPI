@@ -16,7 +16,14 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetByUsernameAsync(string name)
     {
-        var user = await context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
+        var user = await context
+            .Users.Where(u => u.Username == name)
+            .Include(u => u.PortofolioContents)
+            .Include(u => u.Skills)
+            .Include(u => u.ReviewsGiven)
+            .Include(u => u.ReviewsReceived)
+            .Include(u => u.Assets)
+            .FirstOrDefaultAsync();
 
         return user;
     }

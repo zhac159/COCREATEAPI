@@ -1,4 +1,5 @@
-﻿using Domain.Interfaces;
+﻿using Azure.Storage.Blobs;
+using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -12,17 +13,17 @@ public static class ServiceColletionExtensions
         IConfiguration configuration
     )
     {
-        var GetConnectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("PostGresConnectionString");
 
-        if (string.IsNullOrEmpty(GetConnectionString))
+        if (string.IsNullOrEmpty(connectionString))
         {
-            throw new Exception("Connection string is empty 1`");
+            throw new Exception("Connection string is empty or null");
         }
 
-
-        services.AddDbContext<CoCreateDbContext>(options => options.UseNpgsql(GetConnectionString));
+        services.AddDbContext<CoCreateDbContext>(options => options.UseNpgsql(connectionString));
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IAssetRepository, AssetRepository>();
 
         return services;
     }

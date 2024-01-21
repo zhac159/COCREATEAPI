@@ -1,3 +1,4 @@
+using Application.DTOs.AssetDTOs;
 using Application.DTOs.SkillDTOs;
 using Domain.Entities;
 
@@ -7,7 +8,6 @@ public class UserDTO
 {
     public int UserId { get; set; }
     public required string Username { get; set; }
-    public required string Password { get; set; }
     public required string Email { get; set; }
     public required string Location { get; set; }
     public string? AboutYou { get; set; }
@@ -19,5 +19,5 @@ public class UserDTO
     public List<PortofolioContent>? PortofolioContents { get; set; }
     public List<Review>? ReviewsGiven { get; set; }
     public List<Review>? ReviewsReceived { get; set; }
-    public List<Asset>? Assets { get; set; }
+    public List<AssetDTO>? Assets { get; set; }
 }

@@ -1,14 +1,12 @@
 using API.Models;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
-using Domain.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class UserController : ControllerBase
+public class UserController : COCREATEAPIControllerBase
 {
     private readonly IUserService userService;
 
@@ -20,6 +18,7 @@ public class UserController : ControllerBase
         this.currentUserContextService = currentUserContextService;
     }
     
+    [AllowAnonymous]
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<APIResponse<UserDTO>>> Post(int userId)
     {

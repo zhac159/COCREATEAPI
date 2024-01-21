@@ -36,7 +36,6 @@ public static class UserExtensions
         {
             UserId = user.UserId,
             Username = user.Username,
-            Password = user.Password,
             Email = user.Email,
             Location = user.Location,
             AboutYou = user.AboutYou,
@@ -48,7 +47,7 @@ public static class UserExtensions
             PortofolioContents = user.PortofolioContents,
             ReviewsGiven = user.ReviewsGiven,
             ReviewsReceived = user.ReviewsReceived,
-            Assets = user.Assets
+            Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null
         };
     }
 }
