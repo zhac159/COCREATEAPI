@@ -1,4 +1,6 @@
+using System.Reflection.Metadata;
 using Application.DTOs.AssetDTOs;
+using Azure.Storage.Blobs;
 using Domain.Entities;
 
 namespace Application.Extensions;
@@ -13,6 +15,8 @@ public static class AssetExtensions
     //     asset.Order = assetUpdateDTO.Order;
     //     asset.Cost = assetUpdateDTO.Cost;
     // }
+
+    private readonly BlobServiceClient blobStorageService;
 
     public static AssetDTO ToDTO(this Asset asset)
     {

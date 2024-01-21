@@ -4,5 +4,5 @@ namespace Application.Interfaces;
 
 public interface IAssetService
 {
-    Task<AssetDTO> CreateAsync(AssetCreateDTO assetCreateDTO, int userId);
+    Task<AssetDTO> CreateAsync(AssetCreateWrapperDTO assetCreateWrapperDTO, int userId);
 }

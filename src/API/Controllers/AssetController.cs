@@ -19,9 +19,9 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<AssetDTO>> CreateAsync(AssetCreateDTO assetCreateDTO)
+public async Task<IActionResult> Create(AssetCreateWrapperDTO  assetCreateWrapperDTO)
     {
-        var asset = await assetService.CreateAsync(assetCreateDTO, currentUserContextService.GetUserId());
+        var asset = await assetService.CreateAsync(assetCreateWrapperDTO, currentUserContextService.GetUserId());
 
         return Ok(asset);
     }

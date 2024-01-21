@@ -18,18 +18,33 @@ public class AssetService : IAssetService
         this.blobStorageService = blobStorageService;
     }
 
-    public async Task<AssetDTO> CreateAsync(AssetCreateDTO assetCreateDTO, int userId)
+    public async Task<AssetDTO> CreateAsync(AssetCreateWrapperDTO assetCreateWrapperDTO, int userId)
     {
         var fileSrc = new StringBuilder()
             .Append("asset_")
             .Append(userId)
             .Append("_")
-            .Append(assetCreateDTO.Name)
+            .Append(assetCreateWrapperDTO.Asset.Name)
             .Append("_")
             .Append(Guid.NewGuid().ToString())
+            .Append(".jpeg") // Append the file extension
             .ToString();
-        
-        var asset = assetCreateDTO.ToEntity(fileSrc, userId);
+
+        var mediaFile = assetCreateWrapperDTO.MediaFile;
+
+        // Get a reference to the blob container
+        var containerClient = blobStorageService.GetBlobContainerClient("assets");
+
+        // Get a reference to a blob
+        var blobClient = containerClient.GetBlobClient(fileSrc);
+
+        // Open the file and upload its data
+        using (var stream = mediaFile.OpenReadStream())
+        {
+            await blobClient.UploadAsync(stream, overwrite: true);
+        }
+
+        var asset = assetCreateWrapperDTO.Asset.ToEntity(fileSrc, userId);
 
         var createdAsset = await assetRepository.CreateAsync(asset);
 
