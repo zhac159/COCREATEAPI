@@ -9,4 +9,5 @@ public class AssetDTO {
     public required AssetType AssetType { get; set; }
     public required int Order { get; set; }
     public required int Cost { get; set; }
+    public required Uri DownloadUrl { get; set; }
 }

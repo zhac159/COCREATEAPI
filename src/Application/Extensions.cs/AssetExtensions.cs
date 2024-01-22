@@ -1,24 +1,12 @@
-using System.Reflection.Metadata;
 using Application.DTOs.AssetDTOs;
-using Azure.Storage.Blobs;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Extensions;
 
 public static class AssetExtensions
 {
-    // public static void UpdateFromDTO(this Asset asset, AssetUpdateDTO assetUpdateDTO)
-    // {
-    //     asset.Name = assetUpdateDTO.Name;
-    //     asset.Description = assetUpdateDTO.Description;
-    //     asset.AssetType = assetUpdateDTO.AssetType;
-    //     asset.Order = assetUpdateDTO.Order;
-    //     asset.Cost = assetUpdateDTO.Cost;
-    // }
-
-    private readonly BlobServiceClient blobStorageService;
-
-    public static AssetDTO ToDTO(this Asset asset)
+    public static AssetDTO ToDTO(this Asset asset, IStorageService storageService)
     {
         return new AssetDTO
         {
@@ -27,7 +15,8 @@ public static class AssetExtensions
             Description = asset.Description,
             AssetType = asset.AssetType,
             Order = asset.Order,
-            Cost = asset.Cost
+            Cost = asset.Cost,
+            DownloadUrl = storageService.GetFileUri(asset.FileSrc, "assets")
         };
     }
 }

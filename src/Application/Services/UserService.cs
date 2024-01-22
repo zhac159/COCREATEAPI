@@ -10,10 +10,12 @@ namespace Application.Services;
 public class UserService : IUserService
 {
     private readonly IUserRepository userRepository;
+    private readonly IStorageService storageService;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IStorageService storageService)
     {
         this.userRepository = userRepository;
+        this.storageService = storageService;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -31,7 +33,7 @@ public class UserService : IUserService
             throw new InvalidPasswordException();
         }
 
-        return user.ToDTO();
+        return user.ToDTO(storageService);
     }
 
     public async Task<UserDTO> CreateAsync(UserCreateDTO userCreateDTO)
@@ -45,7 +47,7 @@ public class UserService : IUserService
 
         var createdUser = await userRepository.CreateAsync(user);
 
-        return createdUser.ToDTO();
+        return createdUser.ToDTO(storageService);
     }
 
     public async Task<UserDTO> GetByIdAsync(int id)
@@ -57,7 +59,7 @@ public class UserService : IUserService
             throw new EntityNotFoundException();
         }
 
-        return user.ToDTO();
+        return user.ToDTO(storageService);
     }
 
     public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)
@@ -74,7 +76,7 @@ public class UserService : IUserService
 
         var updatedUser = await userRepository.UpdateAsync(user);
 
-        return updatedUser.ToDTO();
+        return updatedUser.ToDTO(storageService);
     }
 
 }

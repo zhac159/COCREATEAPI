@@ -1,4 +1,5 @@
 using Application.DTOs.UserDtos;
+using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Extensions;
@@ -30,7 +31,7 @@ public static class UserExtensions
         }
     }
 
-    public static UserDTO ToDTO(this User user)
+    public static UserDTO ToDTO(this User user, IStorageService storageService)
     {
         return new UserDTO
         {
@@ -47,7 +48,7 @@ public static class UserExtensions
             PortofolioContents = user.PortofolioContents,
             ReviewsGiven = user.ReviewsGiven,
             ReviewsReceived = user.ReviewsReceived,
-            Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null
+            Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO(storageService)).ToList() : null
         };
     }
 }

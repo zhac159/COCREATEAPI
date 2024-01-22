@@ -37,7 +37,7 @@ try
 
     builder
         .Services.AddDatabaseInfrastracture(builder.Configuration)
-        .AddBlobStorageService(builder.Configuration)
+        .AddStorageService(builder.Configuration)
         .AddApplicationServices()
         .AddAPI();
 

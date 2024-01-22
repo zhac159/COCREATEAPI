@@ -13,4 +13,5 @@ public class Asset
     public required int Cost { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
+    
 }

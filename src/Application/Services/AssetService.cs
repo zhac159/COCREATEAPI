@@ -2,7 +2,6 @@ using System.Text;
 using Application.DTOs.AssetDTOs;
 using Application.Extensions;
 using Application.Interfaces;
-using Azure.Storage.Blobs;
 using Domain.Interfaces;
 
 namespace Application.Services;
@@ -10,12 +9,12 @@ namespace Application.Services;
 public class AssetService : IAssetService
 {
     private readonly IAssetRepository assetRepository;
-    private readonly BlobServiceClient blobStorageService;
+    private readonly IStorageService storageService;
 
-    public AssetService(IAssetRepository assetRepository, BlobServiceClient blobStorageService)
+    public AssetService(IAssetRepository assetRepository, IStorageService storageService)
     {
         this.assetRepository = assetRepository;
-        this.blobStorageService = blobStorageService;
+        this.storageService = storageService;
     }
 
     public async Task<AssetDTO> CreateAsync(AssetCreateWrapperDTO assetCreateWrapperDTO, int userId)
@@ -32,22 +31,12 @@ public class AssetService : IAssetService
 
         var mediaFile = assetCreateWrapperDTO.MediaFile;
 
-        // Get a reference to the blob container
-        var containerClient = blobStorageService.GetBlobContainerClient("assets");
-
-        // Get a reference to a blob
-        var blobClient = containerClient.GetBlobClient(fileSrc);
-
-        // Open the file and upload its data
-        using (var stream = mediaFile.OpenReadStream())
-        {
-            await blobClient.UploadAsync(stream, overwrite: true);
-        }
+        var uploaded = await storageService.UploadFile(fileSrc, mediaFile, "assets");
 
         var asset = assetCreateWrapperDTO.Asset.ToEntity(fileSrc, userId);
 
         var createdAsset = await assetRepository.CreateAsync(asset);
 
-        return createdAsset.ToDTO();
+        return createdAsset.ToDTO(storageService);
     }
 }
