@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
@@ -8,10 +9,12 @@ namespace Infrastructure.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly CoCreateDbContext context;
+    private readonly IStorageService storageService;
 
-    public UserRepository(CoCreateDbContext context)
+    public UserRepository(CoCreateDbContext context, IStorageService storageService)
     {
         this.context = context;
+        this.storageService = storageService;
     }
 
     public async Task<User?> GetByUsernameAsync(string name)
@@ -24,6 +27,8 @@ public class UserRepository : IUserRepository
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
             .FirstOrDefaultAsync();
+            
+        PopulateUris(user);
 
         return user;
     }
@@ -54,6 +59,8 @@ public class UserRepository : IUserRepository
             .Include(u => u.Assets)
             .FirstOrDefaultAsync();
 
+        PopulateUris(user);
+
         return user;
     }
 
@@ -63,5 +70,24 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
 
         return user;
+    }
+
+    private void PopulateUris(User? user)
+    {
+        if (user?.Assets != null)
+        {
+            foreach (var asset in user.Assets)
+            {
+                asset.Uri = storageService.GetFileUri(asset.FileSrc, "assets");
+            }
+        }
+
+        if (user?.PortofolioContents != null)
+        {
+            foreach (var portofolioContent in user.PortofolioContents)
+            {
+                portofolioContent.Uri = storageService.GetFileUri(portofolioContent.FileSrc, "portofoliocontents");
+            }
+        }
     }
 }

@@ -40,4 +40,14 @@ public class AzureBlobStorageService : IStorageService
 
         return blobClient.Uri;
     }
+
+    public async Task<bool> DeleteFile(string fileName, string containerName)
+    {
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+        var blobClient = containerClient.GetBlobClient(fileName);
+
+        await blobClient.DeleteIfExistsAsync();
+
+        return true;
+    }
 }

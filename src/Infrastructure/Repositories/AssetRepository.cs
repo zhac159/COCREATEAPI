@@ -21,25 +21,24 @@ public class AssetRepository : IAssetRepository
         return asset;
     }
 
-    // public async Task<Asset?> GetByIdAsync(int id)
-    // {
-    //     var asset = await context.Assets.Where(a => a.Id == id).FirstOrDefaultAsync();
+    public async Task<Asset?> GetByIdAsync(int id)
+    {
+        return await context.Assets.FindAsync(id);
+    }
 
-    //     return asset;
-    // }
+    public async Task<bool> DeleteAsync(Asset asset)
+    {
+        context.Assets.Remove(asset);
+        await context.SaveChangesAsync();
 
-    // public async Task<Asset?> GetByUserIdAsync(int userId)
-    // {
-    //     var asset = await context.Assets.Where(a => a.UserId == userId).FirstOrDefaultAsync();
+        return true;
+    }
 
-    //     return asset;
-    // }
+    public async Task<Asset> UpdateAsync(Asset asset)
+    {
+        context.Assets.Update(asset);
+        await context.SaveChangesAsync();
 
-    // public async Task<Asset> UpdateAsync(Asset asset)
-    // {
-    //     context.Assets.Update(asset);
-    //     await context.SaveChangesAsync();
-
-    //     return asset;
-    // }
+        return asset;
+    }
 }

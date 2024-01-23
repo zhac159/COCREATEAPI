@@ -2,6 +2,7 @@ using System.Text;
 using Application.DTOs.AssetDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services;
@@ -26,7 +27,7 @@ public class AssetService : IAssetService
             .Append(assetCreateWrapperDTO.Asset.Name)
             .Append("_")
             .Append(Guid.NewGuid().ToString())
-            .Append(".jpeg") // Append the file extension
+            .Append(".jpeg")
             .ToString();
 
         var mediaFile = assetCreateWrapperDTO.MediaFile;
@@ -37,6 +38,44 @@ public class AssetService : IAssetService
 
         var createdAsset = await assetRepository.CreateAsync(asset);
 
-        return createdAsset.ToDTO(storageService);
+        return createdAsset.ToDTO();
+    }
+
+    public async Task<bool> DeleteAsync(int id, int userId)
+    {
+        var asset = await assetRepository.GetByIdAsync(id);
+
+        if (asset is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        await storageService.DeleteFile(asset.FileSrc, "assets");
+
+        await assetRepository.DeleteAsync(asset);
+
+        return true;
+    }
+
+    public async Task<AssetDTO> UpdateAsync(AssetUpdateWrapperDTO assetUpdateWrapperDTO, int userId)
+    {
+        var asset = await assetRepository.GetByIdAsync(assetUpdateWrapperDTO.AssetUpdateDTO.Id);
+
+        if (asset is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (assetUpdateWrapperDTO.MediaFile is not null)
+        {
+
+            await storageService.UploadFile(asset.FileSrc, assetUpdateWrapperDTO.MediaFile, "assets");
+        }
+
+        asset.UpdateFromDTO(assetUpdateWrapperDTO.AssetUpdateDTO);
+
+        await assetRepository.UpdateAsync(asset);
+
+        return asset.ToDTO();
     }
 }

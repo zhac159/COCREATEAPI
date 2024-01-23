@@ -24,6 +24,7 @@ namespace Infrastructure.Migrations
                     Rating = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     TotalReviews = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     AboutYou = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
+                    Coins = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     ProfilePictureSrc = table.Column<string>(type: "text", nullable: true),
                     BannerPictureSrc = table.Column<string>(type: "text", nullable: true)
                 },
@@ -63,8 +64,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false, defaultValue: ""),
-                    Title = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     FileSrc = table.Column<string>(type: "text", nullable: false),
                     FileType = table.Column<string>(type: "text", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),

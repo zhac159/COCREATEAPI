@@ -31,7 +31,7 @@ public static class UserExtensions
         }
     }
 
-    public static UserDTO ToDTO(this User user, IStorageService storageService)
+    public static UserDTO ToDTO(this User user)
     {
         return new UserDTO
         {
@@ -40,15 +40,16 @@ public static class UserExtensions
             Email = user.Email,
             Location = user.Location,
             AboutYou = user.AboutYou,
+            Coins = user.Coins,
             Rating = user.Rating,
             TotalReviews = user.TotalReviews,
             ProfilePictureSrc = user.ProfilePictureSrc,
             BannerPictureSrc = user.BannerPictureSrc,
             Skills = user.Skills != null ? user.Skills.Select(s => s.ToDTO()).ToList() : null,
-            PortofolioContents = user.PortofolioContents,
+            PortofolioContents =  user.PortofolioContents != null ? user.PortofolioContents.Select(pc => pc.ToDTO()).ToList() : null,
             ReviewsGiven = user.ReviewsGiven,
             ReviewsReceived = user.ReviewsReceived,
-            Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO(storageService)).ToList() : null
+            Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null
         };
     }
 }

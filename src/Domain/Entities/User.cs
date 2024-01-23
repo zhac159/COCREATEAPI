@@ -10,6 +10,7 @@ public class User
     public int Rating { get; set; } = 0;
     public int TotalReviews { get; set; } = 0;
     public string? AboutYou { get; set; }
+    public int Coins { get; set; } = 0;
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
     public List<Skill>? Skills { get; set; }

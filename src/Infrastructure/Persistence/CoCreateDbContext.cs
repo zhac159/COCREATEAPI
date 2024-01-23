@@ -23,4 +23,3 @@ namespace Infrastructure.Persistence
     }
 }
 
-    // "PostGresConnectionString": "Host=cocreatedb.postgres.database.azure.com;Port=5432;Database=cocreate;Username=cocreate;Password=Abitha2001!;SSL Mode=Require;"

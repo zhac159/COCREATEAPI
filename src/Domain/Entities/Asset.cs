@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Enums;
 
 namespace Domain.Entities;
@@ -13,5 +14,7 @@ public class Asset
     public required int Cost { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
-    
+
+    [NotMapped]
+    public Uri? Uri { get; set; }
 }
