@@ -1,3 +1,4 @@
+using API.Factories;
 using Application.DTOs.AssetDTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ public class AssetController : COCREATEAPIControllerBase
             currentUserContextService.GetUserId()
         );
 
-        return Ok(asset);
+        return Ok(APIResponseFactory.CreateSuccess(asset));
     }
 
     [HttpDelete("{id}")]
@@ -35,7 +36,7 @@ public class AssetController : COCREATEAPIControllerBase
     {
         await assetService.DeleteAsync(id, currentUserContextService.GetUserId());
 
-        return Ok();
+        return Ok(APIResponseFactory.CreateSuccess(true));
     }
 
     [HttpPut]
@@ -46,6 +47,13 @@ public class AssetController : COCREATEAPIControllerBase
             currentUserContextService.GetUserId()
         );
 
-        return Ok(asset);
+        return Ok(APIResponseFactory.CreateSuccess(asset));
+    }
+
+    [HttpPut("dasdsa")]
+    public IActionResult Update2(AssetUpdateDTO assetUpdateWrapperDTO,  IFormFile? MediaFile )
+    {
+
+        return Ok();
     }
 }

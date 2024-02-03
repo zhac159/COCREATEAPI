@@ -1,3 +1,4 @@
+using API.Factories;
 using API.Models;
 using Application.DTOs.PortofolioContentDTOs;
 using Application.Interfaces;
@@ -28,7 +29,7 @@ public class PortofolioContentController : COCREATEAPIControllerBase
             portofolioContentCreateWrapperDTO,
             currentUserContextService.GetUserId()
         );
-        return Ok(portofolioContent);
+        return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
     }
 
     [HttpDelete("{id}")]
@@ -36,7 +37,7 @@ public class PortofolioContentController : COCREATEAPIControllerBase
     {
         await portofolioContentService.DeleteAsync(id, currentUserContextService.GetUserId());
 
-        return Ok();
+        return Ok(APIResponseFactory.CreateSuccess(true));
     }
 
     [HttpPut]
@@ -47,6 +48,6 @@ public class PortofolioContentController : COCREATEAPIControllerBase
             currentUserContextService.GetUserId()
         );
 
-        return Ok(portofolioContent);
+        return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
     }
 }

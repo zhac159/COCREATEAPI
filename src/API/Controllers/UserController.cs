@@ -1,3 +1,4 @@
+using API.Factories;
 using API.Models;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
@@ -23,13 +24,13 @@ public class UserController : COCREATEAPIControllerBase
     public async Task<ActionResult<APIResponse<UserDTO>>> Post(int userId)
     {
         var user = await userService.GetByIdAsync(userId);
-        return Ok(user);
+        return Ok(APIResponseFactory.CreateSuccess(user));
     }
 
     [HttpPut()]
     public async Task<ActionResult<APIResponse<UserDTO>>> Put(UserUpdateDTO userUpdateDTO)
     {
         var user = await userService.UpdateAsync(userUpdateDTO, currentUserContextService.GetUserId());
-        return Ok(user);
+        return Ok(APIResponseFactory.CreateSuccess(user));
     }
 }

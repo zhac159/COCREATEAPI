@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using API.Factories;
 using API.Models;
 using Application.DTOs;
 using Application.DTOs.UserDtos;
@@ -48,7 +49,7 @@ namespace JwtInDotnetCore.Controllers
 
             var response = new LoginResponseDTO { User = user, Token = token };
 
-            return Ok(response);
+            return Ok(APIResponseFactory.CreateSuccess(response));
         }
 
         [HttpPost("register")]
@@ -78,7 +79,7 @@ namespace JwtInDotnetCore.Controllers
 
             var response = new LoginResponseDTO { User = createdUser, Token = token };
 
-            return Ok(response);
+            return Ok(APIResponseFactory.CreateSuccess(response));
         }
     }
 }
