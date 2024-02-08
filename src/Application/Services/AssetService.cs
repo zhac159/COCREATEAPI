@@ -20,21 +20,31 @@ public class AssetService : IAssetService
 
     public async Task<AssetDTO> CreateAsync(AssetCreateWrapperDTO assetCreateWrapperDTO, int userId)
     {
-        var fileSrc = new StringBuilder()
-            .Append("asset_")
-            .Append(userId)
-            .Append("_")
-            .Append(assetCreateWrapperDTO.Asset.Name)
-            .Append("_")
-            .Append(Guid.NewGuid().ToString())
-            .Append(".jpeg")
-            .ToString();
+        var fileSrcs = new List<string>();
 
-        var mediaFile = assetCreateWrapperDTO.MediaFile;
+        for (int i = 0; i < assetCreateWrapperDTO.MediaFiles.Count; i++)
+        {
+            if(assetCreateWrapperDTO.Asset.Name == "null" || assetCreateWrapperDTO.Asset.Name == "undefined")
+            {
+                throw new InvalidModelException();
+            }
 
-        var uploaded = await storageService.UploadFile(fileSrc, mediaFile, "assets");
+            var fileSrc = new StringBuilder()
+                .Append("asset_")
+                .Append(userId)
+                .Append("_")
+                .Append(assetCreateWrapperDTO.Asset.Name)
+                .Append("_")
+                .Append(Guid.NewGuid().ToString())
+                .Append(".jpeg")
+                .ToString();
 
-        var asset = assetCreateWrapperDTO.Asset.ToEntity(fileSrc, userId);
+            await storageService.UploadFile(fileSrc, assetCreateWrapperDTO.MediaFiles[i], "assets");
+
+            fileSrcs.Add(fileSrc);
+        }
+
+        var asset = assetCreateWrapperDTO.Asset.ToEntity(fileSrcs, userId);
 
         var createdAsset = await assetRepository.CreateAsync(asset);
 
@@ -50,7 +60,10 @@ public class AssetService : IAssetService
             throw new EntityNotFoundException();
         }
 
-        await storageService.DeleteFile(asset.FileSrc, "assets");
+        asset.FileSrcs.ForEach(async fileSrc =>
+        {
+            await storageService.DeleteFile(fileSrc, "assets");
+        });
 
         await assetRepository.DeleteAsync(asset);
 
@@ -65,11 +78,53 @@ public class AssetService : IAssetService
         {
             throw new EntityNotFoundException();
         }
+        
 
-        if (assetUpdateWrapperDTO.MediaFile is not null)
+        if (assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs is not null)
         {
+            var filesToDelete = asset.FileSrcs.Except(
+                assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs
+            );
+            foreach (var fileSrc in filesToDelete)
+            {
+                await storageService.DeleteFile(fileSrc, "assets");
+            }
+        }
 
-            await storageService.UploadFile(asset.FileSrc, assetUpdateWrapperDTO.MediaFile, "assets");
+        if (
+            assetUpdateWrapperDTO.MediaFiles is not null
+            && assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs is not null
+        )
+        {
+            for (int i = 0; i < assetUpdateWrapperDTO.MediaFiles.Count; i++)
+            {
+                var fileSrc = new StringBuilder()
+                    .Append("asset_")
+                    .Append(userId)
+                    .Append("_")
+                    .Append(asset.Name)
+                    .Append("_")
+                    .Append(Guid.NewGuid().ToString())
+                    .Append(".jpeg")
+                    .ToString();
+
+                await storageService.UploadFile(
+                    fileSrc,
+                    assetUpdateWrapperDTO.MediaFiles[i],
+                    "assets"
+                );
+
+                int index = assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs.IndexOf("placeholder");
+                if (index != -1)
+                {
+                    assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs[index] = fileSrc;
+                }
+                else
+                {
+                    assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs.Add(fileSrc);
+                }
+            }
+            assetUpdateWrapperDTO.AssetUpdateDTO.FileSrcs.RemoveAll(src => src == "placeholder");
         }
 
         asset.UpdateFromDTO(assetUpdateWrapperDTO.AssetUpdateDTO);

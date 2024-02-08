@@ -21,7 +21,7 @@ public class PortofolioContentController : COCREATEAPIControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Post(
+    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Create(
         [FromForm] PortofolioContentCreateWrapperDTO portofolioContentCreateWrapperDTO
     )
     {
@@ -29,19 +29,12 @@ public class PortofolioContentController : COCREATEAPIControllerBase
             portofolioContentCreateWrapperDTO,
             currentUserContextService.GetUserId()
         );
+
         return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
     }
-
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await portofolioContentService.DeleteAsync(id, currentUserContextService.GetUserId());
-
-        return Ok(APIResponseFactory.CreateSuccess(true));
-    }
-
+    
     [HttpPut]
-    public async Task<IActionResult> Update(PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Update(PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO)
     {
         var portofolioContent = await portofolioContentService.UpdateAsync(
             portofolioContentUpdateWrapperDTO,
@@ -49,5 +42,13 @@ public class PortofolioContentController : COCREATEAPIControllerBase
         );
 
         return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<APIResponse<bool>>> Delete(int id)
+    {
+        await portofolioContentService.DeleteAsync(id, currentUserContextService.GetUserId());
+
+        return Ok(APIResponseFactory.CreateSuccess(true));
     }
 }

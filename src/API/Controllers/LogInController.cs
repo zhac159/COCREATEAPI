@@ -19,10 +19,13 @@ namespace JwtInDotnetCore.Controllers
 
         private readonly IUserService userService;
 
-        public LoginController(IConfiguration config, IUserService userService)
+        private readonly ILogger<LoginController> logger;
+
+        public LoginController(IConfiguration config, IUserService userService, ILogger<LoginController> logger)
         {
             this.config = config;
             this.userService = userService;
+            this.logger = logger;
         }
 
         [HttpPost]
@@ -30,6 +33,9 @@ namespace JwtInDotnetCore.Controllers
             UserLoginDTO userLoginDTO
         )
         {
+
+            logger.LogError("LoginController -> Post -> userLoginDTO");
+            
             var user = await userService.AuthenticateAsync(userLoginDTO);
 
             var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()), new Claim(JwtRegisteredClaimNames.Email, user.Email ) };

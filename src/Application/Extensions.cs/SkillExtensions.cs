@@ -8,6 +8,7 @@ public static class SkillExtensions
     public static void UpdateFromDTO(this Skill skill, SkillUpdateDTO skillUpdateDTO)
     {
         skill.SkillType = skillUpdateDTO.SkillType;
+        skill.SkillGroupType = skillUpdateDTO.SkillGroupType;
         skill.Description = skillUpdateDTO.Description;
         skill.Level = skillUpdateDTO.Level;
     }
@@ -18,6 +19,7 @@ public static class SkillExtensions
         {
             Id = skill.Id,
             SkillType = skill.SkillType,
+            SkillGroupType = skill.SkillGroupType,
             Description = skill.Description,
             Level = skill.Level
         };

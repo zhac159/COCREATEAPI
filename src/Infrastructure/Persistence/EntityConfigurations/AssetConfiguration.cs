@@ -14,9 +14,8 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
         builder.Property(e => e.Name).HasMaxLength(30).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(500).IsRequired();
         builder.Property(e => e.AssetType).IsRequired();
-        builder.Property(e => e.FileSrc).IsRequired();
-        builder.Property(e => e.Order).IsRequired();
-        builder.Property(e => e.Cost).IsRequired();
+        builder.Property(e => e.FileSrcs);
+        builder.Property(e => e.Cost).HasDefaultValue(0);
         builder.Property(e => e.UserId).IsRequired();
 
         builder.Property(e => e.AssetType).HasConversion<string>();

@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
@@ -7,10 +8,12 @@ namespace Infrastructure.Repositories;
 public class PortofolioContentRepository : IPortofolioContentRepository
 {
     private readonly CoCreateDbContext context;
+    private readonly IStorageService storageService;
 
-    public PortofolioContentRepository(CoCreateDbContext context)
+    public PortofolioContentRepository(CoCreateDbContext context, IStorageService storageService)
     {
         this.context = context;
+        this.storageService = storageService;
     }
 
     public async Task<PortofolioContent> CreateAsync(PortofolioContent portofolioContent)
@@ -18,6 +21,8 @@ public class PortofolioContentRepository : IPortofolioContentRepository
         await context.PortofolioContents.AddAsync(portofolioContent);
         await context.SaveChangesAsync();
 
+        portofolioContent.Uri = storageService.GetFileUri(portofolioContent.FileSrc, "portofoliocontents");
+        
         return portofolioContent;
     }
 

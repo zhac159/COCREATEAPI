@@ -1,4 +1,5 @@
 using API.Factories;
+using API.Models;
 using Application.DTOs.AssetDTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(AssetCreateWrapperDTO assetCreateWrapperDTO)
+    public async Task<ActionResult<APIResponse<AssetDTO>>>  Create([FromForm] AssetCreateWrapperDTO assetCreateWrapperDTO)
     {
         var asset = await assetService.CreateAsync(
             assetCreateWrapperDTO,
@@ -32,7 +33,7 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult<APIResponse<bool>>>  Delete(int id)
     {
         await assetService.DeleteAsync(id, currentUserContextService.GetUserId());
 
@@ -40,7 +41,7 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(AssetUpdateWrapperDTO assetUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<AssetDTO>>>  Update(AssetUpdateWrapperDTO assetUpdateWrapperDTO)
     {
         var asset = await assetService.UpdateAsync(
             assetUpdateWrapperDTO,
@@ -48,12 +49,5 @@ public class AssetController : COCREATEAPIControllerBase
         );
 
         return Ok(APIResponseFactory.CreateSuccess(asset));
-    }
-
-    [HttpPut("dasdsa")]
-    public IActionResult Update2(AssetUpdateDTO assetUpdateWrapperDTO,  IFormFile? MediaFile )
-    {
-
-        return Ok();
     }
 }

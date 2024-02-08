@@ -12,8 +12,9 @@ public class SkillConfiguration : IEntityTypeConfiguration<Skill>
 
         builder.HasKey(e => e.Id);
         builder.Property(e => e.SkillType).IsRequired();
+        builder.Property(e => e.SkillGroupType).IsRequired();
         builder.Property(e => e.Description).HasDefaultValue(null);
-        builder.Property(e => e.Level).IsRequired();
+        builder.Property(e => e.Level).HasDefaultValue(1);
         builder.Property(e => e.UserId).IsRequired();
 
         builder.Property(e => e.SkillType).HasConversion<string>();

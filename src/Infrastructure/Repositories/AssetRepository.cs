@@ -1,3 +1,4 @@
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
@@ -7,16 +8,20 @@ namespace Infrastructure.Repositories;
 public class AssetRepository : IAssetRepository
 {
     private readonly CoCreateDbContext context;
+    private readonly IStorageService storageService;
 
-    public AssetRepository(CoCreateDbContext context)
+    public AssetRepository(CoCreateDbContext context, IStorageService storageService)
     {
         this.context = context;
+        this.storageService = storageService;
     }
 
     public async Task<Asset> CreateAsync(Asset asset)
     {
         await context.Assets.AddAsync(asset);
         await context.SaveChangesAsync();
+
+        asset.Uris = asset.FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "assets")).ToList();
 
         return asset;
     }

@@ -18,4 +18,5 @@ public enum SkillType
     SoundEngineering,
     SoundDesign,
     SoundEditing,
+    GameDesign
 }

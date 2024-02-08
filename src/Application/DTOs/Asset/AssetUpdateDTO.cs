@@ -7,6 +7,6 @@ public class AssetUpdateDTO {
     public string? Name { get; set; }
     public string? Description { get; set; }
     public AssetType? AssetType { get; set; }
-    public int? Order { get; set; }
     public int? Cost { get; set; }
+    public List<string>? FileSrcs { get; set; }
 }

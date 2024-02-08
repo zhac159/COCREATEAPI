@@ -1,3 +1,4 @@
+using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Extensions;
 using Application.Interfaces;
@@ -18,7 +19,6 @@ public class UserService : IUserService
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
     {
-
         var user = await userRepository.GetByUsernameAsync(userLoginDTO.Username);
 
         if (user is null)
@@ -62,7 +62,6 @@ public class UserService : IUserService
 
     public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)
     {
-
         var user = await userRepository.GetByIdAsync(userId);
 
         if (user is null)
@@ -77,4 +76,48 @@ public class UserService : IUserService
         return updatedUser.ToDTO();
     }
 
+    public async Task<List<SkillDTO>> UpdateSkillsAsync(
+        List<SkillUpdateDTO> skillUpdateDTOs,
+        int userId
+    )
+    {
+        var user = await userRepository.GetByIdIncludeOnlySkillsAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.UpdateSkillsFromDTO(skillUpdateDTOs);
+
+        var updatedUser = await userRepository.UpdateAsync(user);
+
+        if (updatedUser.Skills is null)
+        {
+            return new List<SkillDTO>();
+        }
+
+        return updatedUser.Skills.Select(s => s.ToDTO()).ToList();
+    }
+
+    public async Task<UserLocationDTO> UpdateLocationAsync(
+        UserLocationUpdateDTO userLocationUpdateDTO,
+        int userId
+    )
+    {
+        var user = await userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.Latitude = userLocationUpdateDTO.Latitude;
+        user.Longitude = userLocationUpdateDTO.Longitude;
+        user.Address = userLocationUpdateDTO.Address;
+
+        var updatedUser = await userRepository.UpdateAsync(user);
+
+        return updatedUser.ToLocationDTO();
+    }
 }

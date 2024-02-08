@@ -11,7 +11,6 @@ public class UserCreateDTO
     [EmailAddress]
     public required string Email { get; set; }
 
-    public required string Location { get; set; }
 
     public User ToEntity()
     {
@@ -20,7 +19,6 @@ public class UserCreateDTO
             Username = Username,
             Password = Password,
             Email = Email,
-            Location = Location
         };
     }
 }

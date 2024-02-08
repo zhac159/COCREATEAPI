@@ -1,5 +1,4 @@
 using Application.DTOs.AssetDTOs;
-using Application.Interfaces;
 using Domain.Entities;
 
 namespace Application.Extensions;
@@ -14,9 +13,8 @@ public static class AssetExtensions
             Name = asset.Name,
             Description = asset.Description,
             AssetType = asset.AssetType,
-            Order = asset.Order,
             Cost = asset.Cost,
-            Uri = asset.Uri ?? null
+            Uris = asset.Uris
         };
     }
 
@@ -25,7 +23,7 @@ public static class AssetExtensions
         asset.Name = assetUpdateDTO.Name ?? asset.Name;
         asset.Description = assetUpdateDTO.Description ?? asset.Description;
         asset.AssetType = assetUpdateDTO.AssetType ?? asset.AssetType;
-        asset.Order = assetUpdateDTO.Order ?? asset.Order;
         asset.Cost = assetUpdateDTO.Cost ?? asset.Cost;
+        asset.FileSrcs = assetUpdateDTO.FileSrcs ?? asset.FileSrcs;
     }
 }

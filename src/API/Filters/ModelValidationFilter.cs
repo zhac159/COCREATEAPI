@@ -9,12 +9,23 @@ public class ModelValidationFilter : IActionFilter
     {
         if (!context.ModelState.IsValid)
         {
+            var errors = context.ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .Select(x => new { x.Key, x.Value.Errors })
+                .ToArray();
+
+            foreach (var error in errors)
+            {
+                foreach (var subError in error.Errors)
+                {
+                    // Log the error detail
+                    Console.WriteLine($"Property: {error.Key} Error: {subError.ErrorMessage}");
+                }
+            }
+
             throw new InvalidModelException();
         }
     }
 
-    public void OnActionExecuted(ActionExecutedContext context)
-    {
-    }
-
+    public void OnActionExecuted(ActionExecutedContext context) { }
 }

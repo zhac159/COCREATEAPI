@@ -1,5 +1,6 @@
 using API.Factories;
 using API.Models;
+using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +14,15 @@ public class UserController : COCREATEAPIControllerBase
 
     private readonly ICurrentUserContextService currentUserContextService;
 
-    public UserController(IUserService userService, ICurrentUserContextService currentUserContextService)
+    public UserController(
+        IUserService userService,
+        ICurrentUserContextService currentUserContextService
+    )
     {
         this.userService = userService;
         this.currentUserContextService = currentUserContextService;
     }
-    
+
     [AllowAnonymous]
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<APIResponse<UserDTO>>> Post(int userId)
@@ -28,9 +32,37 @@ public class UserController : COCREATEAPIControllerBase
     }
 
     [HttpPut()]
-    public async Task<ActionResult<APIResponse<UserDTO>>> Put(UserUpdateDTO userUpdateDTO)
+    public async Task<ActionResult<APIResponse<UserDTO>>> Update(UserUpdateDTO userUpdateDTO)
     {
-        var user = await userService.UpdateAsync(userUpdateDTO, currentUserContextService.GetUserId());
+        var user = await userService.UpdateAsync(
+            userUpdateDTO,
+            currentUserContextService.GetUserId()
+        );
         return Ok(APIResponseFactory.CreateSuccess(user));
+    }
+
+    [HttpPut("skills")]
+    public async Task<ActionResult<APIResponse<SkillDTO>>> UpdateSkills(
+        List<SkillUpdateDTO> skillUpdateDTO
+    )
+    {
+        var skills = await userService.UpdateSkillsAsync(
+            skillUpdateDTO,
+            currentUserContextService.GetUserId()
+        );
+        return Ok(APIResponseFactory.CreateSuccess(skills));
+    }
+
+    [HttpPut("location")]
+    public async Task<ActionResult<APIResponse<UserLocationDTO>>> UpdateLocation(
+        UserLocationUpdateDTO locationUpdateDTO
+    )
+    {
+        var successfull = await userService.UpdateLocationAsync(
+            locationUpdateDTO,
+            currentUserContextService.GetUserId()
+        );
+
+        return Ok(APIResponseFactory.CreateSuccess(successfull));
     }
 }
