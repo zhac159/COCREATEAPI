@@ -76,6 +76,14 @@ public static class UserExtensions
             Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null
         };
     }
+    public static UserInformationDTO ToInformationDTO(this User user)
+    {
+        return new UserInformationDTO
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+        };
+    }
 
     public static UserLocationDTO ToLocationDTO(this User user)
     {

@@ -44,7 +44,7 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    AssetType = table.Column<string>(type: "text", nullable: false),
+                    AssetType = table.Column<int>(type: "integer", nullable: false),
                     FileSrcs = table.Column<List<string>>(type: "text[]", nullable: false),
                     Cost = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     UserId = table.Column<int>(type: "integer", nullable: false)
@@ -69,7 +69,7 @@ namespace Infrastructure.Migrations
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     FileSrc = table.Column<string>(type: "text", nullable: false),
-                    FileType = table.Column<string>(type: "text", nullable: false),
+                    FileType = table.Column<int>(type: "integer", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -79,6 +79,28 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_PortofolioContents_Users_UserId",
                         column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    FileSrcs = table.Column<List<string>>(type: "text[]", nullable: false),
+                    ProjectManagerId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_Users_ProjectManagerId",
+                        column: x => x.ProjectManagerId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -118,7 +140,7 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SkillType = table.Column<string>(type: "text", nullable: false),
+                    SkillType = table.Column<int>(type: "integer", nullable: false),
                     SkillGroupType = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Level = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
@@ -135,6 +157,40 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProjectRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    FileSrcs = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Cost = table.Column<int>(type: "integer", nullable: false),
+                    Effort = table.Column<int>(type: "integer", nullable: false),
+                    SkillType = table.Column<int>(type: "integer", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Remote = table.Column<bool>(type: "boolean", nullable: false),
+                    AssigneeId = table.Column<int>(type: "integer", nullable: true),
+                    ProjectId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectRoles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectRoles_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectRoles_Users_AssigneeId",
+                        column: x => x.AssigneeId,
+                        principalTable: "Users",
+                        principalColumn: "UserId");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Assets_AssetType",
                 table: "Assets",
@@ -149,6 +205,21 @@ namespace Infrastructure.Migrations
                 name: "IX_PortofolioContents_UserId",
                 table: "PortofolioContents",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoles_AssigneeId",
+                table: "ProjectRoles",
+                column: "AssigneeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoles_ProjectId",
+                table: "ProjectRoles",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_ProjectManagerId",
+                table: "Projects",
+                column: "ProjectManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_ReviewedUserId",
@@ -193,10 +264,16 @@ namespace Infrastructure.Migrations
                 name: "PortofolioContents");
 
             migrationBuilder.DropTable(
+                name: "ProjectRoles");
+
+            migrationBuilder.DropTable(
                 name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Skills");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
 
             migrationBuilder.DropTable(
                 name: "Users");

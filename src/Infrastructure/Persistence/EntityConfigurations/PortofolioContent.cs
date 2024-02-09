@@ -18,7 +18,7 @@ public class PortofolioContentConfiguration : IEntityTypeConfiguration<Portofoli
         builder.Property(e => e.Order).IsRequired();
         builder.Property(e => e.UserId).IsRequired();
 
-        builder.Property(e => e.FileType).HasConversion<string>();
+        builder.Property(e => e.FileType);
 
         builder
             .HasOne(e => e.User)

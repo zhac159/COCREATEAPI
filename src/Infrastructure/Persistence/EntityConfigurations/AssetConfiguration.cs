@@ -18,7 +18,7 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
         builder.Property(e => e.Cost).HasDefaultValue(0);
         builder.Property(e => e.UserId).IsRequired();
 
-        builder.Property(e => e.AssetType).HasConversion<string>();
+        builder.Property(e => e.AssetType);
 
         builder.HasOne(e => e.User).WithMany(e => e.Assets).HasForeignKey(e => e.UserId);
 

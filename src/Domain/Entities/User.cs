@@ -20,4 +20,6 @@ public class User
     public List<Review> ReviewsGiven { get; set; } = new List<Review>();
     public List<Review> ReviewsReceived { get; set; } = new List<Review>();
     public List<Asset> Assets { get; set; } = new List<Asset>();
+    public List<Project> Projects { get; set; } = new List<Project>();
+    public List<ProjectRole> ProjectRoles { get; set; } = new List<ProjectRole>();
 }

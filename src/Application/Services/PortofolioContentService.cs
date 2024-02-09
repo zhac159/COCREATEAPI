@@ -32,7 +32,7 @@ public class PortofolioContentService : IPortofolioContentService
 
         var mediaFile = portofolioContentCreateWrapperDTO.MediaFile;
 
-        var uploaded = await storageService.UploadFile(fileSrc, mediaFile, "portofoliocontents");
+        await storageService.UploadFile(fileSrc, mediaFile, "portofoliocontents");
 
         var portofolioContent = portofolioContentCreateWrapperDTO.PortofolioContent.ToEntity(fileSrc, userId);
 

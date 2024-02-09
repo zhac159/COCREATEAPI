@@ -15,6 +15,8 @@ namespace Infrastructure.Persistence
         public DbSet<PortofolioContent> PortofolioContents { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Asset> Assets { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectRole> ProjectRoles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
