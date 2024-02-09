@@ -1,3 +1,4 @@
+using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 
@@ -11,4 +12,5 @@ public interface IUserService
     Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId);
     Task<List<SkillDTO>> UpdateSkillsAsync(List<SkillUpdateDTO> userUpdateDTO, int userId);
     Task<UserLocationDTO> UpdateLocationAsync(UserLocationUpdateDTO location, int userId);
+    Task<List<ProjectWithMatchingRoleDTO>> GetMatchingProjectRolesAsync(UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO, int userId);
 }

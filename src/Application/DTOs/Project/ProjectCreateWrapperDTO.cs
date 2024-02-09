@@ -1,4 +1,4 @@
-namespace Application.DTOs.ProjectDTO;
+namespace Application.DTOs.ProjectDTOs;
 
 public class ProjectCreateWrapperDTO
 {

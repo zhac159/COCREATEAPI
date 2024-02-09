@@ -1,4 +1,4 @@
-using Application.DTOs.ProjectDTO;
+using Application.DTOs.ProjectDTOs;
 using Domain.Entities;
 
 namespace Application.Extensions;

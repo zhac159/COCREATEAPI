@@ -17,6 +17,7 @@ namespace Infrastructure.Persistence
         public DbSet<Asset> Assets { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectRole> ProjectRoles { get; set; }
+        public DbSet<SeenMatches> SeenMatches { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

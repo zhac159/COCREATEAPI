@@ -20,7 +20,12 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
 
         builder.Property(e => e.AssetType);
 
-        builder.HasOne(e => e.User).WithMany(e => e.Assets).HasForeignKey(e => e.UserId);
+        builder
+            .HasOne(e => e.User)
+            .WithMany(e => e.Assets)
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        ;
 
         builder.HasIndex(e => new { e.AssetType });
     }

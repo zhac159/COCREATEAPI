@@ -15,6 +15,7 @@ public class User
     public int Coins { get; set; } = 0;
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
+    public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
     public List<Skill> Skills { get; set; } = new List<Skill>();
     public List<PortofolioContent> PortofolioContents { get; set; } = new List<PortofolioContent>();
     public List<Review> ReviewsGiven { get; set; } = new List<Review>();

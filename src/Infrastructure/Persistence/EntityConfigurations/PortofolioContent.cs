@@ -23,6 +23,7 @@ public class PortofolioContentConfiguration : IEntityTypeConfiguration<Portofoli
         builder
             .HasOne(e => e.User)
             .WithMany(e => e.PortofolioContents)
-            .HasForeignKey(e => e.UserId);
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

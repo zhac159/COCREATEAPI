@@ -21,6 +21,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasOne(e => e.ProjectManager)
             .WithMany(e => e.Projects)
             .HasForeignKey(e => e.ProjectManagerId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

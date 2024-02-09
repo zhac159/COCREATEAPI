@@ -27,6 +27,8 @@ public class APIExceptitionFilter : IExceptionFilter
             InvalidModelException => StatusCodes.Status400BadRequest,
             ArgumentException => StatusCodes.Status400BadRequest,
             InvalidPasswordException => StatusCodes.Status401Unauthorized,
+            InsufficientFundsException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status403Forbidden,
             EntityNotFoundException => StatusCodes.Status404NotFound,
             EntityAlreadyExistsException => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError

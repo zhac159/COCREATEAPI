@@ -1,3 +1,4 @@
+using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Extensions;
@@ -5,16 +6,23 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
+using Domain.Queries;
 
 namespace Application.Services;
 
 public class UserService : IUserService
 {
     private readonly IUserRepository userRepository;
+    private readonly IProjectRoleRepository projectRoleRepository;
 
-    public UserService(IUserRepository userRepository, IStorageService storageService)
+    public UserService(
+        IUserRepository userRepository,
+        IStorageService storageService,
+        IProjectRoleRepository projectRoleRepository
+    )
     {
         this.userRepository = userRepository;
+        this.projectRoleRepository = projectRoleRepository;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -50,7 +58,7 @@ public class UserService : IUserService
 
     public async Task<UserDTO> GetByIdAsync(int id)
     {
-        var user = await userRepository.GetByIdAsync(id);
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(id);
 
         if (user is null)
         {
@@ -62,7 +70,7 @@ public class UserService : IUserService
 
     public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)
     {
-        var user = await userRepository.GetByIdAsync(userId);
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(userId);
 
         if (user is null)
         {
@@ -81,7 +89,7 @@ public class UserService : IUserService
         int userId
     )
     {
-        var user = await userRepository.GetByIdIncludeOnlySkillsAsync(userId);
+        var user = await userRepository.GetByIdIncludeSkillsAsync(userId);
 
         if (user is null)
         {
@@ -105,7 +113,7 @@ public class UserService : IUserService
         int userId
     )
     {
-        var user = await userRepository.GetByIdAsync(userId);
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(userId);
 
         if (user is null)
         {
@@ -119,5 +127,46 @@ public class UserService : IUserService
         var updatedUser = await userRepository.UpdateAsync(user);
 
         return updatedUser.ToLocationDTO();
+    }
+
+    public async Task<List<ProjectWithMatchingRoleDTO>> GetMatchingProjectRolesAsync(
+        UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO,
+        int userId
+    )
+    {
+        var user = await userRepository.GetByIdIncludeSkillsAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        var userSkillTypes = user.Skills.Select(s => s.SkillType).ToList();
+
+        var getMatchingProjectRolesAsyncQuery = new GetMatchingProjectRolesAsyncQuery
+        {
+            Latitude = user.Latitude,
+            Longitude = user.Longitude,
+            Distance = userGetMatchingProjectRolesDTO.Distance,
+            SkillTypes = userSkillTypes,
+            Effort = userGetMatchingProjectRolesDTO.Effort,
+            UserId = userId,
+        };
+
+        var matchingProjects = await projectRoleRepository.GetMatchingProjectRoleIdsAsync(
+            getMatchingProjectRolesAsyncQuery
+        );
+        var matchingProjectDTOs = matchingProjects
+            .Select(
+                mp =>
+                    new ProjectWithMatchingRoleDTO
+                    {
+                        ProjectRoleId = mp.Item1,
+                        Project = mp.Item2.ToDTO(),
+                    }
+            )
+            .ToList();
+
+        return matchingProjectDTOs;
     }
 }

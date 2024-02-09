@@ -34,6 +34,7 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
             .HasOne(e => e.Project)
             .WithMany(e => e.ProjectRoles)
             .HasForeignKey(e => e.ProjectId)
-            .IsRequired();
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,5 +1,3 @@
-using NetTopologySuite.Geometries;
-
 namespace Application.DTOs.UserDtos;
 
 public class UserLocationDTO

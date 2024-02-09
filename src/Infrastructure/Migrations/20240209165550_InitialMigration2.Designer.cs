@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    partial class CoCreateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240209165550_InitialMigration2")]
+    partial class InitialMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,32 +222,6 @@ namespace Infrastructure.Migrations
                     b.ToTable("Reviews", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.SeenMatches", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ProjectRoleId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("SeenAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectRoleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("SeenMatches", (string)null);
-                });
-
             modelBuilder.Entity("Domain.Entities.Skill", b =>
                 {
                     b.Property<int>("Id")
@@ -416,25 +393,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("ReviewerUser");
                 });
 
-            modelBuilder.Entity("Domain.Entities.SeenMatches", b =>
-                {
-                    b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
-                        .WithMany("SeenMatches")
-                        .HasForeignKey("ProjectRoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("SeenMatches")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ProjectRole");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Entities.Skill", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -451,11 +409,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("ProjectRoles");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
-                {
-                    b.Navigation("SeenMatches");
-                });
-
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Assets");
@@ -469,8 +422,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("ReviewsGiven");
 
                     b.Navigation("ReviewsReceived");
-
-                    b.Navigation("SeenMatches");
 
                     b.Navigation("Skills");
                 });

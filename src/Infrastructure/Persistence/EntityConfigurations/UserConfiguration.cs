@@ -18,7 +18,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Latitude).HasDefaultValue(null);
         builder.Property(e => e.Address).HasDefaultValue(null);
         builder.Property(e => e.AboutYou).HasMaxLength(2000).HasDefaultValue(null);
-        builder.Property(e => e.Coins).IsRequired().HasDefaultValue(0);
+        builder.Property(e => e.Coins).IsRequired().HasDefaultValue(10000);
         builder.Property(e => e.Rating).IsRequired().HasDefaultValue(0);
         builder.Property(e => e.TotalReviews).IsRequired().HasDefaultValue(0);
         builder.Property(e => e.ProfilePictureSrc).HasDefaultValue(null);

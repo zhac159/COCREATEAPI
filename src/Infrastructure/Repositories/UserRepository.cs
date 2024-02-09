@@ -48,7 +48,7 @@ public class UserRepository : IUserRepository
         return user != null;
     }
 
-    public async Task<User?> GetByIdAsync(int id)
+    public async Task<User?> GetByIdIncludeAllPropertiesAsync(int id)
     {
         var user = await context
             .Users.Where(u => u.UserId == id)
@@ -64,7 +64,7 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public async Task<User?> GetByIdIncludeOnlySkillsAsync(int id)
+    public async Task<User?> GetByIdIncludeSkillsAsync(int id)
     {
         var user = await context
             .Users.Where(u => u.UserId == id)
@@ -108,5 +108,28 @@ public class UserRepository : IUserRepository
                 );
             }
         }
+    }
+
+    public async Task<int?> GetCoinByIdAsync(int id)
+    {
+        var user = await context.Users.Where(u => u.UserId == id).FirstOrDefaultAsync();
+
+        return user?.Coins;
+    }
+
+    public async Task<int?> UpdateCoinByIdAsync(int id, int coin)
+    {
+        var user = await context.Users.Where(u => u.UserId == id).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return null;
+        }
+
+        user.Coins = coin;
+
+        await context.SaveChangesAsync();
+
+        return user.Coins;
     }
 }

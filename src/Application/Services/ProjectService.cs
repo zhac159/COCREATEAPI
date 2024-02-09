@@ -1,5 +1,5 @@
 using System.Text;
-using Application.DTOs.ProjectDTO;
+using Application.DTOs.ProjectDTOs;
 using Application.Extensions;
 using Application.Interfaces;
 using Domain.Exceptions;
@@ -36,7 +36,7 @@ public class ProjectService : IProjectService
         for (int i = 0; i < projectCreateWrapperDTO.MediaFiles.Count; i++)
         {
             var fileSrc = new StringBuilder()
-                .Append("asset_")
+                .Append("project_")
                 .Append(userId)
                 .Append("_")
                 .Append(projectCreateWrapperDTO.ProjectCreateDTO.Name)
@@ -59,5 +59,17 @@ public class ProjectService : IProjectService
         var createdProject = await projectRepository.CreateAsync(project);
 
         return createdProject.ToDTO();
+    }
+
+    public async Task<ProjectDTO?> GetByIdAsync(int id)
+    {
+        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(id);
+
+        if (project is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return project.ToDTO();
     }
 }

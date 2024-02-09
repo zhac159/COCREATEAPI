@@ -1,5 +1,6 @@
 using API.Factories;
 using API.Models;
+using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
@@ -64,5 +65,18 @@ public class UserController : COCREATEAPIControllerBase
         );
 
         return Ok(APIResponseFactory.CreateSuccess(successfull));
+    }
+
+    [HttpPost("matching-projects")]
+    public async Task<
+        ActionResult<APIResponse<List<ProjectWithMatchingRoleDTO>>>
+    > GetMatchingProjectRoles(UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO)
+    {
+        var matchingProjects = await userService.GetMatchingProjectRolesAsync(
+            userGetMatchingProjectRolesDTO,
+            currentUserContextService.GetUserId()
+        );
+
+        return Ok(APIResponseFactory.CreateSuccess(matchingProjects));
     }
 }

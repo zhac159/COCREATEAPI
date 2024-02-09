@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -47,5 +48,39 @@ public class ProjectRepository : IProjectRepository
         await context.SaveChangesAsync();
 
         return project;
+    }
+
+    public async Task<Project?> GetByIdIncludeAllPropertiesAsync(int id)
+    {
+        var project = await context
+            .Projects.Where(p => p.Id == id)
+            .Include(p => p.ProjectManager)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
+            .FirstOrDefaultAsync();
+
+        PopulateUris(project);
+        
+        return project;
+    }
+
+    private void PopulateUris(Project? project)
+    {
+        if (project?.FileSrcs != null)
+        {
+            project.Uris = project
+                .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projects"))
+                .ToList();
+        }
+
+        if (project?.ProjectRoles != null)
+        {
+            foreach (var projectRole in project.ProjectRoles)
+            {
+                projectRole.Uris = projectRole
+                    .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projectroles"))
+                    .ToList();
+            }
+        }
     }
 }

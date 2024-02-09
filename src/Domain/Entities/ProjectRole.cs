@@ -19,6 +19,7 @@ public class ProjectRole
     public User? Assignee { get; set; }
     public int ProjectId { get; set; }
     public Project? Project { get; set; }
+    public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
 
     [NotMapped]
     public List<Uri> Uris { get; set; } = new List<Uri>();

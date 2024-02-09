@@ -1,8 +1,9 @@
 using API.Factories;
 using API.Models;
 using Application.DTOs.PortofolioContentDTOs;
-using Application.DTOs.ProjectDTO;
+using Application.DTOs.ProjectDTOs;
 using Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -31,6 +32,14 @@ public class ProjectController : COCREATEAPIControllerBase
             currentUserContextService.GetUserId()
         );
 
+        return Ok(APIResponseFactory.CreateSuccess(project));
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{projectId:int}")]
+    public async Task<ActionResult<APIResponse<ProjectDTO>>> GetById(int projectId)
+    {
+        var project = await projectService.GetByIdAsync(projectId);
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
     

@@ -1,7 +1,7 @@
 using Application.DTOs.ProjectRoleDTOs;
 using Application.DTOs.UserDtos;
 
-namespace Application.DTOs.ProjectDTO;
+namespace Application.DTOs.ProjectDTOs;
 
 public class ProjectDTO
 {
