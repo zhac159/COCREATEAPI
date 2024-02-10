@@ -1,6 +1,5 @@
 using API.Factories;
 using API.Models;
-using Application.DTOs.PortofolioContentDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;

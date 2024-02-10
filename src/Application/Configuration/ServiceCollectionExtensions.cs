@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPortofolioContentService, PortofolioContentService>();
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IProjectRoleService, ProjectRoleService>();
+        services.AddScoped<IEnquiryService, EnquiryService>();
         return services;
     }
 }

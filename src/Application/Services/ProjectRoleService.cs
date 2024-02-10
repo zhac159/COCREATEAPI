@@ -1,5 +1,6 @@
 using System.Runtime.Serialization;
 using System.Text;
+using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.ProjectRoleDTOs;
 using Application.Extensions;

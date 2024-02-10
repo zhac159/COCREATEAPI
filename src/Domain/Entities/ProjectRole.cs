@@ -20,6 +20,7 @@ public class ProjectRole
     public int ProjectId { get; set; }
     public Project? Project { get; set; }
     public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
+    public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
 
     [NotMapped]
     public List<Uri> Uris { get; set; } = new List<Uri>();

@@ -29,6 +29,7 @@ public static class ServiceColletionExtensions
         services.AddScoped<IPortofolioContentRepository, PortofolioContentRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectRoleRepository, ProjectRoleRepostiory>();
+        services.AddScoped<IEnquiryRepository, EnquiryRepository>();
 
         return services;
     }

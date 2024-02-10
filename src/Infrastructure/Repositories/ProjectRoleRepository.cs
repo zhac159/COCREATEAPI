@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Queries;
 using Infrastructure.Persistence;
@@ -35,6 +36,13 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
         return await context.ProjectRoles.FindAsync(id);
     }
 
+    public async Task<ProjectRole?> GetByIdIncludeProjectAsync(int id)
+    {
+        return await context.ProjectRoles
+            .Include(pr => pr.Project)
+            .FirstOrDefaultAsync(pr => pr.Id == id);
+    }
+
     public async Task<bool> DeleteAsync(ProjectRole projectRole)
     {
         context.ProjectRoles.Remove(projectRole);
@@ -66,12 +74,16 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             .ThenInclude(pr => pr.Assignee)
             .Include(pr => pr.Project!)
             .ThenInclude(p => p.ProjectManager)
+            .Where(pr => pr.AssigneeId == null)
             .Where(pr => pr.Effort <= query.Effort && query.SkillTypes.Contains(pr.SkillType))
             .Where(pr => !seenProjectRoleIds.Contains(pr.Id))
-            .Take(5)
+            .OrderBy(pr => pr.Project!.ProjectManagerId != query.UserId)
+            .Take(1000)
             .ToListAsync();
 
         var matchingProjectRoles = new List<(int, Project)>();
+
+        var seenMatches = new List<SeenMatches>();
 
         foreach (var projectRole in allProjectRoles)
         {
@@ -82,19 +94,36 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
                 projectRole.Longitude
             );
 
-            if (distance <= query.Distance && projectRole.Project != null)
+            if (
+                distance <= query.Distance
+                && projectRole.Project != null
+                && matchingProjectRoles.Count < 5
+            )
             {
+                PopulateUris(projectRole.Project);
+
                 matchingProjectRoles.Add((projectRole.Id, projectRole.Project));
-                
-                context.SeenMatches.Add(
+
+                seenMatches.Add(
                     new SeenMatches
                     {
                         UserId = query.UserId,
                         ProjectRoleId = projectRole.Id,
-                        SeenAt = DateTime.Now
+                        SeenAt = DateTime.Now.ToUniversalTime()
                     }
                 );
             }
+        }
+
+        if (matchingProjectRoles.Count < 5)
+        {
+            var userMatches = context.SeenMatches.Where(sm => sm.UserId == query.UserId);
+
+            context.SeenMatches.RemoveRange(userMatches);
+        }
+        else
+        {
+            context.SeenMatches.AddRange(seenMatches);
         }
 
         await context.SaveChangesAsync();
@@ -113,5 +142,25 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
 
         return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
+    }
+
+    private void PopulateUris(Project? project)
+    {
+        if (project?.FileSrcs != null)
+        {
+            project.Uris = project
+                .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projects"))
+                .ToList();
+        }
+
+        if (project?.ProjectRoles != null)
+        {
+            foreach (var projectRole in project.ProjectRoles)
+            {
+                projectRole.Uris = projectRole
+                    .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projectroles"))
+                    .ToList();
+            }
+        }
     }
 }

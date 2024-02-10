@@ -4,26 +4,26 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.EntityConfigurations;
 
-public class SeenMatchesConfiguration : IEntityTypeConfiguration<SeenMatches>
+public class EnquiryConfiguration : IEntityTypeConfiguration<Enquiry>
 {
-    public void Configure(EntityTypeBuilder<SeenMatches> builder)
+    public void Configure(EntityTypeBuilder<Enquiry> builder)
     {
-        builder.ToTable("SeenMatches");
+        builder.ToTable("Enquiries");
 
         builder.HasKey(e => e.Id);
         builder.Property(e => e.UserId).IsRequired();
         builder.Property(e => e.ProjectRoleId).IsRequired();
-        builder.Property(e => e.SeenAt).IsRequired();
+        builder.Property(e => e.CreateAt).IsRequired();
 
         builder
             .HasOne(e => e.User)
-            .WithMany(e => e.SeenMatches)
+            .WithMany(e => e.Enquiries)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne(e => e.ProjectRole)
-            .WithMany(e => e.SeenMatches)
+            .WithMany(e => e.Enquiries)
             .HasForeignKey(e => e.ProjectRoleId)
             .OnDelete(DeleteBehavior.Cascade);
 

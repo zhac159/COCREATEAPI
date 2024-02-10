@@ -1,5 +1,6 @@
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -46,6 +47,15 @@ public class UserRepository : IUserRepository
         var user = await context.Users.Where(u => u.Username == name).FirstOrDefaultAsync();
 
         return user != null;
+    }
+
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        var user = await context.Users.Where(u => u.UserId == id).FirstOrDefaultAsync();
+
+        PopulateUris(user);
+
+        return user;
     }
 
     public async Task<User?> GetByIdIncludeAllPropertiesAsync(int id)
