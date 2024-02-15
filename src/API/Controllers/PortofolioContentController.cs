@@ -34,7 +34,7 @@ public class PortofolioContentController : COCREATEAPIControllerBase
     }
     
     [HttpPut]
-    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Update(PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Update( [FromForm] PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO)
     {
         var portofolioContent = await portofolioContentService.UpdateAsync(
             portofolioContentUpdateWrapperDTO,

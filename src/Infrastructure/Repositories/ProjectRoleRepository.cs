@@ -1,6 +1,5 @@
 using Application.Interfaces;
 using Domain.Entities;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Queries;
 using Infrastructure.Persistence;

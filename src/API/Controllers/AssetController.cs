@@ -41,7 +41,7 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<APIResponse<AssetDTO>>>  Update(AssetUpdateWrapperDTO assetUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<AssetDTO>>>  Update([FromForm] AssetUpdateWrapperDTO assetUpdateWrapperDTO)
     {
         var asset = await assetService.UpdateAsync(
             assetUpdateWrapperDTO,
