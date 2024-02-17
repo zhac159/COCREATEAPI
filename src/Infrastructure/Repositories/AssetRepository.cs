@@ -1,19 +1,16 @@
-using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
 public class AssetRepository : IAssetRepository
 {
     private readonly CoCreateDbContext context;
-    private readonly IStorageService storageService;
-
-    public AssetRepository(CoCreateDbContext context, IStorageService storageService)
+    public AssetRepository(CoCreateDbContext context)
     {
         this.context = context;
-        this.storageService = storageService;
     }
 
     public async Task<Asset> CreateAsync(Asset asset)
@@ -21,16 +18,17 @@ public class AssetRepository : IAssetRepository
         await context.Assets.AddAsync(asset);
         await context.SaveChangesAsync();
 
-        asset.Uris = asset.FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "assets")).ToList();
-
         return asset;
     }
 
-    public async Task<Asset?> GetByIdAsync(int id)
+    public async Task<Asset?> GetByIdIncludeAllPropertiesAsync(int id)
     {
-        return await context.Assets.FindAsync(id);
-    }
+        var asset = await context.Assets
+            .Include(asset => asset.Medias)
+            .FirstOrDefaultAsync(asset => asset.Id == id);
 
+        return asset;
+    }
     public async Task<bool> DeleteAsync(Asset asset)
     {
         context.Assets.Remove(asset);

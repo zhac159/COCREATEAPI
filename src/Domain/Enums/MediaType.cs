@@ -1,8 +1,9 @@
 namespace Domain.Enums;
 
-public enum FileType
+public enum MediaType
 {
     Image,
     Video,
     Audio,
+    Document
 }

@@ -27,6 +27,7 @@ public class UserRepository : IUserRepository
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
+            .ThenInclude(a => a.Medias)
             .FirstOrDefaultAsync();
 
         PopulateUris(user);
@@ -67,6 +68,7 @@ public class UserRepository : IUserRepository
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
+            .ThenInclude(a => a.Medias)
             .FirstOrDefaultAsync();
 
         PopulateUris(user);
@@ -94,20 +96,6 @@ public class UserRepository : IUserRepository
 
     private void PopulateUris(User? user)
     {
-        if (user?.Assets != null)
-        {
-            foreach (var asset in user.Assets)
-            {
-                var uris = new List<Uri>();
-                asset.FileSrcs.ForEach(fileSrc =>
-                {
-                    uris.Add(storageService.GetFileUri(fileSrc, "assets"));
-                });
-
-                asset.Uris = uris;
-            }
-        }
-
         if (user?.PortofolioContents != null)
         {
             foreach (var portofolioContent in user.PortofolioContents)

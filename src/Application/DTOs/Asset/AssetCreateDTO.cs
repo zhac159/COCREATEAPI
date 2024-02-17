@@ -1,3 +1,4 @@
+using Application.DTOs.MediaDTOs;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -7,18 +8,17 @@ public class AssetCreateDTO {
     public required string Name { get; set; }
     public required string Description { get; set; }
     public required AssetType AssetType { get; set; }
-    public required int Cost { get; set; }
+    public required List<MediaCreateDTO> Medias { get; set; }
 
-    public Asset ToEntity(List<string> fileSrcs, int userId)
+    public Asset ToEntity(int userId)
     {
         return new Asset
         {
             Name = Name,
             Description = Description,
             AssetType = AssetType,
-            Cost = Cost,
-            FileSrcs = fileSrcs,
-            UserId = userId
+            UserId = userId,
+            Medias = Medias.Select((m, order) => m.ToEntity(order)).ToList()
         };
     }
 }

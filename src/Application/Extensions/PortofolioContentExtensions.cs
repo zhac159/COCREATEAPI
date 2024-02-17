@@ -14,7 +14,6 @@ public static class PortofolioContentExtensions
             Name = portofolioContent.Name,
             Description = portofolioContent.Description,
             Order = portofolioContent.Order,
-            FileType = portofolioContent.FileType,
             Uri = portofolioContent.Uri ?? null
         };
     }
@@ -24,6 +23,5 @@ public static class PortofolioContentExtensions
         portofolioContent.Name = portofolioContentUpdateDTO.Name ?? portofolioContent.Name;
         portofolioContent.Description = portofolioContentUpdateDTO.Description ?? portofolioContent.Description;
         portofolioContent.Order = portofolioContentUpdateDTO.Order ?? portofolioContent.Order;
-        portofolioContent.FileType = portofolioContentUpdateDTO.FileType ?? portofolioContent.FileType;
     }
 }

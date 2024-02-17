@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.DTOs.AssetDTOs;
 using Domain.Entities;
 
@@ -13,8 +14,10 @@ public static class AssetExtensions
             Name = asset.Name,
             Description = asset.Description,
             AssetType = asset.AssetType,
-            Cost = asset.Cost,
-            Uris = asset.Uris
+            Medias = asset
+                .Medias.OrderBy(media => media.Order)
+                .Select(media => media.ToDTO())
+                .ToList()
         };
     }
 
@@ -23,7 +26,25 @@ public static class AssetExtensions
         asset.Name = assetUpdateDTO.Name ?? asset.Name;
         asset.Description = assetUpdateDTO.Description ?? asset.Description;
         asset.AssetType = assetUpdateDTO.AssetType ?? asset.AssetType;
-        asset.Cost = assetUpdateDTO.Cost ?? asset.Cost;
-        asset.FileSrcs = assetUpdateDTO.FileSrcs ?? asset.FileSrcs;
+
+        if (assetUpdateDTO.Medias is not null)
+        {
+            asset.Medias?.RemoveAll(m => !assetUpdateDTO.Medias.Any(mu => mu.Id == m.Id));
+
+            asset.Medias = assetUpdateDTO
+                .Medias.Select(
+                    (mediaUpdateDTO, order) =>
+                    {
+                        var media = asset.Medias?.FirstOrDefault(m => m.Id == mediaUpdateDTO.Id);
+                        if (media is not null)
+                        {
+                            media.UpdateFromDTO(mediaUpdateDTO, order);
+                            return media;
+                        }
+                        return mediaUpdateDTO.ToAssetMediaEntity(order);
+                    }
+                )
+                .ToList();
+        }
     }
 }

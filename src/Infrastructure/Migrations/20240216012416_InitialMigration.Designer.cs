@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    [Migration("20240209180859_InitialMigration3")]
-    partial class InitialMigration3
+    [Migration("20240216012416_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,19 +37,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("AssetType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Cost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<List<string>>("FileSrcs")
-                        .IsRequired()
-                        .HasColumnType("text[]");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -68,6 +59,60 @@ namespace Infrastructure.Migrations
                     b.ToTable("Assets", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.AssetMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("MediaType");
+
+                    b.ToTable("Medias", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Enquiry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProjectRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectRoleId");
+
+                    b.HasIndex("UserId", "ProjectRoleId")
+                        .IsUnique();
+
+                    b.ToTable("Enquiries", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
                 {
                     b.Property<int>("Id")
@@ -84,9 +129,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("FileSrc")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("FileType")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -243,7 +285,8 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProjectRoleId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId", "ProjectRoleId")
+                        .IsUnique();
 
                     b.ToTable("SeenMatches", (string)null);
                 });
@@ -361,6 +404,36 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AssetMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Asset", "Asset")
+                        .WithMany("Medias")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Enquiry", b =>
+                {
+                    b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
+                        .WithMany("Enquiries")
+                        .HasForeignKey("ProjectRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("Enquiries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectRole");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -449,6 +522,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Asset", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
             modelBuilder.Entity("Domain.Entities.Project", b =>
                 {
                     b.Navigation("ProjectRoles");
@@ -456,12 +534,16 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
                 {
+                    b.Navigation("Enquiries");
+
                     b.Navigation("SeenMatches");
                 });
 
             modelBuilder.Entity("Domain.Entities.User", b =>
                 {
                     b.Navigation("Assets");
+
+                    b.Navigation("Enquiries");
 
                     b.Navigation("PortofolioContents");
 

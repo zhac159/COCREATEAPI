@@ -14,11 +14,8 @@ public class PortofolioContentConfiguration : IEntityTypeConfiguration<Portofoli
         builder.Property(e => e.Description).HasMaxLength(500);
         builder.Property(e => e.Name).HasMaxLength(30).IsRequired();
         builder.Property(e => e.FileSrc).IsRequired();
-        builder.Property(e => e.FileType).IsRequired();
         builder.Property(e => e.Order).IsRequired();
         builder.Property(e => e.UserId).IsRequired();
-
-        builder.Property(e => e.FileType);
 
         builder
             .HasOne(e => e.User)

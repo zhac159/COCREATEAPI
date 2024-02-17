@@ -1,15 +1,37 @@
+using System.Net.Mime;
 using Application.Interfaces;
+using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
+using Domain.Enums;
 
 namespace Infrastructure.Services;
 
 public class AzureBlobStorageService : IStorageService
 {
     private readonly BlobServiceClient blobServiceClient;
+    private readonly ICurrentUserContextService currentUserContextService;
+    private readonly string storageAccountKey;
 
-    public AzureBlobStorageService(BlobServiceClient blobServiceClient)
+    public AzureBlobStorageService(
+        BlobServiceClient blobServiceClient,
+        IConfiguration configuration,
+        ICurrentUserContextService currentUserContextService
+    )
     {
         this.blobServiceClient = blobServiceClient;
+
+        var connectionString = configuration.GetConnectionString(
+            "AzureStorageAccountKey"
+        );
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new Exception("Connection string is empty or null");
+        }
+
+        this.storageAccountKey = connectionString;
+        this.currentUserContextService = currentUserContextService;
     }
 
     public async Task<bool> UploadFile(
@@ -31,7 +53,6 @@ public class AzureBlobStorageService : IStorageService
 
         return true;
     }
-    
 
     public Uri GetFileUri(string fileName, string containerName)
     {
@@ -49,5 +70,43 @@ public class AzureBlobStorageService : IStorageService
         await blobClient.DeleteIfExistsAsync();
 
         return true;
+    }
+
+    public string GetBlobSasUri(string containerName, MediaType mediaType)
+    {
+        var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+        var userId = currentUserContextService.GetUserId().ToString();
+
+        var fileName =
+            Guid.NewGuid().ToString()
+            + "_UserId_" + userId + mediaType switch
+            {
+                MediaType.Image => ".jpeg",
+                MediaType.Video => ".mp4",
+                _ => throw new Exception("Invalid file type")
+            };
+
+        var blobClient = containerClient.GetBlobClient(fileName);
+
+        BlobSasBuilder sasBuilder = new BlobSasBuilder()
+        {
+            BlobContainerName = containerClient.Name,
+            BlobName = blobClient.Name,
+            Resource = "b",
+            ContentType = "image/jpeg",
+            StartsOn = DateTimeOffset.UtcNow,
+            ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+        };
+
+        sasBuilder.SetPermissions(BlobSasPermissions.Write);
+
+        string sasToken = sasBuilder
+            .ToSasQueryParameters(
+                new StorageSharedKeyCredential(blobServiceClient.AccountName, storageAccountKey)
+            )
+            .ToString();
+
+        return blobClient.Uri + "?" + sasToken;
     }
 }

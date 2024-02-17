@@ -34,19 +34,10 @@ namespace Infrastructure.Migrations
                     b.Property<int>("AssetType")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Cost")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0);
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
-
-                    b.Property<List<string>>("FileSrcs")
-                        .IsRequired()
-                        .HasColumnType("text[]");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -63,6 +54,36 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Assets", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.AssetMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssetId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("MediaType");
+
+                    b.ToTable("Medias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Enquiry", b =>
@@ -108,9 +129,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("FileSrc")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("FileType")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -386,6 +404,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.AssetMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Asset", "Asset")
+                        .WithMany("Medias")
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+                });
+
             modelBuilder.Entity("Domain.Entities.Enquiry", b =>
                 {
                     b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
@@ -491,6 +520,11 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Asset", b =>
+                {
+                    b.Navigation("Medias");
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>

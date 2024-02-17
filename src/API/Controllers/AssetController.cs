@@ -22,32 +22,31 @@ public class AssetController : COCREATEAPIControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<APIResponse<AssetDTO>>>  Create([FromForm] AssetCreateWrapperDTO assetCreateWrapperDTO)
+    public async Task<ActionResult<APIResponse<AssetDTO>>>  Create(AssetCreateDTO assetCreateDTO)
     {
         var asset = await assetService.CreateAsync(
-            assetCreateWrapperDTO,
-            currentUserContextService.GetUserId()
+            assetCreateDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(asset));
-    }
-
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<APIResponse<bool>>>  Delete(int id)
-    {
-        await assetService.DeleteAsync(id, currentUserContextService.GetUserId());
-
-        return Ok(APIResponseFactory.CreateSuccess(true));
     }
 
     [HttpPut]
-    public async Task<ActionResult<APIResponse<AssetDTO>>>  Update([FromForm] AssetUpdateWrapperDTO assetUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<AssetDTO>>>  Update(AssetUpdateDTO assetUpdateDTO)
     {
         var asset = await assetService.UpdateAsync(
-            assetUpdateWrapperDTO,
-            currentUserContextService.GetUserId()
+            assetUpdateDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(asset));
     }
+
+    // [HttpDelete("{id}")]
+    // public async Task<ActionResult<APIResponse<bool>>>  Delete(int id)
+    // {
+    //     await assetService.DeleteAsync(id, currentUserContextService.GetUserId());
+
+    //     return Ok(APIResponseFactory.CreateSuccess(true));
+    // }
+
 }
