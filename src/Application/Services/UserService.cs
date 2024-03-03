@@ -3,7 +3,6 @@ using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Extensions;
 using Application.Interfaces;
-using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Queries;
@@ -14,15 +13,20 @@ public class UserService : IUserService
 {
     private readonly IUserRepository userRepository;
     private readonly IProjectRoleRepository projectRoleRepository;
+    private readonly IStorageService storageService;
+    private readonly ICurrentUserContextService currentUserContextService;
 
     public UserService(
         IUserRepository userRepository,
         IStorageService storageService,
-        IProjectRoleRepository projectRoleRepository
+        IProjectRoleRepository projectRoleRepository,
+        ICurrentUserContextService currentUserContextService
     )
     {
         this.userRepository = userRepository;
         this.projectRoleRepository = projectRoleRepository;
+        this.storageService = storageService;
+        this.currentUserContextService = currentUserContextService;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -168,5 +172,25 @@ public class UserService : IUserService
             .ToList();
 
         return matchingProjectDTOs;
+    }
+
+    public async Task<UserPortofolioDTO> UpdatePortofolio(
+        UserPortofolioUpdateDTO userPortofolioUpdateDTO
+    )
+    {
+        var user = await userRepository.GetByIdIncludePortofolioAsync(
+            currentUserContextService.GetUserId()
+        );
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        await user.UpdatePortofolioFromDTOAsync(userPortofolioUpdateDTO, storageService);
+
+        var updatedUser = await userRepository.UpdateAsync(user);
+
+        return updatedUser.ToPortofolioDTO();
     }
 }

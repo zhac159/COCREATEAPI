@@ -22,23 +22,35 @@ public class PortofolioContentController : COCREATEAPIControllerBase
 
     [HttpPost]
     public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Create(
-        [FromForm] PortofolioContentCreateWrapperDTO portofolioContentCreateWrapperDTO
+        PortofolioContentCreateDTO portofolioContentCreateDTO
     )
     {
         var portofolioContent = await portofolioContentService.CreateAsync(
-            portofolioContentCreateWrapperDTO,
-            currentUserContextService.GetUserId()
+            portofolioContentCreateDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
     }
-    
+
     [HttpPut]
-    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Update( [FromForm] PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO)
+    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> Update(
+        PortofolioContentUpdateDTO portofolioContentUpdateDTO
+    )
     {
         var portofolioContent = await portofolioContentService.UpdateAsync(
-            portofolioContentUpdateWrapperDTO,
-            currentUserContextService.GetUserId()
+            portofolioContentUpdateDTO
+        );
+
+        return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
+    }
+
+    [HttpPut("group")]
+    public async Task<ActionResult<APIResponse<PortofolioContentDTO>>> UpdateGroup(
+        PortofolioContentGroupUpdateDTO portofolioContentGroupUpdateDTO
+    )
+    {
+        var portofolioContent = await portofolioContentService.UpdateGroupAsync(
+            portofolioContentGroupUpdateDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(portofolioContent));
@@ -47,8 +59,8 @@ public class PortofolioContentController : COCREATEAPIControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<APIResponse<bool>>> Delete(int id)
     {
-        await portofolioContentService.DeleteAsync(id, currentUserContextService.GetUserId());
+        var result = await portofolioContentService.DeleteAsync(id);
 
-        return Ok(APIResponseFactory.CreateSuccess(true));
+        return Ok(APIResponseFactory.CreateSuccess(result));
     }
 }

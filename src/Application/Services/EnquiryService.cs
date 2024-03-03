@@ -61,7 +61,7 @@ public class EnquiryService : IEnquiryService
             throw new EntityNotFoundException();
         }
 
-        var projectRole = await projectRoleRepository.GetByIdIncludeProjectAsync(enquiry.ProjectRoleId);
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(enquiry.ProjectRoleId);
 
         if (projectRole is null)
         {

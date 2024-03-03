@@ -12,10 +12,9 @@ public static class ProjectExtensions
             Id = project.Id,
             Name = project.Name,
             Description = project.Description,
-            Uris = project.Uris,
             ProjectManager =  project.ProjectManager != null ? project.ProjectManager.ToInformationDTO(): null,
-            ProjectRoles = project.ProjectRoles.Select(pr => pr.ToDTO()).ToList()
+            ProjectRoles = project.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
+            Medias = project.Medias.OrderBy(media => media.Order).Select(media => media.ToDTO()).ToList()
         };
     }
-
 }

@@ -23,13 +23,20 @@ public class ProjectRoleController : COCREATEAPIControllerBase
 
     [HttpPost]
     public async Task<ActionResult<APIResponse<ProjectRoleDTO>>> Create(
-        [FromForm] ProjectRoleCreateWrapperDTO projectRoleCreateWrapperDTO
+        ProjectRoleCreateDTO projectRoleCreateDTO
     )
     {
-        var projectRole = await projectRoleService.CreateAsync(
-            projectRoleCreateWrapperDTO,
-            currentUserContextService.GetUserId()
-        );
+        var projectRole = await projectRoleService.CreateAsync(projectRoleCreateDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(projectRole));
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<APIResponse<ProjectRoleDTO>>> Update(
+        ProjectRoleUpdateDTO projectRoleUpdateDTO
+    )
+    {
+        var projectRole = await projectRoleService.UpdateAsync(projectRoleUpdateDTO);
 
         return Ok(APIResponseFactory.CreateSuccess(projectRole));
     }

@@ -14,8 +14,6 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.Property(e => e.Name).HasMaxLength(30).IsRequired();
         builder.Property(e => e.Description).HasMaxLength(500).IsRequired();
-        builder.Property(e => e.FileSrcs);
-        builder.Property(e => e.ProjectManagerId).IsRequired();
 
         builder
             .HasOne(e => e.ProjectManager)

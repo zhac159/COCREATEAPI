@@ -23,13 +23,10 @@ public class ProjectController : COCREATEAPIControllerBase
 
     [HttpPost]
     public async Task<ActionResult<APIResponse<ProjectDTO>>> Create(
-        [FromForm] ProjectCreateWrapperDTO projectCreateWrapperDTO
+        ProjectCreateDTO projectCreateDTO
     )
     {
-        var project = await projectService.CreateAsync(
-            projectCreateWrapperDTO,
-            currentUserContextService.GetUserId()
-        );
+        var project = await projectService.CreateAsync(projectCreateDTO);
 
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
@@ -41,5 +38,4 @@ public class ProjectController : COCREATEAPIControllerBase
         var project = await projectService.GetByIdAsync(projectId);
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
-    
 }

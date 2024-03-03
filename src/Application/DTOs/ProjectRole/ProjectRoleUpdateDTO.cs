@@ -1,10 +1,9 @@
 using Application.DTOs.MediaDTOs;
-using Application.DTOs.UserDtos;
 using Domain.Enums;
 
 namespace Application.DTOs.ProjectRoleDTOs;
 
-public class ProjectRoleDTO
+public class ProjectRoleUpdateDTO
 {
     public int Id { get; set; }
     public required string Name { get; set; }
@@ -19,6 +18,5 @@ public class ProjectRoleDTO
     public required string Address { get; set; }
     public List<string> Keywords { get; set; } = new List<string>();
     public required bool Remote { get; set; }
-    public UserInformationDTO? Assignee { get; set; }
-    public List<MediaDTO> Medias { get; set; } = new List<MediaDTO>();
+    public List<MediaUpdateDTO> Medias { get; set; } = new List<MediaUpdateDTO>();
 }

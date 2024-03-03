@@ -79,4 +79,16 @@ public class UserController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(matchingProjects));
     }
+
+    [HttpPut("portofolio")]
+        public async Task<
+        ActionResult<APIResponse<UserPortofolioDTO>>
+    > UpdatePortofolio(UserPortofolioUpdateDTO userPortofolioUpdateDTO)
+    {
+        var updatedPortfolio = await userService.UpdatePortofolio(
+            userPortofolioUpdateDTO
+        );
+
+        return Ok(APIResponseFactory.CreateSuccess(updatedPortfolio));
+    }
 }

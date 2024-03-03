@@ -1,4 +1,3 @@
-using System.Text;
 using Application.DTOs.PortofolioContentDTOs;
 using Application.Extensions;
 using Application.Interfaces;
@@ -10,72 +9,102 @@ namespace Application.Services;
 public class PortofolioContentService : IPortofolioContentService
 {
     private readonly IPortofolioContentRepository portofolioContentRepository;
+    private readonly ICurrentUserContextService currentUserContextService;
     private readonly IStorageService storageService;
 
-    public PortofolioContentService(IPortofolioContentRepository portofolioContentRepository, IStorageService storageService)
+    public PortofolioContentService(
+        IPortofolioContentRepository portofolioContentRepository,
+        ICurrentUserContextService currentUserContextService,
+        IStorageService storageService
+    )
     {
         this.portofolioContentRepository = portofolioContentRepository;
+        this.currentUserContextService = currentUserContextService;
         this.storageService = storageService;
     }
-    
-        public async Task<PortofolioContentDTO> CreateAsync(PortofolioContentCreateWrapperDTO portofolioContentCreateWrapperDTO, int userId)
+
+    public async Task<PortofolioContentDTO> CreateAsync(
+        PortofolioContentCreateDTO portofolioContentCreateDTO
+    )
     {
-        var fileSrc = new StringBuilder()
-            .Append("portofoliocontent_")
-            .Append(userId)
-            .Append("_")
-            .Append(portofolioContentCreateWrapperDTO.PortofolioContent.Name)
-            .Append("_")
-            .Append(Guid.NewGuid().ToString())
-            .Append(".jpeg")
-            .ToString();
+        var portofolioContent = portofolioContentCreateDTO.ToEntity(
+            currentUserContextService.GetUserId()
+        );
 
-        var mediaFile = portofolioContentCreateWrapperDTO.MediaFile;
+        await portofolioContentRepository.CreateAsync(portofolioContent);
 
-        await storageService.UploadFile(fileSrc, mediaFile, "portofoliocontents");
-
-        var portofolioContent = portofolioContentCreateWrapperDTO.PortofolioContent.ToEntity(fileSrc, userId);
-
-        var createdPortofolioContent = await portofolioContentRepository.CreateAsync(portofolioContent);
-
-        return createdPortofolioContent.ToDTO();
+        return portofolioContent.ToDTO();
     }
 
-        public async Task<bool> DeleteAsync(int id, int userId)
+    public async Task<PortofolioContentDTO> UpdateAsync(
+        PortofolioContentUpdateDTO portofolioContentUpdateDTO
+    )
     {
-        var portofolioContent = await portofolioContentRepository.GetByIdAsync(id);
+        var portofolioContent = await portofolioContentRepository.GetByIdIncludeAllPropertiesAsync(
+            portofolioContentUpdateDTO.Id
+        );
 
         if (portofolioContent is null)
         {
             throw new EntityNotFoundException();
         }
 
-        await storageService.DeleteFile(portofolioContent.FileSrc, "portofoliocontents");
-
-        await portofolioContentRepository.DeleteAsync(portofolioContent);
-
-        return true;
-    }
-
-    public async Task<PortofolioContentDTO> UpdateAsync(PortofolioContentUpdateWrapperDTO portofolioContentUpdateWrapperDTO, int userId)
-    {
-        var portofolioContent = await portofolioContentRepository.GetByIdAsync(portofolioContentUpdateWrapperDTO.PortofolioContentUpdateDTO.Id);
-
-        if (portofolioContent is null)
+        if (portofolioContent.UserId != currentUserContextService.GetUserId())
         {
-            throw new EntityNotFoundException();
+            throw new UnauthorizedAccessException();
         }
 
-        if (portofolioContentUpdateWrapperDTO.MediaFile is not null)
-        {
-
-            await storageService.UploadFile(portofolioContent.FileSrc, portofolioContentUpdateWrapperDTO.MediaFile, "portofolioContents");
-        }
-
-        portofolioContent.UpdateFromDTO(portofolioContentUpdateWrapperDTO.PortofolioContentUpdateDTO);
+        await portofolioContent.UpdateFromDTOAsync(portofolioContentUpdateDTO, storageService);
 
         await portofolioContentRepository.UpdateAsync(portofolioContent);
 
         return portofolioContent.ToDTO();
+    }
+
+    public async Task<PortofolioContentGroupDTO> UpdateGroupAsync(
+        PortofolioContentGroupUpdateDTO portofolioContentGroupUpdateDTO
+    )
+    {
+        var portofolioContentGroup = new List<PortofolioContentDTO>();
+
+        if (portofolioContentGroupUpdateDTO.PortofolioContents is null)
+        {
+            throw new ArgumentNullException();
+        }
+
+        for (int i = 0; i < portofolioContentGroupUpdateDTO.PortofolioContents.Count; i++)
+        {
+            var portofolioContent = await UpdateAsync(
+                portofolioContentGroupUpdateDTO.PortofolioContents[i]
+            );
+            portofolioContentGroup.Add(portofolioContent);
+        }
+
+        return new PortofolioContentGroupDTO { PortofolioContents = portofolioContentGroup };
+    }
+
+    public async Task<bool> DeleteAsync(int id)
+    {
+        var portofolioContent = await portofolioContentRepository.GetByIdIncludeAllPropertiesAsync(id);
+
+        if (portofolioContent is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (portofolioContent.UserId != currentUserContextService.GetUserId())
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        foreach (var media in portofolioContent.Medias)
+        {
+            var fileName = Path.GetFileName(new Uri(media.Uri).LocalPath);
+            await storageService.DeleteFile(fileName, "portofoliocontents");
+        }
+
+        await portofolioContentRepository.DeleteAsync(portofolioContent);
+
+        return true;
     }
 }

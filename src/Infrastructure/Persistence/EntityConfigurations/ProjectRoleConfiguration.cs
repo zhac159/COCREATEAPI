@@ -14,15 +14,15 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
 
         builder.Property(e => e.Name).IsRequired();
         builder.Property(e => e.Description).IsRequired();
-        builder.Property(e => e.FileSrcs);
         builder.Property(e => e.Cost).IsRequired();
         builder.Property(e => e.Effort).IsRequired();
+        builder.Property(e => e.StartDate).IsRequired();
+        builder.Property(e => e.EndDate).IsRequired();
         builder.Property(e => e.SkillType).IsRequired();
-        builder.Property(e => e.Longitude).HasDefaultValue(null);
-        builder.Property(e => e.Latitude).HasDefaultValue(null);
+        builder.Property(e => e.Location).IsRequired();
+        builder.Property(e => e.Address).IsRequired();
+        builder.Property(e => e.Keywords).IsRequired();
         builder.Property(e => e.Remote).IsRequired();
-        builder.Property(e => e.AssigneeId).IsRequired(false);
-        builder.Property(e => e.ProjectId).IsRequired();
         
         builder
             .HasOne(e => e.Assignee)

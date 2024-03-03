@@ -1,5 +1,5 @@
-using System.ComponentModel.DataAnnotations.Schema;
 using Domain.Enums;
+using NetTopologySuite.Geometries;
 
 namespace Domain.Entities;
 
@@ -8,12 +8,14 @@ public class ProjectRole
     public int Id { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
-    public required List<string> FileSrcs { get; set; } = new List<string>();
     public required int Cost { get; set; }
     public required int Effort { get; set; }
+    public required DateTime StartDate { get; set; }
+    public required DateTime EndDate { get; set; }
     public required SkillType SkillType { get; set; }
-    public double Longitude { get; set; }
-    public double Latitude { get; set; }
+    public required Point Location { get; set; }
+    public required string Address { get; set; }
+    public required List<string> Keywords { get; set; } = new List<string>();
     public required bool Remote { get; set; }
     public int? AssigneeId { get; set; }
     public User? Assignee { get; set; }
@@ -21,7 +23,5 @@ public class ProjectRole
     public Project? Project { get; set; }
     public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
     public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
-
-    [NotMapped]
-    public List<Uri> Uris { get; set; } = new List<Uri>();
+    public List<ProjectRoleMedia> Medias { get; set; } = new List<ProjectRoleMedia>();
 }

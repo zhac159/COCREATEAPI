@@ -23,14 +23,18 @@ public class UserRepository : IUserRepository
         var user = await context
             .Users.Where(u => u.Username == name)
             .Include(u => u.PortofolioContents)
+            .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
             .ThenInclude(a => a.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Medias)
             .FirstOrDefaultAsync();
-
-        PopulateUris(user);
 
         return user;
     }
@@ -54,8 +58,6 @@ public class UserRepository : IUserRepository
     {
         var user = await context.Users.Where(u => u.UserId == id).FirstOrDefaultAsync();
 
-        PopulateUris(user);
-
         return user;
     }
 
@@ -64,14 +66,18 @@ public class UserRepository : IUserRepository
         var user = await context
             .Users.Where(u => u.UserId == id)
             .Include(u => u.PortofolioContents)
+            .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
             .ThenInclude(a => a.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Medias)
             .FirstOrDefaultAsync();
-
-        PopulateUris(user);
 
         return user;
     }
@@ -92,20 +98,6 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
 
         return user;
-    }
-
-    private void PopulateUris(User? user)
-    {
-        if (user?.PortofolioContents != null)
-        {
-            foreach (var portofolioContent in user.PortofolioContents)
-            {
-                portofolioContent.Uri = storageService.GetFileUri(
-                    portofolioContent.FileSrc,
-                    "portofoliocontents"
-                );
-            }
-        }
     }
 
     public async Task<int?> GetCoinByIdAsync(int id)
@@ -129,5 +121,16 @@ public class UserRepository : IUserRepository
         await context.SaveChangesAsync();
 
         return user.Coins;
+    }
+
+    public async Task<User?> GetByIdIncludePortofolioAsync(int id)
+    {
+        var user = await context
+            .Users.Where(u => u.UserId == id)
+            .Include(u => u.PortofolioContents)
+            .ThenInclude(pc => pc.Medias)
+            .FirstOrDefaultAsync();
+
+        return user;
     }
 }

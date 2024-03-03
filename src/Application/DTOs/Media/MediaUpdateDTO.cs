@@ -18,5 +18,38 @@ public class MediaUpdateDTO
             MediaType = MediaType,
             Order = order
         };
-    } 
+    }
+    
+    public PortofolioContentMedia ToPortofolioContentMediaEntity(int order)
+    {
+        return new PortofolioContentMedia
+        {
+            Id = Id,
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
+
+    public ProjectMedia ToProjectMediaEntity(int order)
+    {
+        return new ProjectMedia
+        {
+            Id = Id,
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
+
+    public ProjectRoleMedia ToProjectRoleMediaEntity(int order)
+    {
+        return new ProjectRoleMedia
+        {
+            Id = Id,
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
 }

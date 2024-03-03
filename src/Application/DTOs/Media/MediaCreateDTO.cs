@@ -8,7 +8,7 @@ public class MediaCreateDTO
     public required string Uri { get; set; }
     public required MediaType MediaType { get; set; }
 
-    public AssetMedia ToEntity(int order)
+    public AssetMedia ToAssetMediaEntity(int order)
     {
         return new AssetMedia
         {
@@ -17,5 +17,34 @@ public class MediaCreateDTO
             Order = order
         };
     }
-}
 
+    public PortofolioContentMedia ToPortofolioContentMediaEntity(int order)
+    {
+        return new PortofolioContentMedia
+        {
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
+
+    public ProjectMedia ToProjectMediaEntity( int order)
+    {
+        return new ProjectMedia
+        {
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
+
+    public ProjectRoleMedia ToProjectRoleMediaEntity( int order)
+    {
+        return new ProjectRoleMedia
+        {
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
+}

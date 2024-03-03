@@ -22,7 +22,9 @@ public static class ServiceColletionExtensions
             throw new Exception("Connection string is empty or null");
         }
 
-        services.AddDbContext<CoCreateDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<CoCreateDbContext>(
+            options => options.UseNpgsql(connectionString, x => x.UseNetTopologySuite())
+        );
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAssetRepository, AssetRepository>();

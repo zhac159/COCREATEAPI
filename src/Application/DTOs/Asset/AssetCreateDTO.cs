@@ -18,7 +18,7 @@ public class AssetCreateDTO {
             Description = Description,
             AssetType = AssetType,
             UserId = userId,
-            Medias = Medias.Select((m, order) => m.ToEntity(order)).ToList()
+            Medias = Medias.Select((m, order) => m.ToAssetMediaEntity(order)).ToList()
         };
     }
 }

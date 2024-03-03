@@ -5,25 +5,25 @@
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration2 : Migration
+    public partial class InitialMigration5 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Order",
-                table: "Medias",
-                type: "integer",
+            migrationBuilder.AddColumn<string>(
+                name: "Address",
+                table: "ProjectRoles",
+                type: "text",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Order",
-                table: "Medias");
+                name: "Address",
+                table: "ProjectRoles");
         }
     }
 }

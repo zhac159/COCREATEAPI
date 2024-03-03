@@ -10,22 +10,16 @@ namespace Infrastructure.Repositories;
 public class ProjectRoleRepostiory : IProjectRoleRepository
 {
     private readonly CoCreateDbContext context;
-    private readonly IStorageService storageService;
 
-    public ProjectRoleRepostiory(CoCreateDbContext context, IStorageService storageService)
+    public ProjectRoleRepostiory(CoCreateDbContext context)
     {
         this.context = context;
-        this.storageService = storageService;
     }
 
     public async Task<ProjectRole> CreateAsync(ProjectRole projectRole)
     {
         await context.ProjectRoles.AddAsync(projectRole);
         await context.SaveChangesAsync();
-
-        projectRole.Uris = projectRole
-            .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projectroles"))
-            .ToList();
 
         return projectRole;
     }
@@ -35,9 +29,10 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
         return await context.ProjectRoles.FindAsync(id);
     }
 
-    public async Task<ProjectRole?> GetByIdIncludeProjectAsync(int id)
+    public async Task<ProjectRole?> GetByIdIncludeAllProjectAsync(int id)
     {
         return await context.ProjectRoles
+            .Include(pr => pr.Medias)
             .Include(pr => pr.Project)
             .FirstOrDefaultAsync(pr => pr.Id == id);
     }
@@ -84,35 +79,35 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
 
         var seenMatches = new List<SeenMatches>();
 
-        foreach (var projectRole in allProjectRoles)
-        {
-            var distance = CalculateDistance(
-                query.Latitude,
-                query.Longitude,
-                projectRole.Latitude,
-                projectRole.Longitude
-            );
+        // foreach (var projectRole in allProjectRoles)
+        // {
+        //     var distance = CalculateDistance(
+        //         query.Latitude,
+        //         query.Longitude,
+        //         projectRole.Latitude,
+        //         projectRole.Longitude
+        //     );
 
-            if (
-                distance <= query.Distance
-                && projectRole.Project != null
-                && matchingProjectRoles.Count < 5
-            )
-            {
-                PopulateUris(projectRole.Project);
+        //     if (
+        //         distance <= query.Distance
+        //         && projectRole.Project != null
+        //         && matchingProjectRoles.Count < 5
+        //     )
+        //     {
+        //         PopulateUris(projectRole.Project);
 
-                matchingProjectRoles.Add((projectRole.Id, projectRole.Project));
+        //         matchingProjectRoles.Add((projectRole.Id, projectRole.Project));
 
-                seenMatches.Add(
-                    new SeenMatches
-                    {
-                        UserId = query.UserId,
-                        ProjectRoleId = projectRole.Id,
-                        SeenAt = DateTime.Now.ToUniversalTime()
-                    }
-                );
-            }
-        }
+        //         seenMatches.Add(
+        //             new SeenMatches
+        //             {
+        //                 UserId = query.UserId,
+        //                 ProjectRoleId = projectRole.Id,
+        //                 SeenAt = DateTime.Now.ToUniversalTime()
+        //             }
+        //         );
+        //     }
+        // }
 
         if (matchingProjectRoles.Count < 5)
         {
@@ -143,23 +138,4 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
         return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
     }
 
-    private void PopulateUris(Project? project)
-    {
-        if (project?.FileSrcs != null)
-        {
-            project.Uris = project
-                .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projects"))
-                .ToList();
-        }
-
-        if (project?.ProjectRoles != null)
-        {
-            foreach (var projectRole in project.ProjectRoles)
-            {
-                projectRole.Uris = projectRole
-                    .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projectroles"))
-                    .ToList();
-            }
-        }
-    }
 }

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.EntityConfigurations;
 
-public class AssetMediaConfiguration : IEntityTypeConfiguration<AssetMedia>
+public class ProjectMediaConfiguration : IEntityTypeConfiguration<ProjectMedia>
 {
-    public void Configure(EntityTypeBuilder<AssetMedia> builder)
+    public void Configure(EntityTypeBuilder<ProjectMedia> builder)
     {
-        builder.ToTable("AssetMedias");
+        builder.ToTable("ProjectMedias");
 
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Uri).IsRequired();
@@ -16,9 +16,9 @@ public class AssetMediaConfiguration : IEntityTypeConfiguration<AssetMedia>
         builder.Property(e => e.Order).IsRequired();
 
         builder
-            .HasOne(e => e.Asset)
+            .HasOne(e => e.Project)
             .WithMany(e => e.Medias)
-            .HasForeignKey(e => e.AssetId)
+            .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasIndex(e => new { e.MediaType });

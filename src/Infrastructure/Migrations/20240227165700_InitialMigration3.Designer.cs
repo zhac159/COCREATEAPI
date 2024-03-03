@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -13,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    [Migration("20240216162816_InitialMigration2")]
-    partial class InitialMigration2
+    [Migration("20240227165700_InitialMigration3")]
+    partial class InitialMigration3
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +25,7 @@ namespace Infrastructure.Migrations
                 .HasAnnotation("ProductVersion", "8.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Domain.Entities.Asset", b =>
@@ -86,7 +88,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("MediaType");
 
-                    b.ToTable("Medias", (string)null);
+                    b.ToTable("AssetMedias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Enquiry", b =>
@@ -124,21 +126,18 @@ namespace Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<string>("FileSrc")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("character varying(30)");
-
                     b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SkillType")
                         .HasColumnType("integer");
 
                     b.Property<int>("UserId")
@@ -149,6 +148,34 @@ namespace Infrastructure.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PortofolioContents", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.PortofolioContentMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PortofolioContentId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PortofolioContentId");
+
+                    b.ToTable("PortofolioContentMedias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
@@ -164,10 +191,6 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
-                    b.Property<List<string>>("FileSrcs")
-                        .IsRequired()
-                        .HasColumnType("text[]");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
@@ -181,6 +204,36 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProjectManagerId");
 
                     b.ToTable("Projects", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProjectMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaType");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectMedias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
@@ -204,15 +257,16 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Effort")
                         .HasColumnType("integer");
 
-                    b.Property<List<string>>("FileSrcs")
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<List<string>>("Keywords")
                         .IsRequired()
                         .HasColumnType("text[]");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
+                    b.Property<Point>("Location")
+                        .IsRequired()
+                        .HasColumnType("geometry");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -227,6 +281,9 @@ namespace Infrastructure.Migrations
                     b.Property<int>("SkillType")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AssigneeId");
@@ -234,6 +291,36 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProjectRoleMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MediaType");
+
+                    b.HasIndex("ProjectRoleId");
+
+                    b.ToTable("ProjectRoleMedias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Review", b =>
@@ -448,6 +535,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PortofolioContentMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.PortofolioContent", "PortofolioContent")
+                        .WithMany("Medias")
+                        .HasForeignKey("PortofolioContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PortofolioContent");
+                });
+
             modelBuilder.Entity("Domain.Entities.Project", b =>
                 {
                     b.HasOne("Domain.Entities.User", "ProjectManager")
@@ -457,6 +555,17 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ProjectManager");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProjectMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("Medias")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
@@ -474,6 +583,17 @@ namespace Infrastructure.Migrations
                     b.Navigation("Assignee");
 
                     b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ProjectRoleMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
+                        .WithMany("Medias")
+                        .HasForeignKey("ProjectRoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ProjectRole");
                 });
 
             modelBuilder.Entity("Domain.Entities.Review", b =>
@@ -530,14 +650,23 @@ namespace Infrastructure.Migrations
                     b.Navigation("Medias");
                 });
 
+            modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
             modelBuilder.Entity("Domain.Entities.Project", b =>
                 {
+                    b.Navigation("Medias");
+
                     b.Navigation("ProjectRoles");
                 });
 
             modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
                 {
                     b.Navigation("Enquiries");
+
+                    b.Navigation("Medias");
 
                     b.Navigation("SeenMatches");
                 });

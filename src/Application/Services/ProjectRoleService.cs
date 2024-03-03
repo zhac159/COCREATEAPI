@@ -1,7 +1,3 @@
-using System.Runtime.Serialization;
-using System.Text;
-using Application.DTOs.EnquiryDTOs;
-using Application.DTOs.ProjectDTOs;
 using Application.DTOs.ProjectRoleDTOs;
 using Application.Extensions;
 using Application.Interfaces;
@@ -15,35 +11,37 @@ public class ProjectRoleService : IProjectRoleService
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IProjectRepository projectRepository;
     private readonly IUserRepository userRepository;
+    private readonly ICurrentUserContextService currentUserContextService;
     private readonly IStorageService storageService;
 
     public ProjectRoleService(
         IProjectRoleRepository projectRoleRepository,
-        IStorageService storageService,
         IProjectRepository projectRepository,
-        IUserRepository userRepository
+        IUserRepository userRepository,
+        ICurrentUserContextService currentUserContextService,
+        IStorageService storageService
     )
     {
         this.projectRoleRepository = projectRoleRepository;
-        this.storageService = storageService;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.currentUserContextService = currentUserContextService;
+        this.storageService = storageService;
     }
 
     public async Task<ProjectRoleDTO> CreateAsync(
-        ProjectRoleCreateWrapperDTO projectRoleCreateWrapperDTO,
-        int userId
+        ProjectRoleCreateDTO projectRoleCreateDTO
     )
     {
-        var coins = await userRepository.GetCoinByIdAsync(userId);
+        var coins = await userRepository.GetCoinByIdAsync(currentUserContextService.GetUserId());
 
-        if (coins < projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.Cost || coins is null)
+        if (coins < projectRoleCreateDTO.Cost || coins is null)
         {
             throw new InsufficientFundsException();
         }
 
         var project = await projectRepository.GetByIdAsync(
-            projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.ProjectId
+            projectRoleCreateDTO.ProjectId
         );
 
         if (project is null)
@@ -51,51 +49,54 @@ public class ProjectRoleService : IProjectRoleService
             throw new EntityNotFoundException();
         }
 
-        if (project.ProjectManagerId != userId)
+        if (project.ProjectManagerId != currentUserContextService.GetUserId())
         {
             throw new UnauthorizedAccessException();
         }
 
-        var fileSrcs = new List<string>();
-
-        if (
-            projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.Name == "null"
-            || projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.Name == "undefined"
-        )
-        {
-            throw new InvalidModelException();
-        }
-
-        for (int i = 0; i < projectRoleCreateWrapperDTO.MediaFiles.Count; i++)
-        {
-            var fileSrc = new StringBuilder()
-                .Append("projectrole_")
-                .Append(userId)
-                .Append("_")
-                .Append(projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.Name)
-                .Append("_")
-                .Append(Guid.NewGuid().ToString())
-                .Append(".jpeg")
-                .ToString();
-
-            await storageService.UploadFile(
-                fileSrc,
-                projectRoleCreateWrapperDTO.MediaFiles[i],
-                "projectroles"
-            );
-
-            fileSrcs.Add(fileSrc);
-        }
-
-        var projectRole = projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.ToEntity(fileSrcs);
+        var projectRole = projectRoleCreateDTO.ToEntity();
 
         var createdProjectRole = await projectRoleRepository.CreateAsync(projectRole);
 
         await userRepository.UpdateCoinByIdAsync(
-            userId,
-            coins.Value - projectRoleCreateWrapperDTO.ProjectRoleCreateDTO.Cost
+            currentUserContextService.GetUserId(),
+            coins.Value - projectRoleCreateDTO.Cost
         );
 
         return createdProjectRole.ToDTO();
+    }
+
+    public async Task<ProjectRoleDTO> UpdateAsync(
+        ProjectRoleUpdateDTO projectRoleUpdateDTO
+    )
+    {
+        var projectRole = await projectRoleRepository.GetByIdAsync(
+            projectRoleUpdateDTO.Id
+        );
+
+        if (projectRole is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        var project = await projectRepository.GetByIdAsync(
+            projectRole.ProjectId
+        );
+
+        if (project is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (project.ProjectManagerId != currentUserContextService.GetUserId())
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        await projectRole.UpdateFromDTOAsync(projectRoleUpdateDTO, storageService);
+
+        await projectRoleRepository.UpdateAsync(projectRole);
+
+        return projectRole.ToDTO();
     }
 }

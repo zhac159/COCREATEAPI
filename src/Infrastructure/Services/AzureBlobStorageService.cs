@@ -21,9 +21,7 @@ public class AzureBlobStorageService : IStorageService
     {
         this.blobServiceClient = blobServiceClient;
 
-        var connectionString = configuration.GetConnectionString(
-            "AzureStorageAccountKey"
-        );
+        var connectionString = configuration.GetConnectionString("AzureStorageAccountKey");
 
         if (string.IsNullOrEmpty(connectionString))
         {
@@ -42,10 +40,8 @@ public class AzureBlobStorageService : IStorageService
     {
         var containerClient = blobServiceClient.GetBlobContainerClient(storageIdentifier);
 
-        // Get a reference to a blob
         var blobClient = containerClient.GetBlobClient(fileName);
 
-        // Open the file and upload its data
         using (var stream = mediaFile.OpenReadStream())
         {
             await blobClient.UploadAsync(stream, overwrite: true);
@@ -78,14 +74,24 @@ public class AzureBlobStorageService : IStorageService
 
         var userId = currentUserContextService.GetUserId().ToString();
 
-        var fileName =
-            Guid.NewGuid().ToString()
-            + "_UserId_" + userId + mediaType switch
-            {
-                MediaType.Image => ".jpeg",
-                MediaType.Video => ".mp4",
-                _ => throw new Exception("Invalid file type")
-            };
+        string extension;
+        string contentType;
+
+        switch (mediaType)
+        {
+            case MediaType.Image:
+                extension = ".jpeg";
+                contentType = "image/jpeg";
+                break;
+            case MediaType.Video:
+                extension = ".mp4";
+                contentType = "video/mp4";
+                break;
+            default:
+                throw new Exception("Invalid file type");
+        }
+
+        var fileName = Guid.NewGuid().ToString() + "_UserId_" + userId + extension;
 
         var blobClient = containerClient.GetBlobClient(fileName);
 
@@ -94,7 +100,7 @@ public class AzureBlobStorageService : IStorageService
             BlobContainerName = containerClient.Name,
             BlobName = blobClient.Name,
             Resource = "b",
-            ContentType = "image/jpeg",
+            ContentType = contentType,
             StartsOn = DateTimeOffset.UtcNow,
             ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
         };

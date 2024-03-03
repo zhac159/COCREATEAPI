@@ -1,3 +1,4 @@
+using Application.DTOs.MediaDTOs;
 using Domain.Enums;
 
 namespace Application.DTOs.PortofolioContentDTOs;
@@ -5,8 +6,7 @@ namespace Application.DTOs.PortofolioContentDTOs;
 public class PortofolioContentDTO
 {
     public int Id { get; set; }
-    public string? Description { get; set; }
-    public string? Name { get; set; }
-    public required int Order { get; set; }
-    public required Uri? Uri { get; set; }
+    public required string Description { get; set; }
+    public required SkillType SkillType { get; set; }
+    public List<MediaDTO> Medias { get; set; } = new List<MediaDTO>();
 }

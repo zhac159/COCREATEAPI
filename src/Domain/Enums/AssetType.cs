@@ -6,5 +6,6 @@ public enum AssetType
     FilmingLocation,
     Props,
     Lights,
-    Microphones
+    Microphones,
+    Instruments
 }

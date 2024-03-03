@@ -9,22 +9,16 @@ namespace Infrastructure.Repositories;
 public class ProjectRepository : IProjectRepository
 {
     private readonly CoCreateDbContext context;
-    private readonly IStorageService storageService;
 
-    public ProjectRepository(CoCreateDbContext context, IStorageService storageService)
+    public ProjectRepository(CoCreateDbContext context)
     {
         this.context = context;
-        this.storageService = storageService;
     }
 
     public async Task<Project> CreateAsync(Project project)
     {
         await context.Projects.AddAsync(project);
         await context.SaveChangesAsync();
-
-        project.Uris = project
-            .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projects"))
-            .ToList();
 
         return project;
     }
@@ -54,33 +48,14 @@ public class ProjectRepository : IProjectRepository
     {
         var project = await context
             .Projects.Where(p => p.Id == id)
+            .Include(p => p.Medias)
             .Include(p => p.ProjectManager)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Medias)
             .Include(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Assignee)
             .FirstOrDefaultAsync();
 
-        PopulateUris(project);
-        
         return project;
-    }
-
-    private void PopulateUris(Project? project)
-    {
-        if (project?.FileSrcs != null)
-        {
-            project.Uris = project
-                .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projects"))
-                .ToList();
-        }
-
-        if (project?.ProjectRoles != null)
-        {
-            foreach (var projectRole in project.ProjectRoles)
-            {
-                projectRole.Uris = projectRole
-                    .FileSrcs.Select(fileSrc => storageService.GetFileUri(fileSrc, "projectroles"))
-                    .ToList();
-            }
-        }
     }
 }

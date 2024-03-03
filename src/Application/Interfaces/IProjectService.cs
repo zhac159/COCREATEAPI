@@ -4,6 +4,6 @@ namespace Application.Interfaces;
 
 public interface IProjectService
 {
-    Task<ProjectDTO> CreateAsync(ProjectCreateWrapperDTO projectCreateDTO, int userId);
+    Task<ProjectDTO> CreateAsync(ProjectCreateDTO projectCreateDTO);
     Task<ProjectDTO?> GetByIdAsync(int id);
 }

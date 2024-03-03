@@ -66,8 +66,8 @@ namespace Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
-                    FileSrc = table.Column<string>(type: "text", nullable: false),
+                    SkillType = table.Column<int>(type: "integer", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -156,22 +156,45 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Medias",
+                name: "AssetMedias",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Uri = table.Column<string>(type: "text", nullable: false),
                     MediaType = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
                     AssetId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medias", x => x.Id);
+                    table.PrimaryKey("PK_AssetMedias", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Medias_Assets_AssetId",
+                        name: "FK_AssetMedias_Assets_AssetId",
                         column: x => x.AssetId,
                         principalTable: "Assets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PortofolioContentMedias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uri = table.Column<string>(type: "text", nullable: false),
+                    MediaType = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    PortofolioContentId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PortofolioContentMedias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PortofolioContentMedias_PortofolioContents_PortofolioConten~",
+                        column: x => x.PortofolioContentId,
+                        principalTable: "PortofolioContents",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -265,6 +288,16 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AssetMedias_AssetId",
+                table: "AssetMedias",
+                column: "AssetId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AssetMedias_MediaType",
+                table: "AssetMedias",
+                column: "MediaType");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Assets_AssetType",
                 table: "Assets",
                 column: "AssetType");
@@ -286,14 +319,9 @@ namespace Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Medias_AssetId",
-                table: "Medias",
-                column: "AssetId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Medias_MediaType",
-                table: "Medias",
-                column: "MediaType");
+                name: "IX_PortofolioContentMedias_PortofolioContentId",
+                table: "PortofolioContentMedias",
+                column: "PortofolioContentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PortofolioContents_UserId",
@@ -363,13 +391,13 @@ namespace Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AssetMedias");
+
+            migrationBuilder.DropTable(
                 name: "Enquiries");
 
             migrationBuilder.DropTable(
-                name: "Medias");
-
-            migrationBuilder.DropTable(
-                name: "PortofolioContents");
+                name: "PortofolioContentMedias");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -382,6 +410,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Assets");
+
+            migrationBuilder.DropTable(
+                name: "PortofolioContents");
 
             migrationBuilder.DropTable(
                 name: "ProjectRoles");
