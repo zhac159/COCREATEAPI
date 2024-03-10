@@ -63,6 +63,8 @@ public static class UserExtensions
             Rating = user.Rating,
             TotalReviews = user.TotalReviews,
             ProfilePictureSrc = user.ProfilePictureSrc,
+            Longitude = user.Location != null ? user.Location.X : 0,
+            Latitude = user.Location != null ? user.Location.Y : 0,
             BannerPictureSrc = user.BannerPictureSrc,
             Skills =
                 user.Skills != null
@@ -72,8 +74,8 @@ public static class UserExtensions
                 user.PortofolioContents != null
                     ? user.PortofolioContents.Select(pc => pc.ToDTO()).ToList()
                     : null,
-            ReviewsGiven = user.ReviewsGiven,
-            ReviewsReceived = user.ReviewsReceived,
+            // ReviewsGiven = user.ReviewsGiven,
+            // ReviewsReceived = user.ReviewsReceived,
             Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null,
             Projects = user.Projects != null ? user.Projects.Select(p => p.ToDTO()).ToList() : null
         };

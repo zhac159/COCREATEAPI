@@ -14,8 +14,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Username).HasMaxLength(30).IsRequired();
         builder.Property(e => e.Password).HasMaxLength(200).IsRequired();
         builder.Property(e => e.Email).HasMaxLength(200).IsRequired();
-        builder.Property(e => e.Longitude).HasDefaultValue(null);
-        builder.Property(e => e.Latitude).HasDefaultValue(null);
+        builder.Property(e => e.Location).HasDefaultValue(null);
         builder.Property(e => e.Address).HasDefaultValue(null);
         builder.Property(e => e.AboutYou).HasMaxLength(2000).HasDefaultValue(null);
         builder.Property(e => e.Coins).IsRequired().HasDefaultValue(10000);

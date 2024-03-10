@@ -1,4 +1,3 @@
-using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Queries;
@@ -31,8 +30,8 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
 
     public async Task<ProjectRole?> GetByIdIncludeAllProjectAsync(int id)
     {
-        return await context.ProjectRoles
-            .Include(pr => pr.Medias)
+        return await context
+            .ProjectRoles.Include(pr => pr.Medias)
             .Include(pr => pr.Project)
             .FirstOrDefaultAsync(pr => pr.Id == id);
     }
@@ -68,74 +67,39 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             .ThenInclude(pr => pr.Assignee)
             .Include(pr => pr.Project!)
             .ThenInclude(p => p.ProjectManager)
+            .Include(pr => pr.Project!)
+            .ThenInclude(p => p.Medias)
+            .Include(pr => pr.Medias)
             .Where(pr => pr.AssigneeId == null)
             .Where(pr => pr.Effort <= query.Effort && query.SkillTypes.Contains(pr.SkillType))
             .Where(pr => !seenProjectRoleIds.Contains(pr.Id))
+            .Where(pr => pr.Location.IsWithinDistance(query.Location, query.Distance / 111.12))
             .OrderBy(pr => pr.Project!.ProjectManagerId != query.UserId)
             .Take(1000)
             .ToListAsync();
 
         var matchingProjectRoles = new List<(int, Project)>();
 
+        foreach (var projectRole in allProjectRoles)
+        {
+            matchingProjectRoles.Add((projectRole.Id, projectRole.Project!));
+        }
+
         var seenMatches = new List<SeenMatches>();
 
-        // foreach (var projectRole in allProjectRoles)
+        // if (matchingProjectRoles.Count < 5)
         // {
-        //     var distance = CalculateDistance(
-        //         query.Latitude,
-        //         query.Longitude,
-        //         projectRole.Latitude,
-        //         projectRole.Longitude
-        //     );
+        //     var userMatches = context.SeenMatches.Where(sm => sm.UserId == query.UserId);
 
-        //     if (
-        //         distance <= query.Distance
-        //         && projectRole.Project != null
-        //         && matchingProjectRoles.Count < 5
-        //     )
-        //     {
-        //         PopulateUris(projectRole.Project);
-
-        //         matchingProjectRoles.Add((projectRole.Id, projectRole.Project));
-
-        //         seenMatches.Add(
-        //             new SeenMatches
-        //             {
-        //                 UserId = query.UserId,
-        //                 ProjectRoleId = projectRole.Id,
-        //                 SeenAt = DateTime.Now.ToUniversalTime()
-        //             }
-        //         );
-        //     }
+        //     context.SeenMatches.RemoveRange(userMatches);
         // }
-
-        if (matchingProjectRoles.Count < 5)
-        {
-            var userMatches = context.SeenMatches.Where(sm => sm.UserId == query.UserId);
-
-            context.SeenMatches.RemoveRange(userMatches);
-        }
-        else
-        {
-            context.SeenMatches.AddRange(seenMatches);
-        }
+        // else
+        // {
+        //     context.SeenMatches.AddRange(seenMatches);
+        // }
 
         await context.SaveChangesAsync();
 
         return matchingProjectRoles;
     }
-
-    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-    {
-        var d1 = lat1 * (Math.PI / 180.0);
-        var num1 = lon1 * (Math.PI / 180.0);
-        var d2 = lat2 * (Math.PI / 180.0);
-        var num2 = lon2 * (Math.PI / 180.0) - num1;
-        var d3 =
-            Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0)
-            + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
-
-        return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
-    }
-
 }

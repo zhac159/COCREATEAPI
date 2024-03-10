@@ -39,7 +39,9 @@ try
         .Services.AddDatabaseInfrastracture(builder.Configuration)
         .AddStorageService(builder.Configuration)
         .AddApplicationServices()
+        .AddSignalRService()
         .AddAPI();
+        
 
     if (builder.Environment.IsDevelopment())
     {
@@ -47,6 +49,7 @@ try
     }
 
     var app = builder.Build();
+    app.UseRouting();
 
     if (app.Environment.IsDevelopment())
     {
@@ -64,6 +67,8 @@ try
     app.UseAuthorization();
 
     app.MapControllers();
+
+    app.ConfigureChatHub();
 
     app.Run();
 }

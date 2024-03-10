@@ -66,4 +66,19 @@ public static class ServiceColletionExtensions
 
         return services;
     }
+
+    public static IServiceCollection AddSignalRService(this IServiceCollection services)
+    {
+        services.AddSignalR();
+        services.AddScoped<IChatHubService, ChatHubService>();
+        return services;
+    }
+
+    public static void ConfigureChatHub(this IApplicationBuilder app)
+    {
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapHub<ChatHubService>("/chatHub");
+        });
+    }
 }

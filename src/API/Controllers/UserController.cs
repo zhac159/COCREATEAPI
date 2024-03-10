@@ -69,7 +69,7 @@ public class UserController : COCREATEAPIControllerBase
 
     [HttpPost("matching-projects")]
     public async Task<
-        ActionResult<APIResponse<List<ProjectWithMatchingRoleDTO>>>
+        ActionResult<APIResponse<ProjectWithMatchingRolesListDTO>>
     > GetMatchingProjectRoles(UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO)
     {
         var matchingProjects = await userService.GetMatchingProjectRolesAsync(

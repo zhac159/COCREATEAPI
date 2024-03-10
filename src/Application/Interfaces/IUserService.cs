@@ -13,7 +13,7 @@ public interface IUserService
     Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId);
     Task<List<SkillDTO>> UpdateSkillsAsync(List<SkillUpdateDTO> userUpdateDTO, int userId);
     Task<UserLocationDTO> UpdateLocationAsync(UserLocationUpdateDTO location, int userId);
-    Task<List<ProjectWithMatchingRoleDTO>> GetMatchingProjectRolesAsync(
+    Task<ProjectWithMatchingRolesListDTO> GetMatchingProjectRolesAsync(
         UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO,
         int userId
     );

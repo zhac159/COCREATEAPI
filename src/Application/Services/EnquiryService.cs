@@ -15,8 +15,7 @@ public class EnquiryService : IEnquiryService
     public EnquiryService(
         IEnquiryRepository enquiryRepository,
         IProjectRoleRepository projectRoleRepository,
-        IUserRepository userRepository,
-        IStorageService storageService
+        IUserRepository userRepository
     )
     {
         this.enquiryRepository = enquiryRepository;

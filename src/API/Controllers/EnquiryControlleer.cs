@@ -1,10 +1,7 @@
 using API.Factories;
 using API.Models;
 using Application.DTOs.EnquiryDTOs;
-using Application.DTOs.PortofolioContentDTOs;
-using Application.DTOs.ProjectDTOs;
 using Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;

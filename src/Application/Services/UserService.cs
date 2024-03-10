@@ -6,6 +6,7 @@ using Application.Interfaces;
 using Domain.Exceptions;
 using Domain.Interfaces;
 using Domain.Queries;
+using NetTopologySuite.Geometries;
 
 namespace Application.Services;
 
@@ -16,17 +17,21 @@ public class UserService : IUserService
     private readonly IStorageService storageService;
     private readonly ICurrentUserContextService currentUserContextService;
 
+    private readonly IChatHubService chatHubService;
+
     public UserService(
         IUserRepository userRepository,
         IStorageService storageService,
         IProjectRoleRepository projectRoleRepository,
-        ICurrentUserContextService currentUserContextService
+        ICurrentUserContextService currentUserContextService,
+        IChatHubService chatHubService
     )
     {
         this.userRepository = userRepository;
         this.projectRoleRepository = projectRoleRepository;
         this.storageService = storageService;
         this.currentUserContextService = currentUserContextService;
+        this.chatHubService = chatHubService;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -42,6 +47,8 @@ public class UserService : IUserService
         {
             throw new InvalidPasswordException();
         }
+
+        await chatHubService.SendMessage("Im Loggen In");
 
         return user.ToDTO();
     }
@@ -124,8 +131,10 @@ public class UserService : IUserService
             throw new EntityNotFoundException();
         }
 
-        user.Latitude = userLocationUpdateDTO.Latitude;
-        user.Longitude = userLocationUpdateDTO.Longitude;
+        user.Location = new Point(userLocationUpdateDTO.Longitude, userLocationUpdateDTO.Latitude)
+        {
+            SRID = 4326
+        };
         user.Address = userLocationUpdateDTO.Address;
 
         var updatedUser = await userRepository.UpdateAsync(user);
@@ -133,7 +142,7 @@ public class UserService : IUserService
         return updatedUser.ToLocationDTO();
     }
 
-    public async Task<List<ProjectWithMatchingRoleDTO>> GetMatchingProjectRolesAsync(
+    public async Task<ProjectWithMatchingRolesListDTO> GetMatchingProjectRolesAsync(
         UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO,
         int userId
     )
@@ -147,10 +156,14 @@ public class UserService : IUserService
 
         var userSkillTypes = user.Skills.Select(s => s.SkillType).ToList();
 
+        if (user.Location is null)
+        {
+            throw new LocationNotSetException();
+        }
+
         var getMatchingProjectRolesAsyncQuery = new GetMatchingProjectRolesAsyncQuery
         {
-            Latitude = user.Latitude,
-            Longitude = user.Longitude,
+            Location = user.Location,
             Distance = userGetMatchingProjectRolesDTO.Distance,
             SkillTypes = userSkillTypes,
             Effort = userGetMatchingProjectRolesDTO.Effort,
@@ -171,7 +184,12 @@ public class UserService : IUserService
             )
             .ToList();
 
-        return matchingProjectDTOs;
+        var result = new ProjectWithMatchingRolesListDTO
+        {
+            ProjectWithMatchingRoles = matchingProjectDTOs
+        };
+
+        return result;
     }
 
     public async Task<UserPortofolioDTO> UpdatePortofolio(

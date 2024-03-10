@@ -1,11 +1,11 @@
 using Domain.Enums;
+using NetTopologySuite.Geometries;
 
 namespace Domain.Queries;
 
 public class GetMatchingProjectRolesAsyncQuery
 {
-    public double Latitude { get; set; }
-    public double Longitude { get; set; }
+    public required Point Location { get; set; }
     public double Distance { get; set; }
     public required List<SkillType> SkillTypes { get; set; }
     public int Effort { get; set; }

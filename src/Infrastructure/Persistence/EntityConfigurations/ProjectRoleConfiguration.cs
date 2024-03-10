@@ -23,18 +23,20 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
         builder.Property(e => e.Address).IsRequired();
         builder.Property(e => e.Keywords).IsRequired();
         builder.Property(e => e.Remote).IsRequired();
-        
+
         builder
             .HasOne(e => e.Assignee)
             .WithMany(e => e.ProjectRoles)
             .HasForeignKey(e => e.AssigneeId)
             .IsRequired(false);
-            
+
         builder
             .HasOne(e => e.Project)
             .WithMany(e => e.ProjectRoles)
             .HasForeignKey(e => e.ProjectId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(e => e.Location).HasDatabaseName("IX_ProjectRole_Location");
     }
 }

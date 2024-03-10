@@ -1,3 +1,5 @@
+using NetTopologySuite.Geometries;
+
 namespace Domain.Entities;
 
 public class User
@@ -7,8 +9,7 @@ public class User
     public required string Password { get; set; }
     public required string Email { get; set; }
     public string? Address { get; set; }
-    public double Longitude { get; set; }
-    public double Latitude { get; set; }
+    public Point? Location { get; set; }
     public int Rating { get; set; } = 0;
     public int TotalReviews { get; set; } = 0;
     public string? AboutYou { get; set; }
