@@ -1,4 +1,5 @@
 using Application.DTOs.AssetDTOs;
+using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.PortofolioContentDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
@@ -25,4 +26,5 @@ public class UserDTO
     // public List<Review>? ReviewsReceived { get; set; }
     public List<AssetDTO>? Assets { get; set; }
     public List<ProjectDTO>? Projects { get; set; } = new List<ProjectDTO>();
+    public List<EnquiryDTO>? Enquiries { get; set; } = new List<EnquiryDTO>();
 }

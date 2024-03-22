@@ -1,11 +1,10 @@
-using Application.DTOs.AssetDTOs;
 using Application.DTOs.EnquiryDTOs;
-using Domain.Entities;
 
 namespace Application.Interfaces;
 
 public interface IEnquiryService
 {
-    Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO, int userId);
-    Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO, int userId);
+    Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO);
+    Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO);
+    Task<EnquiryMessageCreateDTO> SendMessageAsync(EnquiryMessageCreateDTO NewEnquiryMessageCreateDTO);
 }

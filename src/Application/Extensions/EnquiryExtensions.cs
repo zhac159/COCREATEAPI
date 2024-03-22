@@ -1,4 +1,3 @@
-using Application.DTOs.AssetDTOs;
 using Application.DTOs.EnquiryDTOs;
 using Domain.Entities;
 
@@ -12,7 +11,9 @@ public static class EnquiryExtensions
         {
             Id = enquiry.Id,
             ProjectRoleId = enquiry.ProjectRoleId,
-            UserId = enquiry.UserId
+            Enquirer = enquiry.Enquirer?.ToInformationDTO(),
+            ProjectManager = enquiry.ProjectManager?.ToInformationDTO(),
+            Messages = enquiry.Messages.Select(m => m.ToDTO()).ToList()
         };
     }
 }

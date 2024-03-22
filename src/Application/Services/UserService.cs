@@ -16,7 +16,6 @@ public class UserService : IUserService
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IStorageService storageService;
     private readonly ICurrentUserContextService currentUserContextService;
-
     private readonly IChatHubService chatHubService;
 
     public UserService(
@@ -48,7 +47,7 @@ public class UserService : IUserService
             throw new InvalidPasswordException();
         }
 
-        await chatHubService.SendMessage("Im Loggen In");
+        await chatHubService.SendMessageAsync("Im Loggen In");
 
         return user.ToDTO();
     }

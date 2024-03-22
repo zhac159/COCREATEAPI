@@ -32,6 +32,7 @@ public static class ServiceColletionExtensions
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectRoleRepository, ProjectRoleRepostiory>();
         services.AddScoped<IEnquiryRepository, EnquiryRepository>();
+        services.AddScoped<IEnquiryMessageRepository, EnquiryMessageRepository>();
 
         return services;
     }
@@ -45,12 +46,13 @@ public static class ServiceColletionExtensions
             "AzureBlobContainerConnectionString"
         );
 
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            throw new Exception("Connection string is empty or null");
-        }
-
-        services.AddSingleton(x => new BlobServiceClient(connectionString));
+        services.AddSingleton(
+            x =>
+                new BlobServiceClient(
+                    connectionString
+                        ?? throw new Exception("Azure Blob connection string is empty or null")
+                )
+        );
 
         return services;
     }
@@ -63,6 +65,16 @@ public static class ServiceColletionExtensions
         services.AddAzureBlobStorageService(configuration);
 
         services.AddScoped<IStorageService, AzureBlobStorageService>();
+
+        services.AddSingleton<IRedisService>(
+            sp =>
+                new RedisService(
+                    configuration.GetConnectionString("RedisServer")
+                        ?? throw new Exception("Redis connection string is empty or null")
+                )
+        );
+        
+        services.AddScoped<IMessageStorageService, RedisMessageStorage>();
 
         return services;
     }

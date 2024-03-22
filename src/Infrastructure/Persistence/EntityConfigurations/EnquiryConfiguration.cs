@@ -11,14 +11,20 @@ public class EnquiryConfiguration : IEntityTypeConfiguration<Enquiry>
         builder.ToTable("Enquiries");
 
         builder.HasKey(e => e.Id);
-        builder.Property(e => e.UserId).IsRequired();
+        builder.Property(e => e.EnquirerId).IsRequired();
         builder.Property(e => e.ProjectRoleId).IsRequired();
         builder.Property(e => e.CreateAt).IsRequired();
 
         builder
-            .HasOne(e => e.User)
+            .HasOne(e => e.Enquirer)
             .WithMany(e => e.Enquiries)
-            .HasForeignKey(e => e.UserId)
+            .HasForeignKey(e => e.EnquirerId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder
+            .HasOne(e => e.ProjectManager)
+            .WithMany(e => e.EnquiriesReceived)
+            .HasForeignKey(e => e.ProjectManagerId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
@@ -27,6 +33,6 @@ public class EnquiryConfiguration : IEntityTypeConfiguration<Enquiry>
             .HasForeignKey(e => e.ProjectRoleId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasIndex(e => new { e.UserId, e.ProjectRoleId }).IsUnique();
+        builder.HasIndex(e => new { e.EnquirerId, e.ProjectRoleId }).IsUnique();
     }
 }

@@ -25,4 +25,5 @@ public class User
     public List<Project> Projects { get; set; } = new List<Project>();
     public List<ProjectRole> ProjectRoles { get; set; } = new List<ProjectRole>();
     public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
+    public List<Enquiry> EnquiriesReceived { get; set; } = new List<Enquiry>();
 }

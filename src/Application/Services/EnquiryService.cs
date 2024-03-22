@@ -11,21 +11,29 @@ public class EnquiryService : IEnquiryService
     private readonly IEnquiryRepository enquiryRepository;
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IUserRepository userRepository;
+    private readonly IChatHubService chatHubService;
+    private readonly ICurrentUserContextService currentUserContextService;
 
     public EnquiryService(
         IEnquiryRepository enquiryRepository,
         IProjectRoleRepository projectRoleRepository,
-        IUserRepository userRepository
+        IUserRepository userRepository,
+        IChatHubService chatHubService,
+        ICurrentUserContextService currentUserContextService
     )
     {
         this.enquiryRepository = enquiryRepository;
         this.projectRoleRepository = projectRoleRepository;
         this.userRepository = userRepository;
+        this.chatHubService = chatHubService;
+        this.currentUserContextService = currentUserContextService;
     }
 
-    public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO, int userId)
+    public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
     {
-        var projectRole = await projectRoleRepository.GetByIdAsync(enquiryDTO.ProjectRoleId);
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(
+            enquiryDTO.ProjectRoleId
+        );
 
         if (projectRole is null)
         {
@@ -37,21 +45,28 @@ public class EnquiryService : IEnquiryService
             throw new RoleAlreadyFilledException();
         }
 
-        var user = await userRepository.GetByIdAsync(userId);
+        var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
 
         if (user is null)
         {
             throw new EntityNotFoundException();
         }
 
-        var enquiry = enquiryDTO.ToEntity(userId);
+        var enquiry = enquiryDTO.ToEntity(user.UserId, projectRole.Project!.ProjectManagerId);
 
         var createdEnquiry = await enquiryRepository.CreateAsync(enquiry);
 
-        return createdEnquiry.ToDTO();
+        var createdEnquiryDTO = createdEnquiry.ToDTO();
+
+        await chatHubService.SendNewEnquiryAsync(
+            createdEnquiryDTO,
+            projectRole.Project!.ProjectManagerId
+        );
+
+        return createdEnquiryDTO;
     }
 
-    public async Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO, int userId)
+    public async Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO)
     {
         var enquiry = await enquiryRepository.GetByIdAsync(enquiryConfirmDTO.EnquiryId);
 
@@ -60,7 +75,9 @@ public class EnquiryService : IEnquiryService
             throw new EntityNotFoundException();
         }
 
-        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(enquiry.ProjectRoleId);
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(
+            enquiry.ProjectRoleId
+        );
 
         if (projectRole is null)
         {
@@ -77,15 +94,53 @@ public class EnquiryService : IEnquiryService
             throw new EntityNotFoundException();
         }
 
-        if (projectRole.Project.ProjectManagerId != userId)
+        if (projectRole.Project.ProjectManagerId != currentUserContextService.GetUserId())
         {
             throw new UnauthorizedAccessException();
         }
 
-        projectRole.AssigneeId = enquiry.UserId;
+        projectRole.AssigneeId = enquiry.EnquirerId;
 
         await projectRoleRepository.UpdateAsync(projectRole);
 
         return true;
+    }
+
+    public async Task<EnquiryMessageCreateDTO> SendMessageAsync(
+        EnquiryMessageCreateDTO enquiryMessageCreateDTO
+    )
+    {
+        var enquiry = await enquiryRepository.GetByIdAsync(enquiryMessageCreateDTO.EnquiryId);
+
+        if (enquiry is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if(user.UserId != enquiry.EnquirerId && user.UserId != enquiry.ProjectManagerId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var receiverId = enquiry.EnquirerId == user.UserId
+            ? enquiry.ProjectManagerId
+            : enquiry.EnquirerId;
+
+        var message = enquiryMessageCreateDTO.ToEntity(user.UserId);
+
+        enquiry.Messages.Add(message);
+
+        await enquiryRepository.UpdateAsync(enquiry);
+
+        await chatHubService.SendEnquiryMessageAsync(message.ToDTO(), receiverId);
+
+        return enquiryMessageCreateDTO;
     }
 }

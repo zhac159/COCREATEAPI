@@ -10,15 +10,12 @@ public class AssetController : COCREATEAPIControllerBase
 {
     private readonly IAssetService assetService;
 
-    private readonly ICurrentUserContextService currentUserContextService;
 
     public AssetController(
-        IAssetService assetService,
-        ICurrentUserContextService currentUserContextService
+        IAssetService assetService
     )
     {
         this.assetService = assetService;
-        this.currentUserContextService = currentUserContextService;
     }
 
     [HttpPost]

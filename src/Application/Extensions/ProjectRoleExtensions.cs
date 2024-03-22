@@ -24,6 +24,7 @@ public static class ProjectRoleeExtensions
             Address = projectRole.Address,
             Keywords = projectRole.Keywords,
             Remote = projectRole.Remote,
+            Enquiries = projectRole.Enquiries.Select(enquiry => enquiry.ToDTO()).ToList(),
             Assignee = projectRole.Assignee?.ToInformationDTO(),
             Medias = projectRole
                 .Medias.OrderBy(media => media.Order)
@@ -87,8 +88,7 @@ public static class ProjectRoleeExtensions
             projectRole.Medias?.RemoveAll(
                 m => !projectRoleUpdateDTO.Medias.Any(mu => mu.Id == m.Id)
             );
-            
-            
+
             projectRole.Medias = projectRoleUpdateDTO
                 .Medias.Select(
                     (mediaUpdateDTO, order) =>
@@ -105,7 +105,6 @@ public static class ProjectRoleeExtensions
                     }
                 )
                 .ToList();
-
         }
     }
 }

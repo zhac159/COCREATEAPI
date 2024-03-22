@@ -19,7 +19,8 @@ namespace Infrastructure.Persistence
         public DbSet<ProjectRole> ProjectRoles { get; set; }
         public DbSet<SeenMatches> SeenMatches { get; set; }
         public DbSet<Enquiry> Enquiries { get; set; }
-
+        public DbSet<EnquiryMessage> EnquiryMessages { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoCreateDbContext).Assembly);

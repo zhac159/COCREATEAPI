@@ -9,15 +9,12 @@ namespace API.Controllers;
 public class EnquiryController : COCREATEAPIControllerBase
 {
     private readonly IEnquiryService enquiryService;
-    private readonly ICurrentUserContextService currentUserContextService;
 
     public EnquiryController(
-        IEnquiryService enquiryService,
-        ICurrentUserContextService currentUserContextService
+        IEnquiryService enquiryService
     )
     {
         this.enquiryService = enquiryService;
-        this.currentUserContextService = currentUserContextService;
     }
 
     [HttpPost("create")]
@@ -26,8 +23,7 @@ public class EnquiryController : COCREATEAPIControllerBase
     )
     {
         var enquiry = await enquiryService.CreateAsync(
-            enquiryCreateDTO,
-            currentUserContextService.GetUserId()
+            enquiryCreateDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(enquiry));
@@ -39,10 +35,21 @@ public class EnquiryController : COCREATEAPIControllerBase
     )
     {
         var result = await enquiryService.ConfirmAsync(
-            enquiryConfirmDTO,
-            currentUserContextService.GetUserId()
+            enquiryConfirmDTO
         );
 
         return Ok(APIResponseFactory.CreateSuccess(result));
+    }
+
+    [HttpPost("send-message")]
+    public async Task<ActionResult<APIResponse<EnquiryMessageDTO>>> SendMessageAsync(
+        EnquiryMessageCreateDTO enquiryMessageCreateDTO
+    )
+    {
+        var message = await enquiryService.SendMessageAsync(
+            enquiryMessageCreateDTO
+        );
+
+        return Ok(APIResponseFactory.CreateSuccess(message));
     }
 }

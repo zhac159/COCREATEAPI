@@ -1,3 +1,4 @@
+using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.MediaDTOs;
 using Application.DTOs.UserDtos;
 using Domain.Enums;
@@ -21,4 +22,5 @@ public class ProjectRoleDTO
     public required bool Remote { get; set; }
     public UserInformationDTO? Assignee { get; set; }
     public List<MediaDTO> Medias { get; set; } = new List<MediaDTO>();
+    public List<EnquiryDTO> Enquiries { get; set; } = new List<EnquiryDTO>();
 }

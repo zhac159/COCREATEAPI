@@ -1,4 +1,3 @@
-using System.Net.Mime;
 using Application.Interfaces;
 using Azure.Storage;
 using Azure.Storage.Blobs;

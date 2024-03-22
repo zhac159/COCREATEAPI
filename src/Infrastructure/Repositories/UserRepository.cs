@@ -1,6 +1,4 @@
-using Application.Interfaces;
 using Domain.Entities;
-using Domain.Exceptions;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +8,10 @@ namespace Infrastructure.Repositories;
 public class UserRepository : IUserRepository
 {
     private readonly CoCreateDbContext context;
-    private readonly IStorageService storageService;
 
-    public UserRepository(CoCreateDbContext context, IStorageService storageService)
+    public UserRepository(CoCreateDbContext context)
     {
         this.context = context;
-        this.storageService = storageService;
     }
 
     public async Task<User?> GetByUsernameAsync(string name)
@@ -34,6 +30,18 @@ public class UserRepository : IUserRepository
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Enquiries)
+            .ThenInclude(e => e.Enquirer)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Enquiries)
+            .ThenInclude(e => e.Messages)
+            .Include(u => u.Enquiries)
+            .ThenInclude(e => e.Messages)
+            .Include(u => u.Enquiries)
+            .ThenInclude(e => e.ProjectManager)
             .FirstOrDefaultAsync();
 
         return user;
@@ -77,6 +85,18 @@ public class UserRepository : IUserRepository
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Medias)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Enquiries)
+            .ThenInclude(e => e.Enquirer)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Enquiries)
+            .ThenInclude(e => e.Messages)
+            .Include(u => u.Enquiries)
+            .ThenInclude(e => e.Messages)
+            .Include(u => u.Enquiries)
+            .ThenInclude(e => e.ProjectManager)
             .FirstOrDefaultAsync();
 
         return user;

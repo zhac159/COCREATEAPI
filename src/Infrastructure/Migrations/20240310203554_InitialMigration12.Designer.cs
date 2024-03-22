@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    partial class CoCreateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240310203554_InitialMigration12")]
+    partial class InitialMigration12
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,22 +102,17 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("EnquirerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ProjectManagerId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ProjectRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectManagerId");
-
                     b.HasIndex("ProjectRoleId");
 
-                    b.HasIndex("EnquirerId", "ProjectRoleId")
+                    b.HasIndex("UserId", "ProjectRoleId")
                         .IsUnique();
 
                     b.ToTable("Enquiries", (string)null);
@@ -550,29 +548,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Enquiry", b =>
                 {
-                    b.HasOne("Domain.Entities.User", "Enquirer")
-                        .WithMany("Enquiries")
-                        .HasForeignKey("EnquirerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.User", "ProjectManager")
-                        .WithMany("EnquiriesReceived")
-                        .HasForeignKey("ProjectManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
                         .WithMany("Enquiries")
                         .HasForeignKey("ProjectRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Enquirer");
-
-                    b.Navigation("ProjectManager");
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("Enquiries")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ProjectRole");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Domain.Entities.EnquiryMessage", b =>
@@ -751,8 +741,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Assets");
 
                     b.Navigation("Enquiries");
-
-                    b.Navigation("EnquiriesReceived");
 
                     b.Navigation("PortofolioContents");
 

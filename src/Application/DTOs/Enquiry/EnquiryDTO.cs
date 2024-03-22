@@ -1,8 +1,12 @@
+using Application.DTOs.UserDtos;
+
 namespace Application.DTOs.EnquiryDTOs;
 
 public class EnquiryDTO
 {
     public required int Id { get; set; }
     public required int ProjectRoleId { get; set; }
-    public required int UserId { get; set; }
+    public UserInformationDTO? Enquirer { get; set; }
+    public UserInformationDTO? ProjectManager { get; set; }
+    public List<EnquiryMessageDTO> Messages { get; set; } = new List<EnquiryMessageDTO>();
 }

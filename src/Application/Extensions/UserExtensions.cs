@@ -77,7 +77,8 @@ public static class UserExtensions
             // ReviewsGiven = user.ReviewsGiven,
             // ReviewsReceived = user.ReviewsReceived,
             Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null,
-            Projects = user.Projects != null ? user.Projects.Select(p => p.ToDTO()).ToList() : null
+            Projects = user.Projects != null ? user.Projects.Select(p => p.ToDTO()).ToList() : null,
+            Enquiries = user.Enquiries != null ? user.Enquiries.Select(e => e.ToDTO()).ToList() : null
         };
     }
 
