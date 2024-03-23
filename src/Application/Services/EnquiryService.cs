@@ -124,14 +124,10 @@ public class EnquiryService : IEnquiryService
             throw new EntityNotFoundException();
         }
 
-        if(user.UserId != enquiry.EnquirerId && user.UserId != enquiry.ProjectManagerId)
+        if (user.UserId != enquiry.EnquirerId && user.UserId != enquiry.ProjectManagerId)
         {
             throw new UnauthorizedAccessException();
         }
-
-        var receiverId = enquiry.EnquirerId == user.UserId
-            ? enquiry.ProjectManagerId
-            : enquiry.EnquirerId;
 
         var message = enquiryMessageCreateDTO.ToEntity(user.UserId);
 
@@ -139,6 +135,9 @@ public class EnquiryService : IEnquiryService
 
         await enquiryRepository.UpdateAsync(enquiry);
 
+        var receiverId =
+            enquiry.EnquirerId == user.UserId ? enquiry.ProjectManagerId : enquiry.EnquirerId;
+            
         await chatHubService.SendEnquiryMessageAsync(message.ToDTO(), receiverId);
 
         return enquiryMessageCreateDTO;

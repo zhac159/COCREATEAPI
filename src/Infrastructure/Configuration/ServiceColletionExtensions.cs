@@ -74,7 +74,7 @@ public static class ServiceColletionExtensions
                 )
         );
         
-        services.AddScoped<IMessageStorageService, RedisMessageStorage>();
+        // services.AddScoped<IMessageStorageService, RedisMessageStorage>();
 
         return services;
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
+using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -8,11 +9,16 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class InitialMigration1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:postgis", ",,");
+
+            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -23,8 +29,7 @@ namespace Infrastructure.Migrations
                     Password = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Email = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Address = table.Column<string>(type: "text", nullable: true),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Location = table.Column<Point>(type: "geometry", nullable: true),
                     Rating = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     TotalReviews = table.Column<int>(type: "integer", nullable: false, defaultValue: 0),
                     AboutYou = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
@@ -90,7 +95,6 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Description = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    FileSrcs = table.Column<List<string>>(type: "text[]", nullable: false),
                     ProjectManagerId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -200,6 +204,28 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectMedias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uri = table.Column<string>(type: "text", nullable: false),
+                    MediaType = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    ProjectId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectMedias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectMedias_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ProjectRoles",
                 columns: table => new
                 {
@@ -207,12 +233,14 @@ namespace Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    FileSrcs = table.Column<List<string>>(type: "text[]", nullable: false),
                     Cost = table.Column<int>(type: "integer", nullable: false),
                     Effort = table.Column<int>(type: "integer", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     SkillType = table.Column<int>(type: "integer", nullable: false),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Location = table.Column<Point>(type: "geometry", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    Keywords = table.Column<List<string>>(type: "text[]", nullable: false),
                     Remote = table.Column<bool>(type: "boolean", nullable: false),
                     AssigneeId = table.Column<int>(type: "integer", nullable: true),
                     ProjectId = table.Column<int>(type: "integer", nullable: false)
@@ -239,7 +267,8 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    EnquirerId = table.Column<int>(type: "integer", nullable: false),
+                    ProjectManagerId = table.Column<int>(type: "integer", nullable: false),
                     ProjectRoleId = table.Column<int>(type: "integer", nullable: false),
                     CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -253,10 +282,38 @@ namespace Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Enquiries_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Enquiries_Users_EnquirerId",
+                        column: x => x.EnquirerId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Enquiries_Users_ProjectManagerId",
+                        column: x => x.ProjectManagerId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectRoleMedias",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uri = table.Column<string>(type: "text", nullable: false),
+                    MediaType = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    ProjectRoleId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectRoleMedias", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectRoleMedias_ProjectRoles_ProjectRoleId",
+                        column: x => x.ProjectRoleId,
+                        principalTable: "ProjectRoles",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -287,6 +344,35 @@ namespace Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "EnquiryMessages",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
+                    SenderId = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: true),
+                    Uri = table.Column<string>(type: "text", nullable: true),
+                    MediaType = table.Column<int>(type: "integer", nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EnquiryId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EnquiryMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EnquiryMessages_Enquiries_EnquiryId",
+                        column: x => x.EnquiryId,
+                        principalTable: "Enquiries",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_EnquiryMessages_Users_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AssetMedias_AssetId",
                 table: "AssetMedias",
@@ -308,15 +394,35 @@ namespace Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Enquiries_EnquirerId_ProjectRoleId",
+                table: "Enquiries",
+                columns: new[] { "EnquirerId", "ProjectRoleId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enquiries_ProjectManagerId",
+                table: "Enquiries",
+                column: "ProjectManagerId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Enquiries_ProjectRoleId",
                 table: "Enquiries",
                 column: "ProjectRoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Enquiries_UserId_ProjectRoleId",
-                table: "Enquiries",
-                columns: new[] { "UserId", "ProjectRoleId" },
-                unique: true);
+                name: "IX_EnquiryMessages_Date",
+                table: "EnquiryMessages",
+                column: "Date");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EnquiryMessages_EnquiryId",
+                table: "EnquiryMessages",
+                column: "EnquiryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EnquiryMessages_SenderId",
+                table: "EnquiryMessages",
+                column: "SenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PortofolioContentMedias_PortofolioContentId",
@@ -327,6 +433,31 @@ namespace Infrastructure.Migrations
                 name: "IX_PortofolioContents_UserId",
                 table: "PortofolioContents",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectMedias_MediaType",
+                table: "ProjectMedias",
+                column: "MediaType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectMedias_ProjectId",
+                table: "ProjectMedias",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoleMedias_MediaType",
+                table: "ProjectRoleMedias",
+                column: "MediaType");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoleMedias_ProjectRoleId",
+                table: "ProjectRoleMedias",
+                column: "ProjectRoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRole_Location",
+                table: "ProjectRoles",
+                column: "Location");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectRoles_AssigneeId",
@@ -390,14 +521,22 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DROP EXTENSION IF EXISTS \"uuid-ossp\";");
+            
             migrationBuilder.DropTable(
                 name: "AssetMedias");
 
             migrationBuilder.DropTable(
-                name: "Enquiries");
+                name: "EnquiryMessages");
 
             migrationBuilder.DropTable(
                 name: "PortofolioContentMedias");
+
+            migrationBuilder.DropTable(
+                name: "ProjectMedias");
+
+            migrationBuilder.DropTable(
+                name: "ProjectRoleMedias");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
@@ -410,6 +549,9 @@ namespace Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Assets");
+
+            migrationBuilder.DropTable(
+                name: "Enquiries");
 
             migrationBuilder.DropTable(
                 name: "PortofolioContents");

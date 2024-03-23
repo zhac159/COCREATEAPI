@@ -1,6 +1,8 @@
+using Domain.Entities;
+
 public interface IMessageStorageService
 {
-    Task StoreMessageAsync(Guid key, string message);
-    Task<string> RetrieveMessageAsync(Guid key);
-    Task DeleteMessageAsync(Guid key);
+    Task StoreMessageAsync(int userId, EnquiryMessage enquiryMessage);
+    // Task<string> RetrieveMessageAsync(string key);
+    Task DeleteMessageAsync(int userId, Guid messageId);
 }

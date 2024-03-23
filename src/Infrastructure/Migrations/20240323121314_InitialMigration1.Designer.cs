@@ -14,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    [Migration("20240302205020_InitialMigration5")]
-    partial class InitialMigration5
+    [Migration("20240323121314_InitialMigration1")]
+    partial class InitialMigration1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -102,20 +102,61 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime>("CreateAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ProjectRoleId")
+                    b.Property<int>("EnquirerId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("ProjectManagerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ProjectRoleId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectManagerId");
+
                     b.HasIndex("ProjectRoleId");
 
-                    b.HasIndex("UserId", "ProjectRoleId")
+                    b.HasIndex("EnquirerId", "ProjectRoleId")
                         .IsUnique();
 
                     b.ToTable("Enquiries", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.EnquiryMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasDefaultValueSql("uuid_generate_v4()");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("EnquiryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("EnquiryId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("EnquiryMessages", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
@@ -292,6 +333,9 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AssigneeId");
 
+                    b.HasIndex("Location")
+                        .HasDatabaseName("IX_ProjectRole_Location");
+
                     b.HasIndex("ProjectId");
 
                     b.ToTable("ProjectRoles", (string)null);
@@ -447,11 +491,8 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
+                    b.Property<Point>("Location")
+                        .HasColumnType("geometry");
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -511,21 +552,48 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Enquiry", b =>
                 {
+                    b.HasOne("Domain.Entities.User", "Enquirer")
+                        .WithMany("Enquiries")
+                        .HasForeignKey("EnquirerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.User", "ProjectManager")
+                        .WithMany("EnquiriesReceived")
+                        .HasForeignKey("ProjectManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
                         .WithMany("Enquiries")
                         .HasForeignKey("ProjectRoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.User", "User")
-                        .WithMany("Enquiries")
-                        .HasForeignKey("UserId")
+                    b.Navigation("Enquirer");
+
+                    b.Navigation("ProjectManager");
+
+                    b.Navigation("ProjectRole");
+                });
+
+            modelBuilder.Entity("Domain.Entities.EnquiryMessage", b =>
+                {
+                    b.HasOne("Domain.Entities.Enquiry", "Enquiry")
+                        .WithMany("Messages")
+                        .HasForeignKey("EnquiryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ProjectRole");
+                    b.HasOne("Domain.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Enquiry");
+
+                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
@@ -654,6 +722,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("Medias");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Enquiry", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
                 {
                     b.Navigation("Medias");
@@ -680,6 +753,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Assets");
 
                     b.Navigation("Enquiries");
+
+                    b.Navigation("EnquiriesReceived");
 
                     b.Navigation("PortofolioContents");
 

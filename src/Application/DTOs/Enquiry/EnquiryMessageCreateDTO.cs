@@ -15,6 +15,7 @@ public class EnquiryMessageCreateDTO
     {
         return new EnquiryMessage
         {
+            Id = Guid.NewGuid(),
             SenderId = userId,
             EnquiryId = EnquiryId,
             Message = Message,
