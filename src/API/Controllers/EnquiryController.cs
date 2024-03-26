@@ -1,6 +1,7 @@
 using API.Factories;
 using API.Models;
 using Application.DTOs.EnquiryDTOs;
+using Application.DTOs.MessageDTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,14 +43,14 @@ public class EnquiryController : COCREATEAPIControllerBase
     }
 
     [HttpPost("send-message")]
-    public async Task<ActionResult<APIResponse<EnquiryMessageDTO>>> SendMessageAsync(
-        EnquiryMessageCreateDTO enquiryMessageCreateDTO
+    public ActionResult<APIResponse<MessageDTO>> SendMessage(
+        MessageCreateDTO enquiryMessageCreateDTO
     )
     {
-        var message = await enquiryService.SendMessageAsync(
-            enquiryMessageCreateDTO
-        );
+        // var message = await enquiryService.SendMessageAsync(
+        //     enquiryMessageCreateDTO
+        // );
 
-        return Ok(APIResponseFactory.CreateSuccess(message));
+        return Ok(APIResponseFactory.CreateSuccess(true));
     }
 }

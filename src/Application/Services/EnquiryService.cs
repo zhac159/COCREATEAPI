@@ -1,6 +1,7 @@
 using Application.DTOs.EnquiryDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -13,13 +14,15 @@ public class EnquiryService : IEnquiryService
     private readonly IUserRepository userRepository;
     private readonly IChatHubService chatHubService;
     private readonly ICurrentUserContextService currentUserContextService;
+    private readonly IMessageStorageService messageStorageService;
 
     public EnquiryService(
         IEnquiryRepository enquiryRepository,
         IProjectRoleRepository projectRoleRepository,
         IUserRepository userRepository,
         IChatHubService chatHubService,
-        ICurrentUserContextService currentUserContextService
+        ICurrentUserContextService currentUserContextService,
+        IMessageStorageService messageStorageService
     )
     {
         this.enquiryRepository = enquiryRepository;
@@ -27,6 +30,7 @@ public class EnquiryService : IEnquiryService
         this.userRepository = userRepository;
         this.chatHubService = chatHubService;
         this.currentUserContextService = currentUserContextService;
+        this.messageStorageService = messageStorageService;
     }
 
     public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
@@ -58,9 +62,10 @@ public class EnquiryService : IEnquiryService
 
         var createdEnquiryDTO = createdEnquiry.ToDTO();
 
-        await chatHubService.SendNewEnquiryAsync(
-            createdEnquiryDTO,
-            projectRole.Project!.ProjectManagerId
+        await messageStorageService.AddChatAsync(
+            createdEnquiryDTO.Id,
+            ChatType.Enquiry,
+            new List<int> {createdEnquiry.EnquirerId, createdEnquiry.ProjectManagerId}
         );
 
         return createdEnquiryDTO;
@@ -106,40 +111,40 @@ public class EnquiryService : IEnquiryService
         return true;
     }
 
-    public async Task<EnquiryMessageCreateDTO> SendMessageAsync(
-        EnquiryMessageCreateDTO enquiryMessageCreateDTO
-    )
-    {
-        var enquiry = await enquiryRepository.GetByIdAsync(enquiryMessageCreateDTO.EnquiryId);
+    // public async Task<EnquiryMessageCreateDTO> SendMessageAsync(
+    //     EnquiryMessageCreateDTO enquiryMessageCreateDTO
+    // )
+    // {
+    //     var enquiry = await enquiryRepository.GetByIdAsync(enquiryMessageCreateDTO.EnquiryId);
 
-        if (enquiry is null)
-        {
-            throw new EntityNotFoundException();
-        }
+    //     if (enquiry is null)
+    //     {
+    //         throw new EntityNotFoundException();
+    //     }
 
-        var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
+    //     var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
 
-        if (user is null)
-        {
-            throw new EntityNotFoundException();
-        }
+    //     if (user is null)
+    //     {
+    //         throw new EntityNotFoundException();
+    //     }
 
-        if (user.UserId != enquiry.EnquirerId && user.UserId != enquiry.ProjectManagerId)
-        {
-            throw new UnauthorizedAccessException();
-        }
+    //     if (user.UserId != enquiry.EnquirerId && user.UserId != enquiry.ProjectManagerId)
+    //     {
+    //         throw new UnauthorizedAccessException();
+    //     }
 
-        var message = enquiryMessageCreateDTO.ToEntity(user.UserId);
+    //     var message = enquiryMessageCreateDTO.ToEntity(user.UserId);
 
-        enquiry.Messages.Add(message);
+    //     enquiry.Messages.Add(message);
 
-        await enquiryRepository.UpdateAsync(enquiry);
+    //     await enquiryRepository.UpdateAsync(enquiry);
 
-        var receiverId =
-            enquiry.EnquirerId == user.UserId ? enquiry.ProjectManagerId : enquiry.EnquirerId;
+    //     var receiverId =
+    //         enquiry.EnquirerId == user.UserId ? enquiry.ProjectManagerId : enquiry.EnquirerId;
             
-        await chatHubService.SendEnquiryMessageAsync(message.ToDTO(), receiverId);
+    //     await chatHubService.SendEnquiryMessageAsync(message.ToDTO(), receiverId);
 
-        return enquiryMessageCreateDTO;
-    }
+    //     return enquiryMessageCreateDTO;
+    // }
 }

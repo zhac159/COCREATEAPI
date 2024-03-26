@@ -8,5 +8,4 @@ public class EnquiryDTO
     public required int ProjectRoleId { get; set; }
     public UserInformationDTO? Enquirer { get; set; }
     public UserInformationDTO? ProjectManager { get; set; }
-    public List<EnquiryMessageDTO> Messages { get; set; } = new List<EnquiryMessageDTO>();
 }

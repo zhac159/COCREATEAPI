@@ -1,20 +1,19 @@
-using Application.DTOs.EnquiryDTOs;
-using Application.DTOs.MediaDTOs;
+using Application.DTOs.MessageDTOs;
 using Domain.Entities;
 
 namespace Application.Extensions;
 
-
 public static class MessageExtensions
 {
-    public static EnquiryMessageDTO ToDTO(this EnquiryMessage message)
+    public static MessageDTO ToDTO(this Message message)
     {
-        return new EnquiryMessageDTO
+        return new MessageDTO
         {
             Id = message.Id,
             SenderId = message.SenderId,
-            EnquiryId = message.EnquiryId,
-            Message = message.Message,
+            ChatId = message.ChatId,
+            ChatType = message.ChatType,
+            Content = message.Content,
             Uri = message.Uri,
             MediaType = message.MediaType,
             Date = message.Date

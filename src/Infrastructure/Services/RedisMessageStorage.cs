@@ -1,37 +1,56 @@
-// namespace Infrastructure.Services;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Interfaces;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
-// public class RedisMessageStorage : IMessageStorageService
-// {
-//     private readonly IRedisService redisService;
+namespace Infrastructure.Services;
 
-//     public RedisMessageStorage(IRedisService redisService)
-//     {
-//         this.redisService = redisService;
-//     }
+public class RedisMessageStorage : IMessageStorageService
+{
+    private readonly IRedisService redisService;
+    private readonly IDatabase database;
 
-//     public async Task StoreMessageAsync(string key, string message)
-//     {
-//         var db = redisService.GetDatabase();
-//         await db.StringSetAsync(key, message);
-//     }
+    public RedisMessageStorage(IRedisService redisService)
+    {
+        this.redisService = redisService;
+        database = redisService.GetDatabase();
+    }
 
-//     public async Task<string> RetrieveMessageAsync(string key)
-//     {
-//         var db = redisService.GetDatabase();
+    public async Task AddChatAsync(int chatId, ChatType chatType, IEnumerable<int> userIds)
+    {
+        var key = $"chat:{chatType}-{chatId}";
+        var values = userIds.Select(userId => (RedisValue)userId).ToArray();
+        await database.ListRightPushAsync(key, values);
+    }
 
-//         if (!db.KeyExists(key))
-//         {
-//             return "";
-//         }
+    public async Task<IEnumerable<int>?> GetChatMemebersAsync(int chatId, ChatType chatType)
+    {
+        var key = $"chat:{chatType}-{chatId}";
+        var values = await database.ListRangeAsync(key);
+        return values.Select(value => (int)value).ToArray();
+    }
 
-//         var result = await db.StringGetAsync(key);
+    public async Task AddMessageAsync(Message message, int userId)
+    {
+        var key = $"user:{userId}:messages";
+        var messageString = JsonConvert.SerializeObject(message);
+        await database.HashSetAsync(key, message.Id.ToString(), messageString);
+    }
 
-//         return result.HasValue ? result.ToString() : "";
-//     }
+    public async Task DeleteMessageAsync(IEnumerable<Guid> messageIds, int userId)
+    {
+        var key = $"user:{userId}:messages";
+        var messageIdsArray = messageIds
+            .Select(messageId => (RedisValue)messageId.ToString())
+            .ToArray();
+        await database.HashDeleteAsync(key, messageIdsArray);
+    }
 
-//     public async Task DeleteMessageAsync(string key)
-//     {
-//         var db = redisService.GetDatabase();
-//         await db.KeyDeleteAsync(key);
-//     }
-// }
+    public async Task<IEnumerable<Message>> GetMessagesAsync(int userId)
+    {
+        var key = $"user:{userId}:messages";
+        var messages = await database.HashGetAllAsync(key);
+        return messages.Select(message => JsonConvert.DeserializeObject<Message>(message.Value)).ToArray();
+    }
+}

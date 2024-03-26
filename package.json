@@ -12,5 +12,8 @@
         "migration:list": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef migrations list --project src/Infrastructure/Infrastructure.csproj  --startup-project src/API/API.csproj",
         "migration:rollback": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef database update --project src/Infrastructure/Infrastructure.csproj  --startup-project src/API/API.csproj",
         "migration:run": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj"
+    },
+    "dependencies": {
+        "noble-secp256k1": "^1.2.14"
     }
 }

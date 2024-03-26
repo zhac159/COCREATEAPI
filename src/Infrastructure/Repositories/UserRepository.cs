@@ -37,9 +37,7 @@ public class UserRepository : IUserRepository
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
-            .ThenInclude(e => e.Messages)
             .Include(u => u.Enquiries)
-            .ThenInclude(e => e.Messages)
             .Include(u => u.Enquiries)
             .ThenInclude(e => e.ProjectManager)
             .FirstOrDefaultAsync();
@@ -92,9 +90,7 @@ public class UserRepository : IUserRepository
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
-            .ThenInclude(e => e.Messages)
             .Include(u => u.Enquiries)
-            .ThenInclude(e => e.Messages)
             .Include(u => u.Enquiries)
             .ThenInclude(e => e.ProjectManager)
             .FirstOrDefaultAsync();

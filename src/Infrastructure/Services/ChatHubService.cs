@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
-using Application.DTOs.EnquiryDTOs;
+using Application.DTOs.MessageDTOs;
+using Application.Extensions;
 using Application.Interfaces;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -9,17 +10,18 @@ using Microsoft.AspNetCore.SignalR;
 public class ChatHubService : Hub, IChatHubService
 {
     private readonly IHubContext<ChatHubService> hubContext;
-    private readonly IEnquiryMessageRepository enquiryMessageRepository;
     public static ConcurrentDictionary<string, bool> connectedUsers =
         new ConcurrentDictionary<string, bool>();
 
+    private readonly IMessageStorageService messageStorageService;
+
     public ChatHubService(
         IHubContext<ChatHubService> hubContext,
-        IEnquiryMessageRepository enquiryMessageRepository
+        IMessageStorageService messageStorageService
     )
     {
         this.hubContext = hubContext;
-        this.enquiryMessageRepository = enquiryMessageRepository;
+        this.messageStorageService = messageStorageService;
     }
 
     public override async Task OnConnectedAsync()
@@ -42,22 +44,52 @@ public class ChatHubService : Hub, IChatHubService
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessageAsync(string message)
+    public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
     {
-        await hubContext.Clients.User("2").SendAsync("ReceiveMessage", message);
+        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
+
+        var recipientIds = await messageStorageService.GetChatMemebersAsync(
+            messageCreateDTO.ChatId,
+            messageCreateDTO.ChatType
+        );
+
+        if (recipientIds == null || !recipientIds.Contains(userId))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var message = messageCreateDTO.ToEntity(userId);
+
+        foreach (var recipientId in recipientIds)
+        {
+            if (recipientId.ToString() != Context.UserIdentifier)
+            {
+                await messageStorageService.AddMessageAsync(message, recipientId);
+
+                var messageDTO = new List<MessageDTO> { message.ToDTO() };
+
+                await hubContext
+                    .Clients.User(recipientId.ToString())
+                    .SendAsync("ReceiveMessages", messageDTO);
+            }
+        }
     }
 
-    public async Task SendNewEnquiryAsync(EnquiryDTO message, int projectManagerId)
+    public async Task GetMessagesAsync()
     {
-        await hubContext
-            .Clients.User(projectManagerId.ToString())
-            .SendAsync("ReceiveNewEnquiry", message);
+        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
+
+        var messages = await messageStorageService.GetMessagesAsync(userId);
+
+        var messagesDTO = messages.Select(m => m.ToDTO());
+
+        await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
     }
 
-    public async Task SendEnquiryMessageAsync(EnquiryMessageDTO message, int receiverId)
+    public async Task AknowledgeMessageAsync(IEnumerable<Guid> messageIds)
     {
-        await hubContext
-            .Clients.User(receiverId.ToString())
-            .SendAsync("ReceiveEnquiryMessage", message);
+        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
+
+        await messageStorageService.DeleteMessageAsync(messageIds, userId);
     }
 }

@@ -10,5 +10,4 @@ public class Enquiry
     public int ProjectRoleId { get; set; }
     public ProjectRole? ProjectRole { get; set; }
     public DateTime CreateAt { get; set; }
-    public List<EnquiryMessage> Messages { get; set; } = new List<EnquiryMessage>();
 }

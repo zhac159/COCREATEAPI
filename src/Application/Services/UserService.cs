@@ -47,8 +47,6 @@ public class UserService : IUserService
             throw new InvalidPasswordException();
         }
 
-        await chatHubService.SendMessageAsync("Im Loggen In");
-
         return user.ToDTO();
     }
 

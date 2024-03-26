@@ -13,7 +13,6 @@ public static class EnquiryExtensions
             ProjectRoleId = enquiry.ProjectRoleId,
             Enquirer = enquiry.Enquirer?.ToInformationDTO(),
             ProjectManager = enquiry.ProjectManager?.ToInformationDTO(),
-            Messages = enquiry.Messages.Select(m => m.ToDTO()).ToList()
         };
     }
 }

@@ -32,7 +32,6 @@ public static class ServiceColletionExtensions
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectRoleRepository, ProjectRoleRepostiory>();
         services.AddScoped<IEnquiryRepository, EnquiryRepository>();
-        services.AddScoped<IEnquiryMessageRepository, EnquiryMessageRepository>();
 
         return services;
     }
@@ -74,7 +73,7 @@ public static class ServiceColletionExtensions
                 )
         );
         
-        // services.AddScoped<IMessageStorageService, RedisMessageStorage>();
+        services.AddScoped<IMessageStorageService, RedisMessageStorage>();
 
         return services;
     }
