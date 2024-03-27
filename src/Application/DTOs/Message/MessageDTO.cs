@@ -11,5 +11,6 @@ public class MessageDTO
     public string? Content { get; set; }
     public string? Uri { get; set; }
     public MediaType? MediaType { get; set; }
+    public required string Nonce { get; set; }
     public required DateTime Date { get; set; }
 }

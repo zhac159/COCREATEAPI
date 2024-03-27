@@ -66,6 +66,7 @@ public static class UserExtensions
             Longitude = user.Location != null ? user.Location.X : 0,
             Latitude = user.Location != null ? user.Location.Y : 0,
             BannerPictureSrc = user.BannerPictureSrc,
+            PublicKey = user.PublicKey,
             Skills =
                 user.Skills != null
                     ? user.Skills.Select(s => s.ToDTO()).ToList()
@@ -84,7 +85,7 @@ public static class UserExtensions
 
     public static UserInformationDTO ToInformationDTO(this User user)
     {
-        return new UserInformationDTO { UserId = user.UserId, Username = user.Username, };
+        return new UserInformationDTO { UserId = user.UserId, Username = user.Username, PublicKey = user.PublicKey};
     }
 
     public static UserLocationDTO ToLocationDTO(this User user)

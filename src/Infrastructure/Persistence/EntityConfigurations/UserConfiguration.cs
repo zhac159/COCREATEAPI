@@ -22,6 +22,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.TotalReviews).IsRequired().HasDefaultValue(0);
         builder.Property(e => e.ProfilePictureSrc).HasDefaultValue(null);
         builder.Property(e => e.BannerPictureSrc).HasDefaultValue(null);
+        builder.Property(e => e.PublicKey).HasDefaultValue(null);
 
         builder.HasIndex(e => new { e.Username }).IsUnique();
         builder.HasIndex(e => new { e.Email }).IsUnique();

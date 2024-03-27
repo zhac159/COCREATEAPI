@@ -18,4 +18,5 @@ public interface IUserService
         int userId
     );
     Task<UserPortofolioDTO> UpdatePortofolio(UserPortofolioUpdateDTO userPortofolioUpdateDTO);
+    Task<bool> UpdatePublicKeyAsync(UserPublicKeyUpdateDTO userPublicKeyUpdateDTO);
 }

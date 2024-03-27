@@ -20,6 +20,7 @@ public class UserDTO
     public int TotalReviews { get; set; } = 0;
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
+    public byte[]? PublicKey { get; set; }
     public List<SkillDTO> Skills { get; set; } = new List<SkillDTO>();
     public List<PortofolioContentDTO>? PortofolioContents { get; set; }
     // public List<Review>? ReviewsGiven { get; set; }

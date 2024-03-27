@@ -16,6 +16,7 @@ public static class MessageExtensions
             Content = message.Content,
             Uri = message.Uri,
             MediaType = message.MediaType,
+            Nonce =  message.Nonce,
             Date = message.Date
         };
     }

@@ -208,4 +208,22 @@ public class UserService : IUserService
 
         return updatedUser.ToPortofolioDTO();
     }
+
+    public async Task<bool> UpdatePublicKeyAsync(UserPublicKeyUpdateDTO userPublicKeyUpdateDTO)
+    {
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(
+            currentUserContextService.GetUserId()
+        );
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.PublicKey = userPublicKeyUpdateDTO.PublicKey;
+
+        var updatedUser = await userRepository.UpdateAsync(user);
+
+        return updatedUser.PublicKey == userPublicKeyUpdateDTO.PublicKey;
+    }
 }

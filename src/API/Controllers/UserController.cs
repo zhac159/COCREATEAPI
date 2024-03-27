@@ -91,4 +91,14 @@ public class UserController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(updatedPortfolio));
     }
+
+    [HttpPut("public-key")]
+    public async Task<ActionResult<APIResponse<bool>>> UpdatePublicKey(
+        UserPublicKeyUpdateDTO userPublicKeyUpdateDTO
+    )
+    {
+        var successfull = await userService.UpdatePublicKeyAsync(userPublicKeyUpdateDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(successfull));
+    }
 }
