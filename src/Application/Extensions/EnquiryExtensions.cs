@@ -10,9 +10,11 @@ public static class EnquiryExtensions
         return new EnquiryDTO
         {
             Id = enquiry.Id,
+            EnquiryMessage = enquiry.EnquiryMessage,
             ProjectRoleId = enquiry.ProjectRoleId,
             Enquirer = enquiry.Enquirer?.ToInformationDTO(),
             ProjectManager = enquiry.ProjectManager?.ToInformationDTO(),
+            Shortlisted = enquiry.Shortlisted
         };
     }
 }

@@ -16,21 +16,18 @@ public class UserService : IUserService
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IStorageService storageService;
     private readonly ICurrentUserContextService currentUserContextService;
-    private readonly IChatHubService chatHubService;
 
     public UserService(
         IUserRepository userRepository,
         IStorageService storageService,
         IProjectRoleRepository projectRoleRepository,
-        ICurrentUserContextService currentUserContextService,
-        IChatHubService chatHubService
+        ICurrentUserContextService currentUserContextService
     )
     {
         this.userRepository = userRepository;
         this.projectRoleRepository = projectRoleRepository;
         this.storageService = storageService;
         this.currentUserContextService = currentUserContextService;
-        this.chatHubService = chatHubService;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -225,5 +222,14 @@ public class UserService : IUserService
         var updatedUser = await userRepository.UpdateAsync(user);
 
         return updatedUser.PublicKey == userPublicKeyUpdateDTO.PublicKey;
+    }
+
+    public async Task<UserProfilesDTO> GetUserProfilesAsync(UserGetProfilesDTO userGetProfilesDTO)
+    {
+        var users = await userRepository.GetUsersProfileAsync(userGetProfilesDTO.UserIds);
+
+        var userProfiles = users.Select(u => u.ToUserProfileDTO()).ToList();
+
+        return new UserProfilesDTO { UserProfiles = userProfiles };
     }
 }

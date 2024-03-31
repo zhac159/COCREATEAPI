@@ -2,6 +2,8 @@ using System.Collections.Concurrent;
 using Application.DTOs.MessageDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Entities;
+using Domain.Enums;
 using Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
@@ -46,19 +48,90 @@ public class ChatHubService : Hub, IChatHubService
 
     public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
     {
-        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
+        var userId = GetUserId();
 
+        var message = messageCreateDTO.ToEntity(userId);
+
+        if (message.ChatType == ChatType.Project)
+        {
+            await SendGroupMessage(message);
+            return;
+        }
+        else
+        {
+            await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
+
+            var messageDTO = new List<MessageDTO> { message.ToDTO() };
+
+            await hubContext
+                .Clients.User(messageCreateDTO.TargetId.ToString())
+                .SendAsync("ReceiveMessages", messageDTO);
+        }
+    }
+
+    public async Task KeyExchangeAsync(EncryptedKeyExchangeCreateDTO encryptedKeyExchangeCreateDTO)
+    {
+        var userId = GetUserId();
+
+        var encryptedKeyExchange = encryptedKeyExchangeCreateDTO.ToEntity(userId);
+
+        await messageStorageService.AddEncryptedKeyExchangeAsync(encryptedKeyExchange);
+
+        var encryptedKeyExchangeDTO = new List<EncryptedKeyExchangeDTO>
+        {
+            encryptedKeyExchange.ToDTO()
+        };
+
+        await hubContext
+            .Clients.User(encryptedKeyExchangeCreateDTO.TargetId.ToString())
+            .SendAsync("ReceiveEncryptedKeysExchange", encryptedKeyExchangeDTO);
+    }
+
+    public async Task GetEncryptedKeyExchangesAsync()
+    {
+        var userId = GetUserId();
+
+        var encryptedKeyExchanges = await messageStorageService.GetEncryptedKeyExchangesAsync(userId);
+
+        var encryptedKeyExchangesDTO = encryptedKeyExchanges.Select(e => e.ToDTO());
+
+        await Clients.Caller.SendAsync("ReceiveEncryptedKeysExchange", encryptedKeyExchangesDTO);
+    }
+
+    public async Task GetMessagesAsync()
+    {
+        var userId = GetUserId();
+
+        var messages = await messageStorageService.GetMessagesAsync(userId);
+
+        var messagesDTO = messages.Select(m => m.ToDTO());
+
+        await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
+    }
+
+    public async Task AknowledgeMessageAsync(IEnumerable<Guid> messageIds)
+    {
+        var userId = GetUserId();
+
+        await messageStorageService.DeleteMessageAsync(messageIds, userId);
+    }
+
+    private int GetUserId()
+    {
+        return int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
+    }
+
+    private async Task SendGroupMessage(Message message)
+    {
         var recipientIds = await messageStorageService.GetChatMemebersAsync(
-            messageCreateDTO.ChatId,
-            messageCreateDTO.ChatType
+            message.TargetId,
+            message.ChatType
         );
 
-        if (recipientIds == null || !recipientIds.Contains(userId))
+        if (recipientIds == null || !recipientIds.Contains(message.SenderId))
         {
             throw new UnauthorizedAccessException();
         }
-
-        var message = messageCreateDTO.ToEntity(userId);
 
         foreach (var recipientId in recipientIds)
         {
@@ -73,23 +146,5 @@ public class ChatHubService : Hub, IChatHubService
                     .SendAsync("ReceiveMessages", messageDTO);
             }
         }
-    }
-
-    public async Task GetMessagesAsync()
-    {
-        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
-
-        var messages = await messageStorageService.GetMessagesAsync(userId);
-
-        var messagesDTO = messages.Select(m => m.ToDTO());
-
-        await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
-    }
-
-    public async Task AknowledgeMessageAsync(IEnumerable<Guid> messageIds)
-    {
-        var userId = int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
-
-        await messageStorageService.DeleteMessageAsync(messageIds, userId);
     }
 }

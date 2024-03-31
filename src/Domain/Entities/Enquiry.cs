@@ -3,6 +3,7 @@ namespace Domain.Entities;
 public class Enquiry
 {
     public int Id { get; set; }
+    public required string EnquiryMessage { get; set; }
     public int EnquirerId { get; set; }
     public User? Enquirer { get; set; }
     public int ProjectManagerId { get; set; }
@@ -10,4 +11,5 @@ public class Enquiry
     public int ProjectRoleId { get; set; }
     public ProjectRole? ProjectRole { get; set; }
     public DateTime CreateAt { get; set; }
+    public bool Shortlisted { get; set; }
 }

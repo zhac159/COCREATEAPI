@@ -98,6 +98,20 @@ public class UserRepository : IUserRepository
         return user;
     }
 
+    public async Task<List<User>> GetUsersProfileAsync(List<int> id)
+    {
+        var users = await context
+            .Users.Where(u => id.Contains(u.UserId))
+            .Include(u => u.PortofolioContents)
+            .ThenInclude(pc => pc.Medias)
+            .Include(u => u.Skills)
+            .Include(u => u.ReviewsGiven)
+            .Include(u => u.ReviewsReceived)
+            .ToListAsync();
+
+        return users;
+    }
+
     public async Task<User?> GetByIdIncludeSkillsAsync(int id)
     {
         var user = await context

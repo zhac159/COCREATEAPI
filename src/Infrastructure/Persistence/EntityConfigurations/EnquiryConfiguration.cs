@@ -14,13 +14,15 @@ public class EnquiryConfiguration : IEntityTypeConfiguration<Enquiry>
         builder.Property(e => e.EnquirerId).IsRequired();
         builder.Property(e => e.ProjectRoleId).IsRequired();
         builder.Property(e => e.CreateAt).IsRequired();
+        builder.Property(e => e.Shortlisted).IsRequired().HasDefaultValue(false);
+        builder.Property(e => e.EnquiryMessage).IsRequired().HasMaxLength(500);
 
         builder
             .HasOne(e => e.Enquirer)
             .WithMany(e => e.Enquiries)
             .HasForeignKey(e => e.EnquirerId)
             .OnDelete(DeleteBehavior.Cascade);
-        
+
         builder
             .HasOne(e => e.ProjectManager)
             .WithMany(e => e.EnquiriesReceived)

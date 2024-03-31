@@ -79,13 +79,19 @@ public static class UserExtensions
             // ReviewsReceived = user.ReviewsReceived,
             Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null,
             Projects = user.Projects != null ? user.Projects.Select(p => p.ToDTO()).ToList() : null,
-            Enquiries = user.Enquiries != null ? user.Enquiries.Select(e => e.ToDTO()).ToList() : null
+            Enquiries =
+                user.Enquiries != null ? user.Enquiries.Select(e => e.ToDTO()).ToList() : null
         };
     }
 
     public static UserInformationDTO ToInformationDTO(this User user)
     {
-        return new UserInformationDTO { UserId = user.UserId, Username = user.Username, PublicKey = user.PublicKey};
+        return new UserInformationDTO
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            PublicKey = user.PublicKey
+        };
     }
 
     public static UserLocationDTO ToLocationDTO(this User user)
@@ -137,6 +143,23 @@ public static class UserExtensions
         return new UserPortofolioDTO
         {
             AboutYou = user.AboutYou,
+            PortofolioContents =
+                user.PortofolioContents != null
+                    ? user.PortofolioContents.Select(pc => pc.ToDTO()).ToList()
+                    : null
+        };
+    }
+
+    public static UserProfileDTO ToUserProfileDTO(this User user)
+    {
+        return new UserProfileDTO
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            AboutYou = user.AboutYou,
+            Rating = user.Rating,
+            TotalReviews = user.TotalReviews,
+            Skills = user.Skills.Select(s => s.ToDTO()).ToList(),
             PortofolioContents =
                 user.PortofolioContents != null
                     ? user.PortofolioContents.Select(pc => pc.ToDTO()).ToList()

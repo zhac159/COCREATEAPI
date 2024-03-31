@@ -14,6 +14,7 @@ public class EnquiryCreateDTO
             EnquirerId = enquirerId,
             ProjectRoleId = ProjectRoleId,
             ProjectManagerId = projectManagerId,
+            EnquiryMessage = EnquiryMessage
         };
     }
 }

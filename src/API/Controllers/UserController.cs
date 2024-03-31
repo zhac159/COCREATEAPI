@@ -81,13 +81,11 @@ public class UserController : COCREATEAPIControllerBase
     }
 
     [HttpPut("portofolio")]
-        public async Task<
-        ActionResult<APIResponse<UserPortofolioDTO>>
-    > UpdatePortofolio(UserPortofolioUpdateDTO userPortofolioUpdateDTO)
+    public async Task<ActionResult<APIResponse<UserPortofolioDTO>>> UpdatePortofolio(
+        UserPortofolioUpdateDTO userPortofolioUpdateDTO
+    )
     {
-        var updatedPortfolio = await userService.UpdatePortofolio(
-            userPortofolioUpdateDTO
-        );
+        var updatedPortfolio = await userService.UpdatePortofolio(userPortofolioUpdateDTO);
 
         return Ok(APIResponseFactory.CreateSuccess(updatedPortfolio));
     }
@@ -100,5 +98,15 @@ public class UserController : COCREATEAPIControllerBase
         var successfull = await userService.UpdatePublicKeyAsync(userPublicKeyUpdateDTO);
 
         return Ok(APIResponseFactory.CreateSuccess(successfull));
+    }
+
+    [HttpPost("profiles")]
+    public async Task<ActionResult<APIResponse<UserProfilesDTO>>> GetProfiles(
+        UserGetProfilesDTO userGetProfilesDTO
+    )
+    {
+        var profiles = await userService.GetUserProfilesAsync(userGetProfilesDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(profiles));
     }
 }

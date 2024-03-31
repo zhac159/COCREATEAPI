@@ -11,33 +11,33 @@ public class EnquiryController : COCREATEAPIControllerBase
 {
     private readonly IEnquiryService enquiryService;
 
-    public EnquiryController(
-        IEnquiryService enquiryService
-    )
+    public EnquiryController(IEnquiryService enquiryService)
     {
         this.enquiryService = enquiryService;
     }
 
     [HttpPost("create")]
     public async Task<ActionResult<APIResponse<EnquiryDTO>>> Create(
-       EnquiryCreateDTO enquiryCreateDTO
+        EnquiryCreateDTO enquiryCreateDTO
     )
     {
-        var enquiry = await enquiryService.CreateAsync(
-            enquiryCreateDTO
-        );
+        var enquiry = await enquiryService.CreateAsync(enquiryCreateDTO);
 
         return Ok(APIResponseFactory.CreateSuccess(enquiry));
     }
 
     [HttpPost("confirm")]
-    public async Task<ActionResult<APIResponse<bool>>> Confirm(
-        EnquiryConfirmDTO enquiryConfirmDTO
-    )
+    public async Task<ActionResult<APIResponse<bool>>> Confirm(EnquiryConfirmDTO enquiryConfirmDTO)
     {
-        var result = await enquiryService.ConfirmAsync(
-            enquiryConfirmDTO
-        );
+        var result = await enquiryService.ConfirmAsync(enquiryConfirmDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(result));
+    }
+
+    [HttpPut("shortlist-enquiry")]
+    public async Task<ActionResult<APIResponse<bool>>> ShortlistEnquiry(int enquiryId)
+    {
+        var result = await enquiryService.ShortlistAsync(enquiryId);
 
         return Ok(APIResponseFactory.CreateSuccess(result));
     }
@@ -45,6 +45,18 @@ public class EnquiryController : COCREATEAPIControllerBase
     [HttpPost("send-message")]
     public ActionResult<APIResponse<MessageDTO>> SendMessage(
         MessageCreateDTO enquiryMessageCreateDTO
+    )
+    {
+        // var message = await enquiryService.SendMessageAsync(
+        //     enquiryMessageCreateDTO
+        // );
+
+        return Ok(APIResponseFactory.CreateSuccess(true));
+    }
+
+    [HttpPost("send-messa2ge")]
+    public ActionResult<APIResponse<EncryptedKeyExchangeDTO>> SendMessage2(
+        EncryptedKeyExchangeCreateDTO encryptedKeyExchangeCreateDTO
     )
     {
         // var message = await enquiryService.SendMessageAsync(

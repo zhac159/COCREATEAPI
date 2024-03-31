@@ -6,7 +6,7 @@ namespace Application.DTOs.MessageDTOs;
 public class MessageCreateDTO
 {
     public required Guid Id { get; set; }
-    public required int ChatId { get; set; }
+    public required int TargetId { get; set; }
     public ChatType ChatType { get; set; }
     public string? Content { get; set; }
     public string? Uri { get; set; }
@@ -20,7 +20,7 @@ public class MessageCreateDTO
         {
             Id = Id,
             SenderId = userId,
-            ChatId = ChatId,
+            TargetId = TargetId,
             ChatType = ChatType,
             Content = Content,
             Uri = Uri,

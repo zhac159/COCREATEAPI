@@ -8,4 +8,6 @@ public class EnquiryDTO
     public required int ProjectRoleId { get; set; }
     public UserInformationDTO? Enquirer { get; set; }
     public UserInformationDTO? ProjectManager { get; set; }
+    public required string EnquiryMessage { get; set; }
+    public required bool Shortlisted { get; set; }
 }

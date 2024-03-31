@@ -14,4 +14,5 @@ public interface IUserRepository
     Task<int?> GetCoinByIdAsync(int id);
     Task<int?> UpdateCoinByIdAsync(int id, int coin);
     Task<User> UpdateAsync(User user);
+    Task<List<User>> GetUsersProfileAsync(List<int> id);
 }

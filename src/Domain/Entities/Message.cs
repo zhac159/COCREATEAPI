@@ -12,6 +12,6 @@ namespace Domain.Entities
         public required string Nonce { get; set; }
         public DateTime Date { get; set; }
         public ChatType ChatType { get; set; }
-        public int ChatId { get; set; }
+        public int TargetId { get; set; }
     }
 }
