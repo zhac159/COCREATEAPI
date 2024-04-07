@@ -1,3 +1,4 @@
+using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
@@ -80,7 +81,10 @@ public static class UserExtensions
             Assets = user.Assets != null ? user.Assets.Select(a => a.ToDTO()).ToList() : null,
             Projects = user.Projects != null ? user.Projects.Select(p => p.ToDTO()).ToList() : null,
             Enquiries =
-                user.Enquiries != null ? user.Enquiries.Select(e => e.ToDTO()).ToList() : null
+                user.Enquiries != null ? user.Enquiries.Select(e => e.ToDTO()).ToList() : null,
+            AssignedProjects = user.ProjectRoles != null
+                ? user.ProjectRoles.Select(pr => pr.Project!.ToDTO()).ToList()
+                : new List<ProjectDTO>()
         };
     }
 

@@ -2,6 +2,7 @@ using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Repositories;
 
@@ -33,6 +34,16 @@ public class EnquiryRepository : IEnquiryRepository
     public async Task<Enquiry?> GetByIdAsync(int id)
     {
         return await context.Enquiries.FindAsync(id);
+    }
+
+    public async Task<Enquiry?> GetByIdIncludeAllAsync(int id)
+    {
+        var enquiry = await context
+            .Enquiries.Include(enquiry => enquiry.Enquirer)
+            .Include(enquiry => enquiry.ProjectManager)
+            .FirstOrDefaultAsync(asset => asset.Id == id);
+
+        return enquiry;
     }
 
     public async Task<Enquiry> UpdateAsync(Enquiry enquiry)

@@ -2,7 +2,7 @@ namespace Domain.Enums;
 
 public enum ChatType
 {
-    Private,
+    Enquiry,
     Project,
     AssetEnquiry
 }

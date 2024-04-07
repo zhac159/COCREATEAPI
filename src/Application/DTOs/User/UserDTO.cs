@@ -2,6 +2,7 @@ using Application.DTOs.AssetDTOs;
 using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.PortofolioContentDTOs;
 using Application.DTOs.ProjectDTOs;
+using Application.DTOs.ProjectRoleDTOs;
 using Application.DTOs.SkillDTOs;
 
 namespace Application.DTOs.UserDtos;
@@ -23,6 +24,8 @@ public class UserDTO
     public string? PublicKey { get; set; }
     public List<SkillDTO> Skills { get; set; } = new List<SkillDTO>();
     public List<PortofolioContentDTO>? PortofolioContents { get; set; }
+    public List<ProjectDTO> AssignedProjects { get; set; } = new List<ProjectDTO>();
+
     // public List<Review>? ReviewsGiven { get; set; }
     // public List<Review>? ReviewsReceived { get; set; }
     public List<AssetDTO>? Assets { get; set; }

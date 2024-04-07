@@ -37,9 +37,22 @@ public class UserRepository : IUserRepository
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
             .Include(u => u.Enquiries)
             .Include(u => u.Enquiries)
             .ThenInclude(e => e.ProjectManager)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.Medias)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.ProjectManager)
             .FirstOrDefaultAsync();
 
         return user;
@@ -93,6 +106,13 @@ public class UserRepository : IUserRepository
             .Include(u => u.Enquiries)
             .Include(u => u.Enquiries)
             .ThenInclude(e => e.ProjectManager)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.Medias)
             .FirstOrDefaultAsync();
 
         return user;

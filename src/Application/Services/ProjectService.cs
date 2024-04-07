@@ -1,6 +1,7 @@
 using Application.DTOs.ProjectDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -10,13 +11,14 @@ public class ProjectService : IProjectService
 {
     private readonly IProjectRepository projectRepository;
     private readonly ICurrentUserContextService currentUserContextService;
-    private readonly IStorageService storageService;
+    
+    private readonly IMessageStorageService messageStorageService;
 
-    public ProjectService(IProjectRepository projectRepository, ICurrentUserContextService currentUserContextService, IStorageService storageService)
+    public ProjectService(IProjectRepository projectRepository, ICurrentUserContextService currentUserContextService, IMessageStorageService messageStorageService)
     {
         this.projectRepository = projectRepository;
         this.currentUserContextService = currentUserContextService;
-        this.storageService = storageService;
+        this.messageStorageService = messageStorageService;
     }
 
     public async Task<ProjectDTO> CreateAsync(
@@ -26,6 +28,8 @@ public class ProjectService : IProjectService
         var project = projectCreateDTO.ToEntity(currentUserContextService.GetUserId());
 
         var createdProject = await projectRepository.CreateAsync(project);
+
+        await messageStorageService.AddMemberToGroupChatAsync(createdProject.Id, ChatType.Project, currentUserContextService.GetUserId());
 
         return createdProject.ToDTO();
     }

@@ -17,11 +17,10 @@ public class RedisMessageStorage : IMessageStorageService
         database = redisService.GetDatabase();
     }
 
-    public async Task AddChatAsync(int chatId, ChatType chatType, IEnumerable<int> userIds)
+    public async Task AddMemberToGroupChatAsync(int chatId, ChatType chatType, int userId)
     {
         var key = $"chat:{chatType}-{chatId}";
-        var values = userIds.Select(userId => (RedisValue)userId).ToArray();
-        await database.ListRightPushAsync(key, values);
+        await database.ListRightPushAsync(key, userId);
     }
 
     public async Task<IEnumerable<int>?> GetChatMemebersAsync(int chatId, ChatType chatType)
@@ -59,6 +58,15 @@ public class RedisMessageStorage : IMessageStorageService
                     JsonConvert.DeserializeObject<EncryptedKeyExchange>(encryptedKeyExchange.Value)
             )
             .ToArray();
+    }
+
+    public async Task DeleteEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds, int userId)
+    {
+        var key = $"user:{userId}:encryptedKeyExchanges";
+        var encryptedKeyExchangeIdsArray = encryptedKeyExchangeIds
+            .Select(encryptedKeyExchangeId => (RedisValue)encryptedKeyExchangeId.ToString())
+            .ToArray();
+        await database.HashDeleteAsync(key, encryptedKeyExchangeIdsArray);
     }
 
     public async Task DeleteMessageAsync(IEnumerable<Guid> messageIds, int userId)

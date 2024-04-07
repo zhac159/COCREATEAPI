@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.MessageDTOs;
 using Application.Extensions;
 using Application.Interfaces;
@@ -46,29 +47,6 @@ public class ChatHubService : Hub, IChatHubService
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
-    {
-        var userId = GetUserId();
-
-        var message = messageCreateDTO.ToEntity(userId);
-
-        if (message.ChatType == ChatType.Project)
-        {
-            await SendGroupMessage(message);
-            return;
-        }
-        else
-        {
-            await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
-
-            var messageDTO = new List<MessageDTO> { message.ToDTO() };
-
-            await hubContext
-                .Clients.User(messageCreateDTO.TargetId.ToString())
-                .SendAsync("ReceiveMessages", messageDTO);
-        }
-    }
-
     public async Task KeyExchangeAsync(EncryptedKeyExchangeCreateDTO encryptedKeyExchangeCreateDTO)
     {
         var userId = GetUserId();
@@ -91,11 +69,44 @@ public class ChatHubService : Hub, IChatHubService
     {
         var userId = GetUserId();
 
-        var encryptedKeyExchanges = await messageStorageService.GetEncryptedKeyExchangesAsync(userId);
+        var encryptedKeyExchanges = await messageStorageService.GetEncryptedKeyExchangesAsync(
+            userId
+        );
 
         var encryptedKeyExchangesDTO = encryptedKeyExchanges.Select(e => e.ToDTO());
 
         await Clients.Caller.SendAsync("ReceiveEncryptedKeysExchange", encryptedKeyExchangesDTO);
+    }
+
+    public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
+    {
+        var userId = GetUserId();
+
+        var message = messageCreateDTO.ToEntity(userId);
+
+        if (message.ChatType == ChatType.Project)
+        {
+            await SendGroupMessage(message);
+            return;
+        }
+        else
+            await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
+
+        var messageDTO = new List<MessageDTO> { message.ToDTO() };
+
+        await hubContext
+            .Clients.User(messageCreateDTO.TargetId.ToString())
+            .SendAsync("ReceiveMessages", messageDTO);
+    }
+
+    public async Task AknowledgeEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds)
+    {
+        var userId = GetUserId();
+
+        await messageStorageService.DeleteEncryptedKeyExchangeAsync(
+            encryptedKeyExchangeIds,
+            userId
+        );
     }
 
     public async Task GetMessagesAsync()
@@ -114,11 +125,6 @@ public class ChatHubService : Hub, IChatHubService
         var userId = GetUserId();
 
         await messageStorageService.DeleteMessageAsync(messageIds, userId);
-    }
-
-    private int GetUserId()
-    {
-        return int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
     }
 
     private async Task SendGroupMessage(Message message)
@@ -146,5 +152,24 @@ public class ChatHubService : Hub, IChatHubService
                     .SendAsync("ReceiveMessages", messageDTO);
             }
         }
+    }
+
+    public async Task SendNewEnqruiry(EnquiryDTO enquiryDTO)
+    {
+        await hubContext
+            .Clients.User(enquiryDTO.ProjectManager!.UserId.ToString())
+            .SendAsync("ReceiveNewEnquiry", enquiryDTO);
+    }
+
+    public async Task SendNewShortlist(Enquiry enquiry)
+    {
+        await hubContext
+            .Clients.User(enquiry.EnquirerId.ToString())
+            .SendAsync("ReceiveNewShortlist", enquiry.Id);
+    }
+
+    private int GetUserId()
+    {
+        return int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
     }
 }

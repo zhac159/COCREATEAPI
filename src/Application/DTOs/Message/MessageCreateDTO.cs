@@ -12,7 +12,6 @@ public class MessageCreateDTO
     public string? Uri { get; set; }
     public MediaType? MediaType { get; set; }
     public required DateTime Date { get; set; }
-    public required string Nonce { get; set; }
 
     public Message ToEntity(int userId)
     {
@@ -25,7 +24,6 @@ public class MessageCreateDTO
             Content = Content,
             Uri = Uri,
             MediaType = MediaType,
-            Nonce = Nonce,
             Date = Date
         };
     }

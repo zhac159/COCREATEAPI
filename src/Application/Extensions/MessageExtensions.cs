@@ -16,7 +16,6 @@ public static class MessageExtensions
             Content = message.Content,
             Uri = message.Uri,
             MediaType = message.MediaType,
-            Nonce = message.Nonce,
             Date = message.Date
         };
     }
@@ -25,11 +24,13 @@ public static class MessageExtensions
     {
         return new EncryptedKeyExchangeDTO
         {
+            Id = encryptedKeyExchange.Id,
             Nonce = encryptedKeyExchange.Nonce,
             PublicKey = encryptedKeyExchange.PublicKey,
             EncryptedSymmetricKey = encryptedKeyExchange.EncryptedSymmetricKey,
             TargetId = encryptedKeyExchange.TargetId,
             SenderId = encryptedKeyExchange.SenderId,
+            GroupChatId = encryptedKeyExchange.GroupChatId,
             ChatType = encryptedKeyExchange.ChatType
         };
     }

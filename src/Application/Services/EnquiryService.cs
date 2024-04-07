@@ -1,6 +1,7 @@
 using Application.DTOs.EnquiryDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Enums;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -12,18 +13,24 @@ public class EnquiryService : IEnquiryService
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IUserRepository userRepository;
     private readonly ICurrentUserContextService currentUserContextService;
+    private readonly IMessageStorageService messageStorageService;
+    private readonly IChatHubService chatHubService;
 
     public EnquiryService(
         IEnquiryRepository enquiryRepository,
         IProjectRoleRepository projectRoleRepository,
         IUserRepository userRepository,
-        ICurrentUserContextService currentUserContextService
+        ICurrentUserContextService currentUserContextService,
+        IMessageStorageService messageStorageService,
+        IChatHubService chatHubService
     )
     {
         this.enquiryRepository = enquiryRepository;
         this.projectRoleRepository = projectRoleRepository;
         this.userRepository = userRepository;
         this.currentUserContextService = currentUserContextService;
+        this.messageStorageService = messageStorageService;
+        this.chatHubService = chatHubService;
     }
 
     public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
@@ -51,15 +58,18 @@ public class EnquiryService : IEnquiryService
 
         var enquiry = enquiryDTO.ToEntity(user.UserId, projectRole.Project!.ProjectManagerId);
 
-        var createdEnquiry = await enquiryRepository.CreateAsync(enquiry);
+        await enquiryRepository.CreateAsync(enquiry);
 
+        var createdEnquiry = await enquiryRepository.GetByIdIncludeAllAsync(enquiry.Id);
+
+        if (createdEnquiry is null)
+        {
+            throw new EntityNotFoundException();
+        }
+        
         var createdEnquiryDTO = createdEnquiry.ToDTO();
 
-        // await messageStorageService.AddChatAsync(
-        //     createdEnquiryDTO.Id,
-        //     ChatType.Private,
-        //     new List<int> {createdEnquiry.EnquirerId, createdEnquiry.ProjectManagerId}
-        // );
+        await chatHubService.SendNewEnqruiry(createdEnquiryDTO);
 
         return createdEnquiryDTO;
     }
@@ -81,6 +91,8 @@ public class EnquiryService : IEnquiryService
         enquiry.Shortlisted = true;
 
         await enquiryRepository.UpdateAsync(enquiry);
+
+        await chatHubService.SendNewShortlist(enquiry);
 
         return true;
     }
@@ -121,6 +133,14 @@ public class EnquiryService : IEnquiryService
         projectRole.AssigneeId = enquiry.EnquirerId;
 
         await projectRoleRepository.UpdateAsync(projectRole);
+
+        await enquiryRepository.DeleteAsync(enquiry);
+
+        await messageStorageService.AddMemberToGroupChatAsync(
+            projectRole.Project.Id,
+            ChatType.Project,
+            enquiry.EnquirerId
+        );
 
         return true;
     }
