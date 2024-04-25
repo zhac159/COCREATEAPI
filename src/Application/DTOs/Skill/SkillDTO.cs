@@ -9,4 +9,5 @@ public class SkillDTO
     public required SkillGroupType SkillGroupType { get; set; }
     public string? Description { get; set; }
     public int Level { get; set; }
+    public required List<string> Keywords { get; set; }
 }

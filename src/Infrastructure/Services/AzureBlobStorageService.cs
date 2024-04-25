@@ -101,10 +101,10 @@ public class AzureBlobStorageService : IStorageService
             Resource = "b",
             ContentType = contentType,
             StartsOn = DateTimeOffset.UtcNow,
-            ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+            ExpiresOn = DateTimeOffset.UtcNow.AddDays(30),
         };
 
-        sasBuilder.SetPermissions(BlobSasPermissions.Write);
+        sasBuilder.SetPermissions(BlobSasPermissions.Write | BlobSasPermissions.Read);
 
         string sasToken = sasBuilder
             .ToSasQueryParameters(

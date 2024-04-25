@@ -11,4 +11,5 @@ public class Skill
     public int Level { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
+    public required List<string> Keywords { get; set; } = new List<string>();
 }

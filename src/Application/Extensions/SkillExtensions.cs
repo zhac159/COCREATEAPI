@@ -11,6 +11,7 @@ public static class SkillExtensions
         skill.SkillGroupType = skillUpdateDTO.SkillGroupType;
         skill.Description = skillUpdateDTO.Description;
         skill.Level = skillUpdateDTO.Level;
+        skill.Keywords = skillUpdateDTO.Keywords;
     }
 
     public static SkillDTO ToDTO(this Skill skill)
@@ -21,7 +22,8 @@ public static class SkillExtensions
             SkillType = skill.SkillType,
             SkillGroupType = skill.SkillGroupType,
             Description = skill.Description,
-            Level = skill.Level
+            Level = skill.Level,
+            Keywords = skill.Keywords
         };
     }
 }
