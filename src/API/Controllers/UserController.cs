@@ -100,6 +100,7 @@ public class UserController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(successfull));
     }
 
+    [AllowAnonymous]
     [HttpPost("profiles")]
     public async Task<ActionResult<APIResponse<UserProfilesDTO>>> GetProfiles(
         UserGetProfilesDTO userGetProfilesDTO

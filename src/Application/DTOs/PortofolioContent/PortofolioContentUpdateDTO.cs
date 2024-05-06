@@ -19,7 +19,7 @@ public class PortofolioContentUpdateDTO
             Id = Id,
             Description = Description ?? string.Empty,
             SkillType = SkillType ?? default,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             Order = Order ?? 0,
             Medias =
                 Medias

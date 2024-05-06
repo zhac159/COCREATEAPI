@@ -46,4 +46,16 @@ public static class AssetExtensions
                 .ToList();
         }
     }
+
+    public static AssetInformationDTO ToInformationDTO(this Asset asset)
+    {
+        return new AssetInformationDTO
+        {
+            Id = asset.Id,
+            Name = asset.Name,
+            Description = asset.Description,
+            AssetType = asset.AssetType,
+            Owner = asset.User!.ToInformationDTO()
+        };
+    }
 }

@@ -10,10 +10,7 @@ public class AssetController : COCREATEAPIControllerBase
 {
     private readonly IAssetService assetService;
 
-
-    public AssetController(
-        IAssetService assetService
-    )
+    public AssetController(IAssetService assetService)
     {
         this.assetService = assetService;
     }
@@ -40,5 +37,15 @@ public class AssetController : COCREATEAPIControllerBase
         var result = await assetService.DeleteAsync(id);
 
         return Ok(APIResponseFactory.CreateSuccess(result));
+    }
+
+    [HttpPost("search")]
+    public async Task<ActionResult<APIResponse<AssetSearchResultDTO>>> FindFirstMatchingAssets(
+        AssetSearchDTO assetSearchDTO
+    )
+    {
+        var assets = await assetService.FindFirstMatchingAssetsAsync(assetSearchDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(assets));
     }
 }

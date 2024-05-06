@@ -35,7 +35,7 @@ public class EnquiryService : IEnquiryService
 
     public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
     {
-        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
             enquiryDTO.ProjectRoleId
         );
 
@@ -69,7 +69,7 @@ public class EnquiryService : IEnquiryService
         
         var createdEnquiryDTO = createdEnquiry.ToDTO();
 
-        await chatHubService.SendNewEnqruiry(createdEnquiryDTO);
+        await chatHubService.SendNewEnquiry(createdEnquiryDTO);
 
         return createdEnquiryDTO;
     }
@@ -106,7 +106,7 @@ public class EnquiryService : IEnquiryService
             throw new EntityNotFoundException();
         }
 
-        var projectRole = await projectRoleRepository.GetByIdIncludeAllProjectAsync(
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
             enquiry.ProjectRoleId
         );
 

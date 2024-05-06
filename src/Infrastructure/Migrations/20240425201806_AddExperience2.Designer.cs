@@ -14,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    [Migration("20240327230929_StupidMigration2")]
-    partial class StupidMigration2
+    [Migration("20240425201806_AddExperience2")]
+    partial class AddExperience2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,11 +105,21 @@ namespace Infrastructure.Migrations
                     b.Property<int>("EnquirerId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("EnquiryMessage")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<int>("ProjectManagerId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ProjectRoleId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("Shortlisted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.HasKey("Id");
 
@@ -121,6 +131,70 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Enquiries", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Experience", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ExperienceType")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ProjectId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ProjectRoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("ProjectRoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Experiences", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.ExperienceMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ExperienceId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MediaType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Uri")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExperienceId");
+
+                    b.HasIndex("MediaType");
+
+                    b.ToTable("ExperienceMedias", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
@@ -190,6 +264,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Completed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -404,6 +483,12 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<List<string>>("Keywords")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text[]")
+                        .HasDefaultValue(new List<string>());
+
                     b.Property<int>("Level")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -544,6 +629,42 @@ namespace Infrastructure.Migrations
                     b.Navigation("ProjectRole");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Experience", b =>
+                {
+                    b.HasOne("Domain.Entities.Project", "Project")
+                        .WithMany("Experiences")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.Entities.ProjectRole", "ProjectRole")
+                        .WithMany("Experiences")
+                        .HasForeignKey("ProjectRoleId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("Domain.Entities.User", "User")
+                        .WithMany("Experiences")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+
+                    b.Navigation("ProjectRole");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ExperienceMedia", b =>
+                {
+                    b.HasOne("Domain.Entities.Experience", "Experience")
+                        .WithMany("Medias")
+                        .HasForeignKey("ExperienceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Experience");
+                });
+
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
                 {
                     b.HasOne("Domain.Entities.User", "User")
@@ -670,6 +791,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("Medias");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Experience", b =>
+                {
+                    b.Navigation("Medias");
+                });
+
             modelBuilder.Entity("Domain.Entities.PortofolioContent", b =>
                 {
                     b.Navigation("Medias");
@@ -677,6 +803,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Project", b =>
                 {
+                    b.Navigation("Experiences");
+
                     b.Navigation("Medias");
 
                     b.Navigation("ProjectRoles");
@@ -685,6 +813,8 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.ProjectRole", b =>
                 {
                     b.Navigation("Enquiries");
+
+                    b.Navigation("Experiences");
 
                     b.Navigation("Medias");
 
@@ -698,6 +828,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("Enquiries");
 
                     b.Navigation("EnquiriesReceived");
+
+                    b.Navigation("Experiences");
 
                     b.Navigation("PortofolioContents");
 

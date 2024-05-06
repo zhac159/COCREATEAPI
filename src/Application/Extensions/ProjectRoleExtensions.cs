@@ -23,6 +23,7 @@ public static class ProjectRoleeExtensions
             Latitude = projectRole.Location.Y,
             Address = projectRole.Address,
             Keywords = projectRole.Keywords,
+            Completed = projectRole.Completed,
             Remote = projectRole.Remote,
             Enquiries = projectRole.Enquiries.Select(enquiry => enquiry.ToDTO()).ToList(),
             Assignee = projectRole.Assignee?.ToInformationDTO(),

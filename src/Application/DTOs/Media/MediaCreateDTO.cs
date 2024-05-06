@@ -47,4 +47,14 @@ public class MediaCreateDTO
             Order = order
         };
     }
+
+    public ExperienceMedia ToExperienceMediaEntity( int order)
+    {
+        return new ExperienceMedia
+        {
+            Uri = Uri,
+            MediaType = MediaType,
+            Order = order
+        };
+    }
 }

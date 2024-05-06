@@ -40,4 +40,14 @@ public class ProjectRoleController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(projectRole));
     }
+
+    [HttpPost("complete")]
+    public async Task<ActionResult<APIResponse<bool>>> Complete(
+        ProjectRoleCompleteDTO projectRoleCompleteDTO
+    )
+    {
+        var success = await projectRoleService.CompleteAsync(projectRoleCompleteDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(success));
+    }
 }

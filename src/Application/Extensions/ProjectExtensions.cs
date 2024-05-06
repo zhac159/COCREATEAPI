@@ -11,10 +11,22 @@ public static class ProjectExtensions
         {
             Id = project.Id,
             Name = project.Name,
+            Completed = project.Completed,
             Description = project.Description,
-            ProjectManager =  project.ProjectManager != null ? project.ProjectManager.ToInformationDTO(): null,
+            ProjectManager =  project.ProjectManager?.ToInformationDTO(),
             ProjectRoles = project.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
-            Medias = project.Medias.OrderBy(media => media.Order).Select(media => media.ToDTO()).ToList()
+            Medias = project.Medias.OrderBy(media => media.Order).Select(media => media.ToDTO()).ToList(),
+            AssetOffers = project.AssetOffers.Select(assetOffer => assetOffer.ToDTO()).ToList(),
+        };
+    }
+
+    public static ProjectInformationDTO ToInformationDTO(this Project project)
+    {
+        return new ProjectInformationDTO
+        {
+            Id = project.Id,
+            Name = project.Name,
+            ProjectManager = project.ProjectManager?.ToInformationDTO(),
         };
     }
 }

@@ -1,4 +1,3 @@
-
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,9 +5,8 @@ namespace Infrastructure.Persistence
 {
     public class CoCreateDbContext : DbContext
     {
-        public CoCreateDbContext(DbContextOptions<CoCreateDbContext> options) : base(options)
-        {
-        }
+        public CoCreateDbContext(DbContextOptions<CoCreateDbContext> options)
+            : base(options) { }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Skill> Skills { get; set; }
@@ -19,11 +17,12 @@ namespace Infrastructure.Persistence
         public DbSet<ProjectRole> ProjectRoles { get; set; }
         public DbSet<SeenMatches> SeenMatches { get; set; }
         public DbSet<Enquiry> Enquiries { get; set; }
-        
+        public DbSet<Experience> Experiences { get; set; }
+        public DbSet<AssetOffer> AssetOffers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoCreateDbContext).Assembly);
         }
     }
 }
-

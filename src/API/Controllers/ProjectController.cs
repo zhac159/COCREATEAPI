@@ -31,6 +31,16 @@ public class ProjectController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
 
+    [HttpPost("complete")]
+    public async Task<ActionResult<APIResponse<bool>>> Complete(
+        ProjectCompleteDTO projectCompleteDTO
+    )
+    {
+        var success = await projectService.CompleteAsync(projectCompleteDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(success));
+    }
+
     [AllowAnonymous]
     [HttpGet("{projectId:int}")]
     public async Task<ActionResult<APIResponse<ProjectDTO>>> GetById(int projectId)

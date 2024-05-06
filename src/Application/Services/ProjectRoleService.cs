@@ -1,6 +1,7 @@
 using Application.DTOs.ProjectRoleDTOs;
 using Application.Extensions;
 using Application.Interfaces;
+using Domain.Entities;
 using Domain.Exceptions;
 using Domain.Interfaces;
 
@@ -10,35 +11,36 @@ public class ProjectRoleService : IProjectRoleService
 {
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IProjectRepository projectRepository;
-    private readonly IUserRepository userRepository;
+    private readonly IUserService userService;
     private readonly ICurrentUserContextService currentUserContextService;
     private readonly IStorageService storageService;
+    private readonly IExperienceRepository experienceRepository;
+    private readonly IReviewService reviewService;
 
     public ProjectRoleService(
         IProjectRoleRepository projectRoleRepository,
         IProjectRepository projectRepository,
-        IUserRepository userRepository,
         ICurrentUserContextService currentUserContextService,
-        IStorageService storageService
+        IStorageService storageService,
+        IExperienceRepository experienceRepository,
+        IReviewService reviewService,
+        IUserService userService
     )
     {
         this.projectRoleRepository = projectRoleRepository;
         this.projectRepository = projectRepository;
-        this.userRepository = userRepository;
         this.currentUserContextService = currentUserContextService;
         this.storageService = storageService;
+        this.experienceRepository = experienceRepository;
+        this.reviewService = reviewService;
+        this.userService = userService;
     }
 
     public async Task<ProjectRoleDTO> CreateAsync(
         ProjectRoleCreateDTO projectRoleCreateDTO
     )
     {
-        var coins = await userRepository.GetCoinByIdAsync(currentUserContextService.GetUserId());
 
-        if (coins < projectRoleCreateDTO.Cost || coins is null)
-        {
-            throw new InsufficientFundsException();
-        }
 
         var project = await projectRepository.GetByIdAsync(
             projectRoleCreateDTO.ProjectId
@@ -56,12 +58,9 @@ public class ProjectRoleService : IProjectRoleService
 
         var projectRole = projectRoleCreateDTO.ToEntity();
 
-        var createdProjectRole = await projectRoleRepository.CreateAsync(projectRole);
+        await userService.AdjustUserCoinsAsync(-projectRole.Cost);
 
-        await userRepository.UpdateCoinByIdAsync(
-            currentUserContextService.GetUserId(),
-            coins.Value - projectRoleCreateDTO.Cost
-        );
+        var createdProjectRole = await projectRoleRepository.CreateAsync(projectRole);
 
         return createdProjectRole.ToDTO();
     }
@@ -98,5 +97,61 @@ public class ProjectRoleService : IProjectRoleService
         await projectRoleRepository.UpdateAsync(projectRole);
 
         return projectRole.ToDTO();
+    }
+
+    public async Task<bool> CompleteAsync(
+        ProjectRoleCompleteDTO projectRoleCompleteDTO
+    )
+    {
+        var userId =  currentUserContextService.GetUserId(); 
+
+        var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
+            projectRoleCompleteDTO.Id
+        );
+
+        if (projectRole is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (projectRole.AssigneeId != userId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        if(projectRole.Completed)
+        {
+            throw new ProjectRoleAlreadyCompletedException();
+        }
+
+        if(!projectRole.Project!.Completed)
+        {
+            throw new ProjectNotCompletedExeption();
+        }
+
+        projectRole.Completed = true;
+
+        var experience = projectRoleCompleteDTO.ToExperienceEntity(userId);
+    
+        var reviews = projectRoleCompleteDTO
+            .Reviews.Select(review => review.ToEntity(userId))
+            .ToList();
+
+        ValidateAndCleanReviews(projectRole, reviews);
+
+        await reviewService.CreateRangeFromEntitiesAsync(reviews);
+        await experienceRepository.CreateAsync(experience);
+        await projectRoleRepository.UpdateAsync(projectRole);
+        await userService.AdjustUserCoinsAsync(projectRole.Cost);
+
+        return true;
+    }
+
+    private static void ValidateAndCleanReviews(ProjectRole projectRole, List<Review> reviews)
+    {
+        if(!reviews.Any(review => review.ReviewedUserId == projectRole.Project!.ProjectManagerId))
+        {
+            throw new MissingReviewException();
+        }
     }
 }

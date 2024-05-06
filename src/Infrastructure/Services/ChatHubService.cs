@@ -89,8 +89,8 @@ public class ChatHubService : Hub, IChatHubService
             await SendGroupMessage(message);
             return;
         }
-        else
-            await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
+        
+        await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
 
         var messageDTO = new List<MessageDTO> { message.ToDTO() };
 
@@ -154,7 +154,7 @@ public class ChatHubService : Hub, IChatHubService
         }
     }
 
-    public async Task SendNewEnqruiry(EnquiryDTO enquiryDTO)
+    public async Task SendNewEnquiry(EnquiryDTO enquiryDTO)
     {
         await hubContext
             .Clients.User(enquiryDTO.ProjectManager!.UserId.ToString())
@@ -166,6 +166,21 @@ public class ChatHubService : Hub, IChatHubService
         await hubContext
             .Clients.User(enquiry.EnquirerId.ToString())
             .SendAsync("ReceiveNewShortlist", enquiry.Id);
+    }
+
+    public async Task SendCompleteProject(Project project)
+    {
+        var recipientIds = project
+            .ProjectRoles.Where(pr => pr.AssigneeId != null)
+            .Select(pr => pr.AssigneeId!.Value)
+            .ToList();
+
+        foreach (var recipientId in recipientIds)
+        {
+            await hubContext
+                .Clients.User(recipientId.ToString())
+                .SendAsync("ReceiveCompleteProject", project.Id);
+        }
     }
 
     private int GetUserId()

@@ -168,14 +168,11 @@ public class UserService : IUserService
             getMatchingProjectRolesAsyncQuery
         );
         var matchingProjectDTOs = matchingProjects
-            .Select(
-                mp =>
-                    new ProjectWithMatchingRoleDTO
-                    {
-                        ProjectRoleId = mp.Item1,
-                        Project = mp.Item2.ToDTO(),
-                    }
-            )
+            .Select(mp => new ProjectWithMatchingRoleDTO
+            {
+                ProjectRoleId = mp.Item1,
+                Project = mp.Item2.ToDTO(),
+            })
             .ToList();
 
         var result = new ProjectWithMatchingRolesListDTO
@@ -231,5 +228,26 @@ public class UserService : IUserService
         var userProfiles = users.Select(u => u.ToUserProfileDTO()).ToList();
 
         return new UserProfilesDTO { UserProfiles = userProfiles };
+    }
+
+    public async Task<bool> AdjustUserCoinsAsync(int coins)
+    {
+        var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.Coins += coins;
+
+        if(user.Coins < 0)
+        {
+            throw new InsufficientFundsException();
+        }
+
+        await userRepository.UpdateAsync(user);
+
+        return true;
     }
 }

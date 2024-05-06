@@ -7,6 +7,7 @@ namespace Application.Interfaces;
 public interface IChatHubService
 {
     Task SendMessageAsync(MessageCreateDTO message);
-    Task SendNewEnqruiry(EnquiryDTO enquiryDTO);
-    Task SendNewShortlist(Enquiry enquiryDTO);
+    Task SendNewEnquiry(EnquiryDTO enquiryDTO);
+    Task SendNewShortlist(Enquiry enquiry);
+    Task SendCompleteProject(Project project);
 }

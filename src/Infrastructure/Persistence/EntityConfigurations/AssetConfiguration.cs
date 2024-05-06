@@ -15,6 +15,7 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
         builder.Property(e => e.Description).HasMaxLength(500).IsRequired();
         builder.Property(e => e.AssetType).IsRequired();
         builder.Property(e => e.UserId).IsRequired();
+        builder.Property(e => e.CreatedAt).IsRequired();
 
         builder.Property(e => e.AssetType);
 
@@ -23,8 +24,8 @@ public class AssetConfiguration : IEntityTypeConfiguration<Asset>
             .WithMany(e => e.Assets)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
-        ;
 
-        builder.HasIndex(e => new { e.AssetType });
+        builder.HasIndex(e => e.AssetType);
+        builder.HasIndex(e => e.CreatedAt);
     }
 }

@@ -11,4 +11,6 @@ public class Asset
     public int UserId { get; set; }
     public User? User { get; set; }
     public List<AssetMedia> Medias { get; set; } = new List<AssetMedia>();
+    public List<AssetOffer> AssetOffers { get; set; } = new List<AssetOffer>();
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

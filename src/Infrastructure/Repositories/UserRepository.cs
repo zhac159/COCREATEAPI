@@ -17,7 +17,8 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByUsernameAsync(string name)
     {
         var user = await context
-            .Users.Where(u => u.Username == name)
+            .Users.AsSplitQuery()
+            .Where(u => u.Username == name)
             .Include(u => u.PortofolioContents)
             .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
@@ -25,6 +26,10 @@ public class UserRepository : IUserRepository
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
             .ThenInclude(a => a.Medias)
+            .Include(u => u.Assets)
+            .ThenInclude(a => a.AssetOffers)
+            .ThenInclude(ao => ao.Project)
+            .ThenInclude(p => p!.ProjectManager)
             .Include(u => u.Projects)
             .ThenInclude(p => p.Medias)
             .Include(u => u.Projects)
@@ -34,6 +39,10 @@ public class UserRepository : IUserRepository
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
             .ThenInclude(e => e.Enquirer)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.AssetOffers)
+            .ThenInclude(ao => ao.Asset)
+            .ThenInclude(ao => ao!.User)
             .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
@@ -53,7 +62,13 @@ public class UserRepository : IUserRepository
             .Include(u => u.ProjectRoles)
             .ThenInclude(pr => pr.Project!)
             .ThenInclude(p => p.ProjectManager)
+            .Include(u => u.Experiences)
+            .ThenInclude(e => e.Medias)
+            .Include(u => u.ReviewsReceived)
+            .ThenInclude(r => r.ReviewerUser)
             .FirstOrDefaultAsync();
+
+        FilterCompletedProjects(user);
 
         return user;
     }
@@ -83,14 +98,19 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetByIdIncludeAllPropertiesAsync(int id)
     {
         var user = await context
-            .Users.Where(u => u.UserId == id)
-            .Include(u => u.PortofolioContents)
+            .Users.AsSplitQuery()
+            .Where(u => u.UserId == id)
+           .Include(u => u.PortofolioContents)
             .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
             .Include(u => u.Assets)
             .ThenInclude(a => a.Medias)
+            .Include(u => u.Assets)
+            .ThenInclude(a => a.AssetOffers)
+            .ThenInclude(ao => ao.Project)
+            .ThenInclude(p => p!.ProjectManager)
             .Include(u => u.Projects)
             .ThenInclude(p => p.Medias)
             .Include(u => u.Projects)
@@ -101,8 +121,15 @@ public class UserRepository : IUserRepository
             .ThenInclude(pr => pr.Enquiries)
             .ThenInclude(e => e.Enquirer)
             .Include(u => u.Projects)
+            .ThenInclude(p => p.AssetOffers)
+            .ThenInclude(ao => ao.Asset)
+            .ThenInclude(ao => ao!.User)
+            .Include(u => u.Projects)
             .ThenInclude(p => p.ProjectRoles)
             .ThenInclude(pr => pr.Enquiries)
+            .Include(u => u.Projects)
+            .ThenInclude(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
             .Include(u => u.Enquiries)
             .Include(u => u.Enquiries)
             .ThenInclude(e => e.ProjectManager)
@@ -113,20 +140,36 @@ public class UserRepository : IUserRepository
             .Include(u => u.ProjectRoles)
             .ThenInclude(pr => pr.Project!)
             .ThenInclude(p => p.Medias)
+            .Include(u => u.ProjectRoles)
+            .ThenInclude(pr => pr.Project!)
+            .ThenInclude(p => p.ProjectManager)
+            .Include(u => u.Experiences)
+            .ThenInclude(e => e.Medias)
+            .Include(u => u.ReviewsReceived)
+            .ThenInclude(r => r.ReviewerUser)
             .FirstOrDefaultAsync();
+
+        FilterCompletedProjects(user);
 
         return user;
     }
 
-    public async Task<List<User>> GetUsersProfileAsync(List<int> id)
+    public async Task<List<User>> GetUsersProfileAsync(List<int> ids)
     {
         var users = await context
-            .Users.Where(u => id.Contains(u.UserId))
+            .Users.AsSplitQuery()
+            .Where(u => ids.Contains(u.UserId))
             .Include(u => u.PortofolioContents)
             .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
-            .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
+            .ThenInclude(r => r.ReviewerUser)
+            .Include(u => u.Experiences)
+            .ThenInclude(e => e.Medias)
+            .Include(u => u.Experiences)
+            .ThenInclude(e => e.Project)
+            .Include(u => u.Experiences)
+            .ThenInclude(e => e.ProjectRole)
             .ToListAsync();
 
         return users;
@@ -182,5 +225,32 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync();
 
         return user;
+    }
+
+    private static void FilterCompletedProjects(User? user)
+    {
+        if (user is null)
+        {
+            return;
+        }
+
+        user.ProjectRoles = user.ProjectRoles.Where(pr => !pr.Completed).ToList();
+
+        user.Projects = user.Projects.Where(p => !p.Completed).ToList();
+    }
+
+    public async Task<bool> UpdateRangeAsync(List<User> users)
+    {
+        context.Users.UpdateRange(users);
+        await context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<List<User>> GetRangeAsync(List<int> ids)
+    {
+        var users = await context.Users.Where(u => ids.Contains(u.UserId)).ToListAsync();
+
+        return users;
     }
 }

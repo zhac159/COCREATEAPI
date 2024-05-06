@@ -28,7 +28,7 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
         return await context.ProjectRoles.FindAsync(id);
     }
 
-    public async Task<ProjectRole?> GetByIdIncludeAllProjectAsync(int id)
+    public async Task<ProjectRole?> GetByIdIncludeAllPropertiesAsync(int id)
     {
         return await context
             .ProjectRoles.Include(pr => pr.Medias)

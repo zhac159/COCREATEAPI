@@ -45,6 +45,16 @@ public static class MediaExtensions
         };
     }
 
+    public static MediaDTO ToDTO(this ExperienceMedia media)
+    {
+        return new MediaDTO
+        {
+            Id = media.Id,
+            Uri = media.Uri,
+            MediaType = media.MediaType
+        };
+    }
+
     public static void UpdateFromDTO(
         this AssetMedia media,
         MediaUpdateDTO mediaUpdateDto,

@@ -14,6 +14,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProjectRoleService, ProjectRoleService>();
         services.AddScoped<IEnquiryService, EnquiryService>();
         services.AddScoped<IPrepareService, PrepareService>();
+        services.AddScoped<IExperienceService, ExperienceService>();
+        services.AddScoped<IReviewService, ReviewService>();
+        services.AddScoped<IAssetOfferService, AssetOfferService>();
         return services;
     }
 }

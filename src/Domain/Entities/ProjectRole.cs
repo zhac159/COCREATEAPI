@@ -20,8 +20,10 @@ public class ProjectRole
     public int? AssigneeId { get; set; }
     public User? Assignee { get; set; }
     public int ProjectId { get; set; }
+    public bool Completed { get; set; }
     public Project? Project { get; set; }
     public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
     public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
     public List<ProjectRoleMedia> Medias { get; set; } = new List<ProjectRoleMedia>();
+    public List<Experience> Experiences { get; set; } = new List<Experience>();
 }

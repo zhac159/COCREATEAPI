@@ -22,6 +22,7 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
         builder.Property(e => e.Location).IsRequired();
         builder.Property(e => e.Address).IsRequired();
         builder.Property(e => e.Keywords).IsRequired();
+        builder.Property(e => e.Completed).IsRequired().HasDefaultValue(false);
         builder.Property(e => e.Remote).IsRequired();
 
         builder

@@ -6,5 +6,6 @@ public enum EntityType
     PortofolioContent,
     Project,
     ProjectRole,
-    Chat
+    Chat,
+    Experience
 }

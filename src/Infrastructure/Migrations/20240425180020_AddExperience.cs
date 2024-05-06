@@ -9,15 +9,13 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration1 : Migration
+    public partial class AddExperience : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
-
-            migrationBuilder.Sql("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";");
 
             migrationBuilder.CreateTable(
                 name: "Users",
@@ -35,7 +33,8 @@ namespace Infrastructure.Migrations
                     AboutYou = table.Column<string>(type: "character varying(2000)", maxLength: 2000, nullable: true),
                     Coins = table.Column<int>(type: "integer", nullable: false, defaultValue: 10000),
                     ProfilePictureSrc = table.Column<string>(type: "text", nullable: true),
-                    BannerPictureSrc = table.Column<string>(type: "text", nullable: true)
+                    BannerPictureSrc = table.Column<string>(type: "text", nullable: true),
+                    PublicKey = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -146,7 +145,8 @@ namespace Infrastructure.Migrations
                     SkillGroupType = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Level = table.Column<int>(type: "integer", nullable: false, defaultValue: 1),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Keywords = table.Column<List<string>>(type: "text[]", nullable: false, defaultValue: new List<string>())
                 },
                 constraints: table =>
                 {
@@ -267,10 +267,12 @@ namespace Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    EnquiryMessage = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     EnquirerId = table.Column<int>(type: "integer", nullable: false),
                     ProjectManagerId = table.Column<int>(type: "integer", nullable: false),
                     ProjectRoleId = table.Column<int>(type: "integer", nullable: false),
-                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreateAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Shortlisted = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -290,6 +292,41 @@ namespace Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Enquiries_Users_ProjectManagerId",
                         column: x => x.ProjectManagerId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Experiences",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    ExperienceType = table.Column<int>(type: "integer", nullable: false),
+                    ProjectRoleId = table.Column<int>(type: "integer", nullable: false),
+                    ProjectId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Experiences", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Experiences_ProjectRoles_ProjectRoleId",
+                        column: x => x.ProjectRoleId,
+                        principalTable: "ProjectRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiences_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Experiences_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
@@ -345,31 +382,24 @@ namespace Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "EnquiryMessages",
+                name: "ExperienceMedias",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false, defaultValueSql: "uuid_generate_v4()"),
-                    SenderId = table.Column<int>(type: "integer", nullable: false),
-                    Message = table.Column<string>(type: "text", nullable: true),
-                    Uri = table.Column<string>(type: "text", nullable: true),
-                    MediaType = table.Column<int>(type: "integer", nullable: true),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EnquiryId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Uri = table.Column<string>(type: "text", nullable: false),
+                    MediaType = table.Column<int>(type: "integer", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    ExperienceId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_EnquiryMessages", x => x.Id);
+                    table.PrimaryKey("PK_ExperienceMedias", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_EnquiryMessages_Enquiries_EnquiryId",
-                        column: x => x.EnquiryId,
-                        principalTable: "Enquiries",
+                        name: "FK_ExperienceMedias_Experiences_ExperienceId",
+                        column: x => x.ExperienceId,
+                        principalTable: "Experiences",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_EnquiryMessages_Users_SenderId",
-                        column: x => x.SenderId,
-                        principalTable: "Users",
-                        principalColumn: "UserId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -410,19 +440,29 @@ namespace Infrastructure.Migrations
                 column: "ProjectRoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EnquiryMessages_Date",
-                table: "EnquiryMessages",
-                column: "Date");
+                name: "IX_ExperienceMedias_ExperienceId",
+                table: "ExperienceMedias",
+                column: "ExperienceId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EnquiryMessages_EnquiryId",
-                table: "EnquiryMessages",
-                column: "EnquiryId");
+                name: "IX_ExperienceMedias_MediaType",
+                table: "ExperienceMedias",
+                column: "MediaType");
 
             migrationBuilder.CreateIndex(
-                name: "IX_EnquiryMessages_SenderId",
-                table: "EnquiryMessages",
-                column: "SenderId");
+                name: "IX_Experiences_ProjectId",
+                table: "Experiences",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Experiences_ProjectRoleId",
+                table: "Experiences",
+                column: "ProjectRoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Experiences_UserId",
+                table: "Experiences",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PortofolioContentMedias_PortofolioContentId",
@@ -521,13 +561,14 @@ namespace Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP EXTENSION IF EXISTS \"uuid-ossp\";");
-            
             migrationBuilder.DropTable(
                 name: "AssetMedias");
 
             migrationBuilder.DropTable(
-                name: "EnquiryMessages");
+                name: "Enquiries");
+
+            migrationBuilder.DropTable(
+                name: "ExperienceMedias");
 
             migrationBuilder.DropTable(
                 name: "PortofolioContentMedias");
@@ -551,7 +592,7 @@ namespace Infrastructure.Migrations
                 name: "Assets");
 
             migrationBuilder.DropTable(
-                name: "Enquiries");
+                name: "Experiences");
 
             migrationBuilder.DropTable(
                 name: "PortofolioContents");

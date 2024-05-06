@@ -108,5 +108,16 @@ public class AssetService : IAssetService
 
         return true;
     }
-    
+
+    public async Task<AssetSearchResultDTO> FindFirstMatchingAssetsAsync(AssetSearchDTO assetSearchDTO)
+    {
+        var assets = await assetRepository.FindFirstMatchingAssetsAsync(assetSearchDTO.SearchTerm, assetSearchDTO.AssetType );
+        
+        var assetSearchResults = new AssetSearchResultDTO
+        {
+            Assets = assets.Select(asset => asset.ToDTO()).ToList()
+        };
+
+        return assetSearchResults;
+    }
 }

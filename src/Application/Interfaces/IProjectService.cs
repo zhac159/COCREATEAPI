@@ -6,4 +6,5 @@ public interface IProjectService
 {
     Task<ProjectDTO> CreateAsync(ProjectCreateDTO projectCreateDTO);
     Task<ProjectDTO?> GetByIdAsync(int id);
+    Task<bool> CompleteAsync(ProjectCompleteDTO projectCompleteDTO);
 }

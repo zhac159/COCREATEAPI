@@ -13,6 +13,7 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Description).HasMaxLength(1000).IsRequired();
         builder.Property(e => e.Rating).IsRequired();
+        builder.Property(e => e.CreatedAt).IsRequired();
         builder.Property(e => e.ReviewerUserId).IsRequired();
         builder.Property(e => e.ReviewedUserId).IsRequired();
 

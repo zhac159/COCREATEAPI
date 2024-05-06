@@ -32,7 +32,10 @@ public static class ServiceColletionExtensions
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectRoleRepository, ProjectRoleRepostiory>();
         services.AddScoped<IEnquiryRepository, EnquiryRepository>();
-
+        services.AddScoped<IReviewRepository, ReviewRepository>();
+        services.AddScoped<IExperienceRepository, ExperienceRepository>();
+        services.AddScoped<IAssetOfferRepository, AssetOfferRepository>(); 
+        
         return services;
     }
 

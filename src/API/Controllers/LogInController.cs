@@ -40,7 +40,7 @@ namespace JwtInDotnetCore.Controllers
 
             var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()), new Claim(JwtRegisteredClaimNames.Email, user.Email ) };
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] ?? throw new InvalidOperationException()));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var Sectoken = new JwtSecurityToken(
@@ -70,7 +70,7 @@ namespace JwtInDotnetCore.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, createdUser.UserId.ToString()),
             };
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] ?? throw new InvalidOperationException()));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var Sectoken = new JwtSecurityToken(

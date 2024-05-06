@@ -20,3 +20,17 @@ az acr login --name cocreateapiregistry
 az login
 
 docker build -t cocreateapi .
+
+
+
+###
+
+don't forget to install these extensions onf Postgres
+
+pg_trgm
+plpgsql
+postgis
+uuis-ossp
+
+add the 
+pg_trgm for asset name 
