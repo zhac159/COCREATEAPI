@@ -12,4 +12,5 @@ public class MessageDTO
     public string? Uri { get; set; }
     public MediaType? MediaType { get; set; }
     public required DateTime Date { get; set; }
+    public Guid? ReplyMessageId { get; set; }
 }

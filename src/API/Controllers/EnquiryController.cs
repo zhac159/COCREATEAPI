@@ -42,9 +42,44 @@ public class EnquiryController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(result));
     }
 
+    [HttpPut("reject-enquiry")]
+    public async Task<ActionResult<APIResponse<bool>>> RejectEnquiry(EnquiryRejectDTO enquiryRejectDTO)
+    {
+        var result = await enquiryService.RejectAsync(enquiryRejectDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(result));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
     [HttpPost("send-message")]
     public ActionResult<APIResponse<MessageDTO>> SendMessage(
         MessageCreateDTO enquiryMessageCreateDTO
+    )
+    {
+        // var message = await enquiryService.SendMessageAsync(
+        //     enquiryMessageCreateDTO
+        // );
+
+        return Ok(APIResponseFactory.CreateSuccess(true));
+    }
+
+        [HttpPost("send-message-reaction")]
+    public ActionResult<APIResponse<MessageReactionDTO>> SendReaction(
+        MessageReactionCreateDTO messageReactionCreateDTO
     )
     {
         // var message = await enquiryService.SendMessageAsync(

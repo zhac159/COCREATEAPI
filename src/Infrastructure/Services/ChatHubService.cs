@@ -89,7 +89,7 @@ public class ChatHubService : Hub, IChatHubService
             await SendGroupMessage(message);
             return;
         }
-        
+
         await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
 
         var messageDTO = new List<MessageDTO> { message.ToDTO() };
@@ -97,6 +97,62 @@ public class ChatHubService : Hub, IChatHubService
         await hubContext
             .Clients.User(messageCreateDTO.TargetId.ToString())
             .SendAsync("ReceiveMessages", messageDTO);
+    }
+
+    public async Task SendMessageReactionAsync(MessageReactionCreateDTO messageReactionCreateDTO)
+    {
+        var userId = GetUserId();
+
+        var messageReaction = messageReactionCreateDTO.ToEntity(userId);
+
+        if (messageReactionCreateDTO.ChatType == ChatType.Project)
+        {
+            await SendGroupReaction(
+                messageReaction,
+                messageReactionCreateDTO.ChatType,
+                messageReactionCreateDTO.TargetId
+            );
+            return;
+        }
+
+        await messageStorageService.AddMessageReactionAsync(
+            messageReaction,
+            messageReactionCreateDTO.TargetId
+        );
+
+        var messageReactionDTO = new List<MessageReactionDTO> { messageReaction.ToDTO() };
+
+        await hubContext
+            .Clients.User(messageReactionCreateDTO.TargetId.ToString())
+            .SendAsync("ReceiveMessagesReactions", messageReactionDTO);
+    }
+
+    private async Task SendGroupReaction(
+        MessageReaction messageReaction,
+        ChatType chatType,
+        int targetId
+    )
+    {
+        var recipientIds = await messageStorageService.GetChatMemebersAsync(targetId, chatType);
+
+        if (recipientIds == null || !recipientIds.Contains(messageReaction.UserId))
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        foreach (var recipientId in recipientIds)
+        {
+            if (recipientId.ToString() != Context.UserIdentifier)
+            {
+                await messageStorageService.AddMessageReactionAsync(messageReaction, recipientId);
+
+                var messageReactionDTO = new List<MessageReactionDTO> { messageReaction.ToDTO() };
+
+                await hubContext
+                    .Clients.User(recipientId.ToString())
+                    .SendAsync("ReceiveMessagesReactions", messageReactionDTO);
+            }
+        }
     }
 
     public async Task AknowledgeEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds)
@@ -118,6 +174,17 @@ public class ChatHubService : Hub, IChatHubService
         var messagesDTO = messages.Select(m => m.ToDTO());
 
         await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
+    }
+
+    public async Task GetMessagesReactionsAsync()
+    {
+        var userId = GetUserId();
+
+        var messagesReactions = await messageStorageService.GetMessagesReactionsAsync(userId);
+
+        var messagesReactionsDTO = messagesReactions.Select(mr => mr.ToDTO());
+
+        await Clients.Caller.SendAsync("ReceiveMessagesReactions", messagesReactionsDTO);
     }
 
     public async Task AknowledgeMessageAsync(IEnumerable<Guid> messageIds)
@@ -181,6 +248,13 @@ public class ChatHubService : Hub, IChatHubService
                 .Clients.User(recipientId.ToString())
                 .SendAsync("ReceiveCompleteProject", project.Id);
         }
+    }
+
+    public async Task AknowledgeMessageReactionsAsync()
+    {
+        var userId = GetUserId();
+
+        await messageStorageService.DeleteMessageReactionAsync(userId);
     }
 
     private int GetUserId()

@@ -38,6 +38,12 @@ public class AssetOfferService : IAssetOfferService
 
         var createdAssetOffer = await assetOfferRepository.CreateAsync(assetOffer);
 
-        return createdAssetOffer.ToDTO();
+        if (createdAssetOffer == null)
+        {
+            throw new EntityNotFoundException();
+        }
+        
+
+        return createdAssetOffer!.ToDTO();
     }
 }

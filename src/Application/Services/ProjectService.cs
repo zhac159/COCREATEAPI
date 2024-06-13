@@ -83,6 +83,8 @@ public class ProjectService : IProjectService
         }
 
         project.Completed = true;
+        
+        project.CompletedAt = DateTime.UtcNow;
 
         var experience = projectCompleteDTO.ToExperienceEntity(project.ProjectManagerId);
 
@@ -103,6 +105,23 @@ public class ProjectService : IProjectService
         return true;
     }
 
+    public async Task<ProjectCompletedDTO> GetCompletedProjectByIdAsync(int id)
+    {
+        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(id);
+
+        if (project is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (!project.Completed)
+        {
+            throw new ProjectNotCompletedException();
+        }
+
+        return project.ToCompletedDTO();
+    }
+
     private static void ValidateAndCleanReviews(Project project, List<Review> reviews)
     {
         var assigneeIds = project.ProjectRoles.Select(pr => pr.AssigneeId).ToList();
@@ -121,4 +140,5 @@ public class ProjectService : IProjectService
             }
         }
     }
+    
 }

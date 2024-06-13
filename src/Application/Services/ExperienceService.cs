@@ -57,6 +57,8 @@ public class ExperienceService : IExperienceService
                 throw new ProjectNotCompletedExeption();
             }
 
+            experience.ProjectId = projectRole.ProjectId;
+
         }
 
         var createdExperience = await experienceRepository.CreateAsync(experience);

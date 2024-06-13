@@ -12,6 +12,7 @@ public class MessageCreateDTO
     public string? Uri { get; set; }
     public MediaType? MediaType { get; set; }
     public required DateTime Date { get; set; }
+    public Guid? ReplyMessageId { get; set; }
 
     public Message ToEntity(int userId)
     {
@@ -22,6 +23,7 @@ public class MessageCreateDTO
             TargetId = TargetId,
             ChatType = ChatType,
             Content = Content,
+            ReplyMessageId = ReplyMessageId,
             Uri = Uri,
             MediaType = MediaType,
             Date = Date

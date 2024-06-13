@@ -17,5 +17,7 @@ public class AssetInformationDTO
 
     [Required]
     public required AssetType AssetType { get; set; }
-    public UserInformationDTO? Owner { get; set; }
+
+    [Required]
+    public required UserInformationDTO Owner { get; set; }
 }

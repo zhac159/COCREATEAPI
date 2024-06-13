@@ -241,7 +241,7 @@ public class UserService : IUserService
 
         user.Coins += coins;
 
-        if(user.Coins < 0)
+        if (user.Coins < 0)
         {
             throw new InsufficientFundsException();
         }
@@ -249,5 +249,17 @@ public class UserService : IUserService
         await userRepository.UpdateAsync(user);
 
         return true;
+    }
+
+    public async Task<UserProfileDTO> GetUserProfileAsync(int userId)
+    {
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return user.ToUserProfileDTO();
     }
 }

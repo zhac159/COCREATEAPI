@@ -66,7 +66,7 @@ public class EnquiryService : IEnquiryService
         {
             throw new EntityNotFoundException();
         }
-        
+
         var createdEnquiryDTO = createdEnquiry.ToDTO();
 
         await chatHubService.SendNewEnquiry(createdEnquiryDTO);
@@ -141,6 +141,27 @@ public class EnquiryService : IEnquiryService
             ChatType.Project,
             enquiry.EnquirerId
         );
+
+        return true;
+    }
+
+    public async Task<bool> RejectAsync(EnquiryRejectDTO enquiryRejectDTO)
+    {
+        var enquiry = await enquiryRepository.GetByIdAsync(enquiryRejectDTO.EnquiryId);
+
+        var userId = currentUserContextService.GetUserId();
+
+        if (enquiry is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (userId != enquiry.ProjectManagerId && userId != enquiry.EnquirerId)
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        await enquiryRepository.DeleteAsync(enquiry);
 
         return true;
     }

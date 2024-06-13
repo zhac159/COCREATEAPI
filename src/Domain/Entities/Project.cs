@@ -4,6 +4,7 @@ public class Project
 {
     public int Id { get; set; }
     public bool Completed { get; set; }
+    public DateTime? CompletedAt { get; set; }
     public required string Name { get; set; }
     public required string Description { get; set; }
     public int ProjectManagerId { get; set; }

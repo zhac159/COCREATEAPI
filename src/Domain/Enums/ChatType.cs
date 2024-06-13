@@ -4,5 +4,6 @@ public enum ChatType
 {
     Enquiry,
     Project,
-    AssetEnquiry
+    AssetEnquiry,
+    ProjectColleague,
 }

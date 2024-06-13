@@ -1,4 +1,3 @@
-using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
@@ -21,4 +20,5 @@ public interface IUserService
     Task<bool> UpdatePublicKeyAsync(UserPublicKeyUpdateDTO userPublicKeyUpdateDTO);
     Task<UserProfilesDTO> GetUserProfilesAsync(UserGetProfilesDTO userGetProfilesDTO);
     Task<bool> AdjustUserCoinsAsync(int coins);
+    Task<UserProfileDTO> GetUserProfileAsync(int userId);
 }

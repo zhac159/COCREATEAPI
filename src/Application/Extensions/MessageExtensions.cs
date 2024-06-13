@@ -16,6 +16,7 @@ public static class MessageExtensions
             Content = message.Content,
             Uri = message.Uri,
             MediaType = message.MediaType,
+            ReplyMessageId = message.ReplyMessageId,
             Date = message.Date
         };
     }
@@ -32,6 +33,17 @@ public static class MessageExtensions
             SenderId = encryptedKeyExchange.SenderId,
             GroupChatId = encryptedKeyExchange.GroupChatId,
             ChatType = encryptedKeyExchange.ChatType
+        };
+    }
+
+    public static MessageReactionDTO ToDTO(this MessageReaction messageReaction)
+    {
+        return new MessageReactionDTO
+        {
+            MessageId = messageReaction.MessageId,
+            Multiplier = messageReaction.Multiplier,
+            Reaction = messageReaction.Reaction,
+            UserId = messageReaction.UserId,
         };
     }
 }

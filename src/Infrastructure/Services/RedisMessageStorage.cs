@@ -37,6 +37,14 @@ public class RedisMessageStorage : IMessageStorageService
         await database.HashSetAsync(key, message.Id.ToString(), messageString);
     }
 
+    public async Task AddMessageReactionAsync(MessageReaction messageReaction, int userId)
+    {
+        var key = $"user:{userId}:messageReactions";
+        var messageReactionString = JsonConvert.SerializeObject(messageReaction);
+        var guid = Guid.NewGuid().ToString();
+        await database.HashSetAsync(key, guid, messageReactionString);
+    }
+
     public async Task AddEncryptedKeyExchangeAsync(EncryptedKeyExchange encryptedKeyExchange)
     {
         var key = $"user:{encryptedKeyExchange.TargetId}:encryptedKeyExchanges";
@@ -53,14 +61,36 @@ public class RedisMessageStorage : IMessageStorageService
         var key = $"user:{userId}:encryptedKeyExchanges";
         var encryptedKeyExchanges = await database.HashGetAllAsync(key);
         return encryptedKeyExchanges
-            .Select(
-                encryptedKeyExchange =>
-                    JsonConvert.DeserializeObject<EncryptedKeyExchange>(encryptedKeyExchange.Value)
+            .Select(encryptedKeyExchange =>
+                JsonConvert.DeserializeObject<EncryptedKeyExchange>(encryptedKeyExchange.Value)
             )
             .ToArray();
     }
 
-    public async Task DeleteEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds, int userId)
+    public async Task<IEnumerable<Message>> GetMessagesAsync(int userId)
+    {
+        var key = $"user:{userId}:messages";
+        var messages = await database.HashGetAllAsync(key);
+        return messages
+            .Select(message => JsonConvert.DeserializeObject<Message>(message.Value))
+            .ToArray();
+    }
+
+    public async Task<IEnumerable<MessageReaction>> GetMessagesReactionsAsync(int userId)
+    {
+        var key = $"user:{userId}:messageReactions";
+        var messageReactions = await database.HashGetAllAsync(key);
+        return messageReactions
+            .Select(messageReaction =>
+                JsonConvert.DeserializeObject<MessageReaction>(messageReaction.Value)
+            )
+            .ToArray();
+    }
+
+    public async Task DeleteEncryptedKeyExchangeAsync(
+        IEnumerable<Guid> encryptedKeyExchangeIds,
+        int userId
+    )
     {
         var key = $"user:{userId}:encryptedKeyExchanges";
         var encryptedKeyExchangeIdsArray = encryptedKeyExchangeIds
@@ -78,12 +108,9 @@ public class RedisMessageStorage : IMessageStorageService
         await database.HashDeleteAsync(key, messageIdsArray);
     }
 
-    public async Task<IEnumerable<Message>> GetMessagesAsync(int userId)
+    public async Task DeleteMessageReactionAsync(int userId)
     {
-        var key = $"user:{userId}:messages";
-        var messages = await database.HashGetAllAsync(key);
-        return messages
-            .Select(message => JsonConvert.DeserializeObject<Message>(message.Value))
-            .ToArray();
+        var key = $"user:{userId}:messageReactions";
+        await database.KeyDeleteAsync(key);
     }
 }

@@ -6,5 +6,6 @@ public interface IEnquiryService
 {
     Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO);
     Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO);
+    Task<bool> RejectAsync(EnquiryRejectDTO enquiryRejectDTO);
     Task<bool> ShortlistAsync(int enquiryId);
 }

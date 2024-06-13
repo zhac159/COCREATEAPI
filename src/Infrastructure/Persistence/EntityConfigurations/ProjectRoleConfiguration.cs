@@ -29,7 +29,8 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
             .HasOne(e => e.Assignee)
             .WithMany(e => e.ProjectRoles)
             .HasForeignKey(e => e.AssigneeId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne(e => e.Project)

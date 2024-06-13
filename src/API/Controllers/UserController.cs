@@ -110,4 +110,14 @@ public class UserController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(profiles));
     }
+
+    [HttpGet("get-profile")]
+    public async Task<ActionResult<APIResponse<UserProfileDTO>>> GetProfile(
+        int userId
+    )
+    {
+        var profile = await userService.GetUserProfileAsync(userId);
+
+        return Ok(APIResponseFactory.CreateSuccess(profile));
+    }
 }
