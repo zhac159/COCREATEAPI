@@ -58,4 +58,24 @@ public class ProjectRepository : IProjectRepository
 
         return project;
     }
+
+    public async Task<Project?> GetByIdIncludeAllExperiencesAsync(int id)
+    {
+        var project = await context
+            .Projects.Where(p => p.Id == id)
+            .Include(p => p.Medias)
+            .Include(p => p.Experiences)
+            .ThenInclude(e => e.Medias)
+            .Include(p => p.ProjectManager)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Medias)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Experiences)
+            .ThenInclude(e => e.Medias)
+            .FirstOrDefaultAsync();
+
+        return project;
+    }
 }

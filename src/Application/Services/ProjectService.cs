@@ -107,7 +107,7 @@ public class ProjectService : IProjectService
 
     public async Task<ProjectCompletedDTO> GetCompletedProjectByIdAsync(int id)
     {
-        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(id);
+        var project = await projectRepository.GetByIdIncludeAllExperiencesAsync(id);
 
         if (project is null)
         {
