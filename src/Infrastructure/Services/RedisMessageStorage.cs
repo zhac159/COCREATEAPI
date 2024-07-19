@@ -8,12 +8,10 @@ namespace Infrastructure.Services;
 
 public class RedisMessageStorage : IMessageStorageService
 {
-    private readonly IRedisService redisService;
     private readonly IDatabase database;
 
     public RedisMessageStorage(IRedisService redisService)
     {
-        this.redisService = redisService;
         database = redisService.GetDatabase();
     }
 
@@ -112,5 +110,18 @@ public class RedisMessageStorage : IMessageStorageService
     {
         var key = $"user:{userId}:messageReactions";
         await database.KeyDeleteAsync(key);
+    }
+
+    public async Task StoreOneTimeEmailTokenAsync(string token, int userId)
+    {
+        var key = $"user:{userId}:oneTimeEmailToken";
+        var expiry = TimeSpan.FromMinutes(5);
+        await database.StringSetAsync(key, token, expiry);
+    }
+
+    public async Task<string?> GetOneTimeEmailTokenAsync(string token, int userId)
+    {
+        var key = $"user:{userId}:oneTimeEmailToken";
+        return await database.StringGetAsync(key);
     }
 }

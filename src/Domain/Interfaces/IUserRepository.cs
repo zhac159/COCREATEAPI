@@ -13,6 +13,7 @@ public interface IUserRepository
     Task<User?> GetByIdIncludePortofolioAsync(int id);
     Task<int?> GetCoinByIdAsync(int id);
     Task<int?> UpdateCoinByIdAsync(int id, int coin);
+    Task<int> AddCoinsByIdAsync(int id, int coin);
     Task<User> UpdateAsync(User user);
     Task<List<User>> GetUsersProfileAsync(List<int> ids);
     Task<bool> UpdateRangeAsync(List<User> users);

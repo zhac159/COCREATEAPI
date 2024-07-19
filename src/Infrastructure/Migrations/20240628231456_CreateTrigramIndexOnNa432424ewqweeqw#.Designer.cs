@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(CoCreateDbContext))]
-    partial class CoCreateDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240628231456_CreateTrigramIndexOnNa432424ewqweeqw#")]
+    partial class CreateTrigramIndexOnNa432424ewqweeqw
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -637,19 +640,6 @@ namespace Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.VoucherCode", b =>
-                {
-                    b.Property<string>("Code")
-                        .HasColumnType("text");
-
-                    b.Property<int>("Amount")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Code");
-
-                    b.ToTable("VoucherCodes", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Asset", b =>

@@ -22,8 +22,8 @@ public static class ServiceColletionExtensions
             throw new Exception("Connection string is empty or null");
         }
 
-        services.AddDbContext<CoCreateDbContext>(
-            options => options.UseNpgsql(connectionString, x => x.UseNetTopologySuite())
+        services.AddDbContext<CoCreateDbContext>(options =>
+            options.UseNpgsql(connectionString, x => x.UseNetTopologySuite())
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
@@ -34,8 +34,10 @@ public static class ServiceColletionExtensions
         services.AddScoped<IEnquiryRepository, EnquiryRepository>();
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<IExperienceRepository, ExperienceRepository>();
-        services.AddScoped<IAssetOfferRepository, AssetOfferRepository>(); 
-        
+        services.AddScoped<IAssetOfferRepository, AssetOfferRepository>();
+        services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IVoucherCodeRepository, VoucherCodeRepository>();
+
         return services;
     }
 
@@ -48,13 +50,9 @@ public static class ServiceColletionExtensions
             "AzureBlobContainerConnectionString"
         );
 
-        services.AddSingleton(
-            x =>
-                new BlobServiceClient(
-                    connectionString
-                        ?? throw new Exception("Azure Blob connection string is empty or null")
-                )
-        );
+        services.AddSingleton(x => new BlobServiceClient(
+            connectionString ?? throw new Exception("Azure Blob connection string is empty or null")
+        ));
 
         return services;
     }
@@ -68,14 +66,11 @@ public static class ServiceColletionExtensions
 
         services.AddScoped<IStorageService, AzureBlobStorageService>();
 
-        services.AddSingleton<IRedisService>(
-            sp =>
-                new RedisService(
-                    configuration.GetConnectionString("RedisServer")
-                        ?? throw new Exception("Redis connection string is empty or null")
-                )
-        );
-        
+        services.AddSingleton<IRedisService>(sp => new RedisService(
+            configuration.GetConnectionString("RedisServer")
+                ?? throw new Exception("Redis connection string is empty or null")
+        ));
+
         services.AddScoped<IMessageStorageService, RedisMessageStorage>();
 
         return services;

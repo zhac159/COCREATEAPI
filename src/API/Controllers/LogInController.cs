@@ -33,8 +33,6 @@ namespace JwtInDotnetCore.Controllers
             UserLoginDTO userLoginDTO
         )
         {
-
-            logger.LogError("LoginController -> Post -> userLoginDTO");
             
             var user = await userService.AuthenticateAsync(userLoginDTO);
 

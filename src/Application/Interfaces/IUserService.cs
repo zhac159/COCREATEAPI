@@ -21,4 +21,8 @@ public interface IUserService
     Task<UserProfilesDTO> GetUserProfilesAsync(UserGetProfilesDTO userGetProfilesDTO);
     Task<bool> AdjustUserCoinsAsync(int coins);
     Task<UserProfileDTO> GetUserProfileAsync(int userId);
+    Task<bool> VerifyEmailAsync(UserVerifyEmailDTO userVerifyEmailDTO);
+    Task ResendVerificationEmailAsync();
+    Task UpdateAndVerifyEmailAsync(UserUpdateEmailDTO userUpdateEmailDTO);
+    Task<bool> ChangePasswordAsync(UserChangePasswordDTO userChangePasswordDTO);
 }

@@ -31,6 +31,9 @@ public class APIExceptitionFilter : IExceptionFilter
             UnauthorizedAccessException => StatusCodes.Status403Forbidden,
             EntityNotFoundException => StatusCodes.Status404NotFound,
             EntityAlreadyExistsException => StatusCodes.Status409Conflict,
+            UsernameNotFoundException => StatusCodes.Status404NotFound,
+            InvalidVoucherCodeException => StatusCodes.Status404NotFound,
+            SamePasswordException => StatusCodes.Status400BadRequest,
             _ => StatusCodes.Status500InternalServerError
         };
 

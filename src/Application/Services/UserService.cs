@@ -1,3 +1,4 @@
+using Application.DTOs.EmailDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
@@ -16,18 +17,24 @@ public class UserService : IUserService
     private readonly IProjectRoleRepository projectRoleRepository;
     private readonly IStorageService storageService;
     private readonly ICurrentUserContextService currentUserContextService;
+    private readonly IEmailService emailService;
+    private readonly IMessageStorageService messageStorageService;
 
     public UserService(
         IUserRepository userRepository,
         IStorageService storageService,
         IProjectRoleRepository projectRoleRepository,
-        ICurrentUserContextService currentUserContextService
+        ICurrentUserContextService currentUserContextService,
+        IEmailService emailService,
+        IMessageStorageService messageStorageService
     )
     {
         this.userRepository = userRepository;
         this.projectRoleRepository = projectRoleRepository;
         this.storageService = storageService;
         this.currentUserContextService = currentUserContextService;
+        this.emailService = emailService;
+        this.messageStorageService = messageStorageService;
     }
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
@@ -36,7 +43,7 @@ public class UserService : IUserService
 
         if (user is null)
         {
-            throw new EntityNotFoundException();
+            throw new UsernameNotFoundException();
         }
 
         if (user.Password != userLoginDTO.Password)
@@ -57,6 +64,8 @@ public class UserService : IUserService
         }
 
         var createdUser = await userRepository.CreateAsync(user);
+
+        await emailService.SendAndCacheEmailVerificationAsync(user.Email, createdUser.UserId);
 
         return createdUser.ToDTO();
     }
@@ -261,5 +270,86 @@ public class UserService : IUserService
         }
 
         return user.ToUserProfileDTO();
+    }
+
+    public async Task<bool> VerifyEmailAsync(UserVerifyEmailDTO userVerifyEmailDTO)
+    {
+        var userId = currentUserContextService.GetUserId();
+
+        var token = await messageStorageService.GetOneTimeEmailTokenAsync(
+            userVerifyEmailDTO.Token,
+            userId
+        );
+
+        if (token is null || token != userVerifyEmailDTO.Token)
+        {
+            throw new InvalidTokenException();
+        }
+        var user = await userRepository.GetByIdAsync(userId);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        user.IsEmailVerified = true;
+
+        await userRepository.UpdateAsync(user);
+
+        return true;
+    }
+
+    public async Task ResendVerificationEmailAsync()
+    {
+        var user =
+            await userRepository.GetByIdAsync(currentUserContextService.GetUserId())
+            ?? throw new EntityNotFoundException();
+
+        await emailService.SendAndCacheEmailVerificationAsync(
+            user.Email,
+            currentUserContextService.GetUserId()
+        );
+    }
+
+    public async Task UpdateAndVerifyEmailAsync(UserUpdateEmailDTO userUpdateEmailDTO)
+    {
+        var user =
+            await userRepository.GetByIdAsync(currentUserContextService.GetUserId())
+            ?? throw new EntityNotFoundException();
+
+        user.Email = userUpdateEmailDTO.Email;
+
+        await userRepository.UpdateAsync(user);
+
+        await emailService.SendAndCacheEmailVerificationAsync(
+            user.Email,
+            currentUserContextService.GetUserId()
+        );
+    }
+
+    public async Task<bool> ChangePasswordAsync(UserChangePasswordDTO userChangePasswordDTO)
+    {
+        var user = await userRepository.GetByIdAsync(currentUserContextService.GetUserId());
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (user.Password != userChangePasswordDTO.OldPassword)
+        {
+            throw new InvalidPasswordException();
+        }
+
+        if (user.Password == userChangePasswordDTO.NewPassword)
+        {
+            throw new SamePasswordException();
+        }
+
+        user.Password = userChangePasswordDTO.NewPassword;
+
+        await userRepository.UpdateAsync(user);
+
+        return true;
     }
 }

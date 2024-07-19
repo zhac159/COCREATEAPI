@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IExperienceService, ExperienceService>();
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IAssetOfferService, AssetOfferService>();
+        services.AddScoped<IVoucherCodeService, VoucherCodeService>();
         return services;
     }
 }

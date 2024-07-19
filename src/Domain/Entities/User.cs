@@ -8,6 +8,7 @@ public class User
     public required string Username { get; set; }
     public required string Password { get; set; }
     public required string Email { get; set; }
+    public  bool IsEmailVerified { get; set; } = false;
     public string? Address { get; set; }
     public Point? Location { get; set; }
     public double Rating { get; set; } = 0;

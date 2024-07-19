@@ -112,12 +112,48 @@ public class UserController : COCREATEAPIControllerBase
     }
 
     [HttpGet("get-profile")]
-    public async Task<ActionResult<APIResponse<UserProfileDTO>>> GetProfile(
-        int userId
-    )
+    public async Task<ActionResult<APIResponse<UserProfileDTO>>> GetProfile(int userId)
     {
         var profile = await userService.GetUserProfileAsync(userId);
 
         return Ok(APIResponseFactory.CreateSuccess(profile));
+    }
+
+    [HttpPost("verify-email")]
+    public async Task<ActionResult<APIResponse<bool>>> VerifyEmail(
+        UserVerifyEmailDTO userVerifyEmailDTO
+    )
+    {
+        var successfull = await userService.VerifyEmailAsync(userVerifyEmailDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(successfull));
+    }
+
+    [HttpPost("resend-verification-email")]
+    public async Task<ActionResult<APIResponse<bool>>> ResendVerificationEmail()
+    {
+        await userService.ResendVerificationEmailAsync();
+
+        return Ok(APIResponseFactory.CreateSuccess(true));
+    }
+
+    [HttpPost("update-email")]
+    public async Task<ActionResult<APIResponse<bool>>> UpdateAndVerifyEmail(
+        UserUpdateEmailDTO userUpdateEmailDTO
+    )
+    {
+        await userService.UpdateAndVerifyEmailAsync(userUpdateEmailDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(true));
+    }
+
+    [HttpPost("change-password")]
+    public async Task<ActionResult<APIResponse<bool>>> ChangePassword(
+        UserChangePasswordDTO userChangePasswordDTO
+    )
+    {
+        var successfull = await userService.ChangePasswordAsync(userChangePasswordDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(successfull));
     }
 }

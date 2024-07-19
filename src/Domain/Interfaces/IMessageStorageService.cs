@@ -16,4 +16,6 @@ public interface IMessageStorageService
     Task DeleteEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds, int userId);
     Task DeleteMessageAsync(IEnumerable<Guid> messageIds, int userId);
     Task DeleteMessageReactionAsync(int userId);
+    Task StoreOneTimeEmailTokenAsync(string token, int userId);
+    Task<string?> GetOneTimeEmailTokenAsync(string token, int userId);
 }

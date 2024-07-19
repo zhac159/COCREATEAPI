@@ -100,7 +100,7 @@ public class UserRepository : IUserRepository
         var user = await context
             .Users.AsSplitQuery()
             .Where(u => u.UserId == id)
-           .Include(u => u.PortofolioContents)
+            .Include(u => u.PortofolioContents)
             .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
@@ -210,6 +210,22 @@ public class UserRepository : IUserRepository
         }
 
         user.Coins = coin;
+
+        await context.SaveChangesAsync();
+
+        return user.Coins;
+    }
+
+    public async Task<int> AddCoinsByIdAsync(int id, int coin)
+    {
+        var user = await context.Users.Where(u => u.UserId == id).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return 0;
+        }
+
+        user.Coins += coin;
 
         await context.SaveChangesAsync();
 

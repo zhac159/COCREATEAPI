@@ -19,6 +19,7 @@ namespace Infrastructure.Persistence
         public DbSet<Enquiry> Enquiries { get; set; }
         public DbSet<Experience> Experiences { get; set; }
         public DbSet<AssetOffer> AssetOffers { get; set; }
+        public DbSet<VoucherCode> VoucherCode { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
