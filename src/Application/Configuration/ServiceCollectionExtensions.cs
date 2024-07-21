@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IReviewService, ReviewService>();
         services.AddScoped<IAssetOfferService, AssetOfferService>();
         services.AddScoped<IVoucherCodeService, VoucherCodeService>();
+        services.AddScoped<ISeenMatchesService, SeenMatchesService>();
         return services;
     }
 }

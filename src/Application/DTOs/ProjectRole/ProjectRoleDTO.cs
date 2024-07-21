@@ -40,6 +40,8 @@ public class ProjectRoleDTO
 
     [Required]
     public required string Address { get; set; }
+    [Required]
+    public int? ProjectId { get; set; }
 
     [Required]
     public List<string> Keywords { get; set; } = new List<string>();

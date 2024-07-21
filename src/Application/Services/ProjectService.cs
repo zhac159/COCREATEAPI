@@ -40,13 +40,20 @@ public class ProjectService : IProjectService
 
         var createdProject = await projectRepository.CreateAsync(project);
 
+        if(createdProject is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
         await messageStorageService.AddMemberToGroupChatAsync(
             createdProject.Id,
             ChatType.Project,
             currentUserContextService.GetUserId()
         );
 
-        return createdProject.ToDTO();
+        var createdProjectDTO = createdProject.ToDTO();
+
+        return createdProjectDTO;
     }
 
     public async Task<ProjectDTO?> GetByIdAsync(int id)

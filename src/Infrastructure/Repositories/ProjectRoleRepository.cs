@@ -74,7 +74,7 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             .Where(pr => pr.Effort <= query.Effort && query.SkillTypes.Contains(pr.SkillType))
             .Where(pr => !seenProjectRoleIds.Contains(pr.Id))
             .Where(pr => pr.Location.IsWithinDistance(query.Location, query.Distance / 111.12))
-            .OrderBy(pr => pr.Project!.ProjectManagerId != query.UserId)
+            .Where(pr => pr.Project!.ProjectManagerId != query.UserId)
             .Take(1000)
             .ToListAsync();
 
@@ -87,18 +87,8 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
 
         var seenMatches = new List<SeenMatches>();
 
-        // if (matchingProjectRoles.Count < 5)
-        // {
-        //     var userMatches = context.SeenMatches.Where(sm => sm.UserId == query.UserId);
-
-        //     context.SeenMatches.RemoveRange(userMatches);
-        // }
-        // else
-        // {
-        //     context.SeenMatches.AddRange(seenMatches);
-        // }
-
         await context.SaveChangesAsync();
+        
 
         return matchingProjectRoles;
     }

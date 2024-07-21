@@ -15,12 +15,14 @@ public class ProjectRepository : IProjectRepository
         this.context = context;
     }
 
-    public async Task<Project> CreateAsync(Project project)
+    public async Task<Project?> CreateAsync(Project project)
     {
         await context.Projects.AddAsync(project);
         await context.SaveChangesAsync();
 
-        return project;
+        var createdProject = await GetByIdIncludeAllPropertiesAsync(project.Id);
+
+        return createdProject;
     }
 
     public async Task<Project?> GetByIdAsync(int id)

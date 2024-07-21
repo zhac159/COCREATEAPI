@@ -7,5 +7,5 @@ public class SeenMatches
     public User? User { get; set; }
     public int ProjectRoleId { get; set; }
     public ProjectRole? ProjectRole { get; set; }
-    public DateTime SeenAt { get; set; }
+    public DateTime SeenAt { get; set; } = DateTime.UtcNow;
 }
