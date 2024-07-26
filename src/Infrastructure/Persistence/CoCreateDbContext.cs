@@ -20,7 +20,7 @@ namespace Infrastructure.Persistence
         public DbSet<Experience> Experiences { get; set; }
         public DbSet<AssetOffer> AssetOffers { get; set; }
         public DbSet<VoucherCode> VoucherCode { get; set; }
-
+        public DbSet<SurveyAnswer> SurveyAnswers { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoCreateDbContext).Assembly);

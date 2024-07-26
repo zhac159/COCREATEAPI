@@ -19,6 +19,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IAssetOfferService, AssetOfferService>();
         services.AddScoped<IVoucherCodeService, VoucherCodeService>();
         services.AddScoped<ISeenMatchesService, SeenMatchesService>();
+        services.AddScoped<ISurveyAnswerService, SurveyAnswerService>();
+
         return services;
     }
 }

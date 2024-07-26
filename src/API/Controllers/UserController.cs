@@ -157,7 +157,7 @@ public class UserController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(successfull));
     }
 
-    [HttpPost("get-authenticated-user")]
+    [HttpPost("authenticate-token")]
     public async Task<ActionResult<APIResponse<UserDTO>>> GetAuthenticatedUser()
     {
         var user = await userService.GetByIdAsync(currentUserContextService.GetUserId());

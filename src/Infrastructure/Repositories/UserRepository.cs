@@ -14,11 +14,14 @@ public class UserRepository : IUserRepository
         this.context = context;
     }
 
-    public async Task<User?> GetByUsernameAsync(string name)
+    public async Task<User?> GetByUsernameOrEmailAsync(string nameOrEmail)
     {
         var user = await context
             .Users.AsSplitQuery()
-            .Where(u => u.Username == name)
+            .Where(u =>
+                EF.Functions.ILike(u.Username, nameOrEmail)
+                || EF.Functions.ILike(u.Email, nameOrEmail)
+            )
             .Include(u => u.PortofolioContents)
             .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)

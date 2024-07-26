@@ -39,7 +39,7 @@ public class UserService : IUserService
 
     public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
     {
-        var user = await userRepository.GetByUsernameAsync(userLoginDTO.Username);
+        var user = await userRepository.GetByUsernameOrEmailAsync(userLoginDTO.UsernameOrEmail);
 
         if (user is null)
         {
@@ -58,11 +58,14 @@ public class UserService : IUserService
     {
         var user = userCreateDTO.ToEntity();
 
-        if (await userRepository.GetByUsernameAsync(user.Username) is not null)
+        if (await userRepository.GetByUsernameOrEmailAsync(user.Username) is not null)
         {
             throw new EntityAlreadyExistsException();
         }
 
+        Random random = new Random();
+        user.Coins = random.Next(10, 101);
+        
         var createdUser = await userRepository.CreateAsync(user);
 
         await emailService.SendAndCacheEmailVerificationAsync(user.Email, createdUser.UserId);

@@ -38,6 +38,7 @@ public static class ServiceColletionExtensions
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IVoucherCodeRepository, VoucherCodeRepository>();
         services.AddScoped<ISeenMatchesRepository, SeenMatchesRepository>();
+        services.AddScoped<ISurveyAnswerRepository, SurveyAnswerRepository>();
 
         return services;
     }
