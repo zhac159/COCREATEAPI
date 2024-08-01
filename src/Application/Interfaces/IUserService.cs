@@ -25,4 +25,5 @@ public interface IUserService
     Task ResendVerificationEmailAsync();
     Task UpdateAndVerifyEmailAsync(UserUpdateEmailDTO userUpdateEmailDTO);
     Task<bool> ChangePasswordAsync(UserChangePasswordDTO userChangePasswordDTO);
+    Task<bool> DeleteAsync();
 }

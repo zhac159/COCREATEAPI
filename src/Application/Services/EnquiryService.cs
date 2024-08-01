@@ -137,8 +137,7 @@ public class EnquiryService : IEnquiryService
         await enquiryRepository.DeleteAsync(enquiry);
 
         await messageStorageService.AddMemberToGroupChatAsync(
-            projectRole.Project.Id,
-            ChatType.Project,
+            messageStorageService.GetChatId(ChatType.Project, projectRole.ProjectId),
             enquiry.EnquirerId
         );
 

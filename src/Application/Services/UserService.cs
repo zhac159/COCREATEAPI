@@ -355,4 +355,11 @@ public class UserService : IUserService
 
         return true;
     }
+
+    public async Task<bool> DeleteAsync()
+    {
+        await userRepository.DeleteByIdAsync(currentUserContextService.GetUserId());
+
+        return true;
+    }
 }

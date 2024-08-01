@@ -23,12 +23,14 @@ public class EmailService : IEmailService
 
         var emailClient = new EmailClient(connectionString);
 
-        EmailSendOperation emailSendOperation = await emailClient.SendAsync(
+        await emailClient.SendAsync(
             WaitUntil.Completed,
             senderAddress: "DoNotReply@f1603040-002a-45ea-8c12-cff92bdf3c8d.azurecomm.net",
             recipientAddress: sendEmailDTO.To,
             subject: sendEmailDTO.Subject,
-            htmlContent: "<html><h1>Hello world via email.</h1l></html>",
+            htmlContent: "<html><h1>This is your confirmation code:"
+                + sendEmailDTO.Body
+                + "</h1l></html>",
             plainTextContent: "This is your confirmation code: " + sendEmailDTO.Body
         );
     }

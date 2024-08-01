@@ -272,4 +272,19 @@ public class UserRepository : IUserRepository
 
         return users;
     }
+
+    public async Task<bool> DeleteByIdAsync(int userId)
+    {
+        var user = await context.Users.Where(u => u.UserId == userId).FirstOrDefaultAsync();
+
+        if (user is null)
+        {
+            return false;
+        }
+
+        context.Users.Remove(user);
+        await context.SaveChangesAsync();
+
+        return true;
+    }
 }

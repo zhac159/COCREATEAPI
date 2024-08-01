@@ -13,5 +13,6 @@ namespace Domain.Entities
         public ChatType ChatType { get; set; }
         public int TargetId { get; set; }
         public Guid? ReplyMessageId { get; set; }
+        public required string ChatId { get; set; }
     }
 }

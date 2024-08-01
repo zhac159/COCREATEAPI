@@ -18,4 +18,5 @@ public interface IUserRepository
     Task<List<User>> GetUsersProfileAsync(List<int> ids);
     Task<bool> UpdateRangeAsync(List<User> users);
     Task<List<User>> GetRangeAsync(List<int> ids);
+    Task<bool> DeleteByIdAsync(int userId);
 }

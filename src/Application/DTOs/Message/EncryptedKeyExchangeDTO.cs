@@ -19,11 +19,10 @@ public class EncryptedKeyExchangeDTO
 
     [Required]
     public int TargetId { get; set; }
-    public int? GroupChatId { get; set; }
+
+    [Required]
+    public required string ChatId { get; set; }
 
     [Required]
     public int SenderId { get; set; }
-
-    [Required]
-    public ChatType ChatType { get; set; }
 }

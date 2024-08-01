@@ -164,4 +164,12 @@ public class UserController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(user));
     }
+
+    [HttpDelete("account")]
+    public async Task<ActionResult<APIResponse<bool>>> DeleteAccount()
+    {
+        var successfull = await userService.DeleteAsync();
+
+        return Ok(APIResponseFactory.CreateSuccess(successfull));
+    }
 }

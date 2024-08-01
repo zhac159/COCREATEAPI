@@ -9,8 +9,7 @@ namespace Domain.Entities
         public required string PublicKey { get; set; }
         public required string EncryptedSymmetricKey { get; set; }
         public required int TargetId { get; set; }
-        public int? GroupChatId { get; set; }
+        public required string ChatId { get; set; }
         public required int SenderId { get; set; }
-        public ChatType ChatType { get; set; }
     }
 }

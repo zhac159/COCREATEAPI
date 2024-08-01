@@ -14,7 +14,8 @@ public static class EnquiryExtensions
             ProjectRoleId = enquiry.ProjectRoleId,
             Enquirer = enquiry.Enquirer?.ToInformationDTO(),
             ProjectManager = enquiry.ProjectManager?.ToInformationDTO(),
-            Shortlisted = enquiry.Shortlisted
+            Shortlisted = enquiry.Shortlisted,
+            ProjectId = enquiry.ProjectRole?.ProjectId
         };
     }
 }

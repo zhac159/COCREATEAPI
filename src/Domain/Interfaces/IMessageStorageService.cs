@@ -5,12 +5,12 @@ namespace Domain.Interfaces;
 
 public interface IMessageStorageService
 {
-    Task AddMemberToGroupChatAsync(int chatId, ChatType chatType, int userId);
+    Task AddMemberToGroupChatAsync(string chatId, int userId);
     Task AddMessageAsync(Message message, int userId);
     Task AddMessageReactionAsync(MessageReaction messageReaction, int userId);
     Task AddEncryptedKeyExchangeAsync(EncryptedKeyExchange encryptedKeyExchange);
     Task<IEnumerable<Message>> GetMessagesAsync(int userId);
-    Task<IEnumerable<int>?> GetChatMemebersAsync(int chatId, ChatType chatType);
+    Task<IEnumerable<int>?> GetChatMemebersAsync(string chatId);
     Task<IEnumerable<EncryptedKeyExchange>> GetEncryptedKeyExchangesAsync(int userId);
     Task<IEnumerable<MessageReaction>> GetMessagesReactionsAsync(int userId);
     Task DeleteEncryptedKeyExchangeAsync(IEnumerable<Guid> encryptedKeyExchangeIds, int userId);
@@ -18,4 +18,5 @@ public interface IMessageStorageService
     Task DeleteMessageReactionAsync(int userId);
     Task StoreOneTimeEmailTokenAsync(string token, int userId);
     Task<string?> GetOneTimeEmailTokenAsync(string token, int userId);
+    string GetChatId(ChatType chatType, int entityId);
 }

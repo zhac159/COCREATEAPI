@@ -10,6 +10,7 @@ public class MessageReactionCreateDTO
     public Emoji Reaction { get; set; }
     public required int TargetId { get; set; }
     public ChatType ChatType { get; set; }
+    public required string ChatId { get; set; } 
 
     public MessageReaction ToEntity(int userId)
     {

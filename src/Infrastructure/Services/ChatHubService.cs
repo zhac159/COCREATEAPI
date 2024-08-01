@@ -107,11 +107,7 @@ public class ChatHubService : Hub, IChatHubService
 
         if (messageReactionCreateDTO.ChatType == ChatType.Project)
         {
-            await SendGroupReaction(
-                messageReaction,
-                messageReactionCreateDTO.ChatType,
-                messageReactionCreateDTO.TargetId
-            );
+            await SendGroupReaction(messageReaction, messageReactionCreateDTO.ChatId);
             return;
         }
 
@@ -127,13 +123,9 @@ public class ChatHubService : Hub, IChatHubService
             .SendAsync("ReceiveMessagesReactions", messageReactionDTO);
     }
 
-    private async Task SendGroupReaction(
-        MessageReaction messageReaction,
-        ChatType chatType,
-        int targetId
-    )
+    private async Task SendGroupReaction(MessageReaction messageReaction, string chatId)
     {
-        var recipientIds = await messageStorageService.GetChatMemebersAsync(targetId, chatType);
+        var recipientIds = await messageStorageService.GetChatMemebersAsync(chatId);
 
         if (recipientIds == null || !recipientIds.Contains(messageReaction.UserId))
         {
@@ -196,10 +188,7 @@ public class ChatHubService : Hub, IChatHubService
 
     private async Task SendGroupMessage(Message message)
     {
-        var recipientIds = await messageStorageService.GetChatMemebersAsync(
-            message.TargetId,
-            message.ChatType
-        );
+        var recipientIds = await messageStorageService.GetChatMemebersAsync(message.ChatId);
 
         if (recipientIds == null || !recipientIds.Contains(message.SenderId))
         {
@@ -260,5 +249,5 @@ public class ChatHubService : Hub, IChatHubService
     private int GetUserId()
     {
         return int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
-    }
+    }   
 }

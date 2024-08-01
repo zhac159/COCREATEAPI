@@ -15,15 +15,15 @@ public class RedisMessageStorage : IMessageStorageService
         database = redisService.GetDatabase();
     }
 
-    public async Task AddMemberToGroupChatAsync(int chatId, ChatType chatType, int userId)
+    public async Task AddMemberToGroupChatAsync(string chatId, int userId)
     {
-        var key = $"chat:{chatType}-{chatId}";
+        var key = $"chat:{chatId}";
         await database.ListRightPushAsync(key, userId);
     }
 
-    public async Task<IEnumerable<int>?> GetChatMemebersAsync(int chatId, ChatType chatType)
+    public async Task<IEnumerable<int>?> GetChatMemebersAsync(string chatId)
     {
-        var key = $"chat:{chatType}-{chatId}";
+        var key = $"chat:{chatId}";
         var values = await database.ListRangeAsync(key);
         return values.Select(value => (int)value).ToArray();
     }
@@ -123,5 +123,10 @@ public class RedisMessageStorage : IMessageStorageService
     {
         var key = $"user:{userId}:oneTimeEmailToken";
         return await database.StringGetAsync(key);
+    }
+
+    public string GetChatId(ChatType chatType, int entityId)
+    {
+        return $"{(int)chatType}-{entityId}";
     }
 }

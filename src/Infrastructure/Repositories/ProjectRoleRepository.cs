@@ -1,5 +1,6 @@
 using Domain.Entities;
 using Domain.Interfaces;
+using Domain.Maps;
 using Domain.Queries;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,16 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             .Select(sm => sm.ProjectRoleId)
             .ToListAsync();
 
+        var skillGroups = query
+            .SkillTypes.Select(st => SkillToGroupMap.skillGroupMap[st])
+            .Distinct()
+            .ToList();
+
+        var skillTypesInGroups = SkillToGroupMap
+            .skillGroupMap.Where(kvp => skillGroups.Contains(kvp.Value))
+            .Select(kvp => kvp.Key)
+            .ToList();
+
         var allProjectRoles = await context
             .ProjectRoles.Include(pr => pr.Project!)
             .ThenInclude(p => p.ProjectRoles)
@@ -71,7 +82,7 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
             .ThenInclude(p => p.Medias)
             .Include(pr => pr.Medias)
             .Where(pr => pr.AssigneeId == null)
-            .Where(pr => pr.Effort <= query.Effort && query.SkillTypes.Contains(pr.SkillType))
+            .Where(pr => pr.Effort <= query.Effort && skillTypesInGroups.Contains(pr.SkillType))
             .Where(pr => !seenProjectRoleIds.Contains(pr.Id))
             .Where(pr => pr.Location.IsWithinDistance(query.Location, query.Distance / 111.12))
             .Where(pr => pr.Project!.ProjectManagerId != query.UserId)
@@ -88,7 +99,6 @@ public class ProjectRoleRepostiory : IProjectRoleRepository
         var seenMatches = new List<SeenMatches>();
 
         await context.SaveChangesAsync();
-        
 
         return matchingProjectRoles;
     }

@@ -40,14 +40,13 @@ public class ProjectService : IProjectService
 
         var createdProject = await projectRepository.CreateAsync(project);
 
-        if(createdProject is null)
+        if (createdProject is null)
         {
             throw new EntityNotFoundException();
         }
 
         await messageStorageService.AddMemberToGroupChatAsync(
-            createdProject.Id,
-            ChatType.Project,
+            messageStorageService.GetChatId(ChatType.Project, createdProject.Id),
             currentUserContextService.GetUserId()
         );
 
@@ -90,7 +89,7 @@ public class ProjectService : IProjectService
         }
 
         project.Completed = true;
-        
+
         project.CompletedAt = DateTime.UtcNow;
 
         var experience = projectCompleteDTO.ToExperienceEntity(project.ProjectManagerId);
@@ -131,13 +130,14 @@ public class ProjectService : IProjectService
 
     private static void ValidateAndCleanReviews(Project project, List<Review> reviews)
     {
-        var assigneeIds = project.ProjectRoles.Select(pr => pr.AssigneeId).ToList();
+        var assigneeIds = project
+            .ProjectRoles.Select(pr => pr.AssigneeId)
+            .Where(id => id != null)
+            .ToList();
 
         reviews.RemoveAll(r => !assigneeIds.Contains(r.ReviewedUserId));
 
         var firstReviews = reviews.GroupBy(r => r.ReviewedUserId).Select(g => g.First()).ToList();
-
-        reviews.RemoveAll(r => !firstReviews.Contains(r));
 
         foreach (var assigneeId in assigneeIds)
         {
@@ -147,5 +147,4 @@ public class ProjectService : IProjectService
             }
         }
     }
-    
 }

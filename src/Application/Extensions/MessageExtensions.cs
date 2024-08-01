@@ -17,7 +17,8 @@ public static class MessageExtensions
             Uri = message.Uri,
             MediaType = message.MediaType,
             ReplyMessageId = message.ReplyMessageId,
-            Date = message.Date
+            Date = message.Date,
+            ChatId = message.ChatId
         };
     }
 
@@ -31,8 +32,7 @@ public static class MessageExtensions
             EncryptedSymmetricKey = encryptedKeyExchange.EncryptedSymmetricKey,
             TargetId = encryptedKeyExchange.TargetId,
             SenderId = encryptedKeyExchange.SenderId,
-            GroupChatId = encryptedKeyExchange.GroupChatId,
-            ChatType = encryptedKeyExchange.ChatType
+            ChatId = encryptedKeyExchange.ChatId
         };
     }
 
