@@ -90,7 +90,8 @@ public static class UserExtensions
         {
             UserId = user.UserId,
             Username = user.Username,
-            PublicKey = user.PublicKey
+            PublicKey = user.PublicKey,
+            Rating = user.Rating
         };
     }
 

@@ -1,13 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using API.Factories;
 using API.Models;
 using Application.DTOs;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace JwtInDotnetCore.Controllers
 {
@@ -15,17 +11,20 @@ namespace JwtInDotnetCore.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private IConfiguration config;
-
         private readonly IUserService userService;
 
         private readonly ILogger<LoginController> logger;
+        private readonly IAuthenticationService authenticationService;
 
-        public LoginController(IConfiguration config, IUserService userService, ILogger<LoginController> logger)
+        public LoginController(
+            IUserService userService,
+            ILogger<LoginController> logger,
+            IAuthenticationService authenticationService
+        )
         {
-            this.config = config;
             this.userService = userService;
             this.logger = logger;
+            this.authenticationService = authenticationService;
         }
 
         [HttpPost]
@@ -33,23 +32,9 @@ namespace JwtInDotnetCore.Controllers
             UserLoginDTO userLoginDTO
         )
         {
-            
             var user = await userService.AuthenticateAsync(userLoginDTO);
 
-            var claims = new[] { new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()), new Claim(JwtRegisteredClaimNames.Email, user.Email ) };
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] ?? throw new InvalidOperationException()));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var Sectoken = new JwtSecurityToken(
-                config["Jwt:Issuer"],
-                config["Jwt:Issuer"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials
-            );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+            var token = authenticationService.CreateJWTTokenAsync(user);
 
             var response = new LoginResponseDTO { User = user, Token = token };
 
@@ -63,25 +48,27 @@ namespace JwtInDotnetCore.Controllers
         {
             var createdUser = await userService.CreateAsync(userCreateDTO);
 
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, createdUser.UserId.ToString()),
-            };
-
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"] ?? throw new InvalidOperationException()));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var Sectoken = new JwtSecurityToken(
-                config["Jwt:Issuer"],
-                config["Jwt:Issuer"],
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(120),
-                signingCredentials: credentials
-            );
-
-            var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+            var token = authenticationService.CreateJWTTokenAsync(createdUser);
 
             var response = new LoginResponseDTO { User = createdUser, Token = token };
+
+            return Ok(APIResponseFactory.CreateSuccess(response));
+        }
+
+        [HttpPost("token-login")]
+        public async Task<ActionResult<APIResponse<LoginResponseDTO>>> Post(
+            UserTokenLoginDTO tokenLoginDTO
+        )
+        {
+            var userId = authenticationService.AuthenticateJWTTokenAndGetUserId(
+                tokenLoginDTO.Token
+            );
+
+            var user = await userService.GetByIdAsync(userId);
+
+            var token = authenticationService.CreateJWTTokenAsync(user);
+
+            var response = new LoginResponseDTO { User = user, Token = token };
 
             return Ok(APIResponseFactory.CreateSuccess(response));
         }

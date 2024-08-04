@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IVoucherCodeService, VoucherCodeService>();
         services.AddScoped<ISeenMatchesService, SeenMatchesService>();
         services.AddScoped<ISurveyAnswerService, SurveyAnswerService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         return services;
     }

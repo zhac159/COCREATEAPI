@@ -80,4 +80,19 @@ public class ProjectRepository : IProjectRepository
 
         return project;
     }
+
+    public async Task<Project?> GetProjectByRoleIdAsync(int roleId)
+    {
+        var project = await context
+            .Projects
+            .Include(p => p.Medias)
+            .Include(p => p.ProjectManager)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Medias)
+            .Include(p => p.ProjectRoles)
+            .ThenInclude(pr => pr.Assignee)
+            .FirstOrDefaultAsync(p => p.ProjectRoles.Any(pr => pr.Id == roleId));
+
+        return project;
+    }
 }

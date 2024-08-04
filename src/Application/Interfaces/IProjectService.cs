@@ -8,4 +8,5 @@ public interface IProjectService
     Task<ProjectDTO?> GetByIdAsync(int id);
     Task<bool> CompleteAsync(ProjectCompleteDTO projectCompleteDTO);
     Task<ProjectCompletedDTO> GetCompletedProjectByIdAsync(int id);
+    Task<ProjectDTO?> GetProjectByRoleIdAsync(int roleId);
 }

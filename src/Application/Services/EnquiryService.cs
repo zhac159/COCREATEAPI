@@ -1,4 +1,5 @@
 using Application.DTOs.EnquiryDTOs;
+using Application.DTOs.ProjectDTOs;
 using Application.Extensions;
 using Application.Interfaces;
 using Domain.Enums;
@@ -15,6 +16,7 @@ public class EnquiryService : IEnquiryService
     private readonly ICurrentUserContextService currentUserContextService;
     private readonly IMessageStorageService messageStorageService;
     private readonly IChatHubService chatHubService;
+    private readonly IProjectRepository projectRepository;
 
     public EnquiryService(
         IEnquiryRepository enquiryRepository,
@@ -22,7 +24,8 @@ public class EnquiryService : IEnquiryService
         IUserRepository userRepository,
         ICurrentUserContextService currentUserContextService,
         IMessageStorageService messageStorageService,
-        IChatHubService chatHubService
+        IChatHubService chatHubService,
+        IProjectRepository projectRepository
     )
     {
         this.enquiryRepository = enquiryRepository;
@@ -31,6 +34,7 @@ public class EnquiryService : IEnquiryService
         this.currentUserContextService = currentUserContextService;
         this.messageStorageService = messageStorageService;
         this.chatHubService = chatHubService;
+        this.projectRepository = projectRepository;
     }
 
     public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
@@ -97,15 +101,10 @@ public class EnquiryService : IEnquiryService
         return true;
     }
 
-    public async Task<bool> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO)
+    public async Task<ProjectDTO> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO)
     {
-        var enquiry = await enquiryRepository.GetByIdAsync(enquiryConfirmDTO.EnquiryId);
-
-        if (enquiry is null)
-        {
-            throw new EntityNotFoundException();
-        }
-
+        var enquiry = await enquiryRepository.GetByIdAsync(enquiryConfirmDTO.EnquiryId) ?? throw new EntityNotFoundException();
+        
         var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
             enquiry.ProjectRoleId
         );
@@ -141,7 +140,9 @@ public class EnquiryService : IEnquiryService
             enquiry.EnquirerId
         );
 
-        return true;
+        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(projectRole.ProjectId) ?? throw new EntityNotFoundException();
+
+        return project.ToDTO();
     }
 
     public async Task<bool> RejectAsync(EnquiryRejectDTO enquiryRejectDTO)

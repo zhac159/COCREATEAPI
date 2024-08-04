@@ -6,6 +6,5 @@ public interface IProjectRoleService
 {
     Task<ProjectRoleDTO> CreateAsync(ProjectRoleCreateDTO projectCreateDTO);
     Task<ProjectRoleDTO> UpdateAsync(ProjectRoleUpdateDTO projectUpdateDTO);
-    
     Task<bool> CompleteAsync(ProjectRoleCompleteDTO projectRoleCompleteDTO);
 }

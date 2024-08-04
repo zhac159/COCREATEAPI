@@ -2,6 +2,7 @@ using API.Factories;
 using API.Models;
 using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.MessageDTOs;
+using Application.DTOs.ProjectDTOs;
 using Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,7 +28,7 @@ public class EnquiryController : COCREATEAPIControllerBase
     }
 
     [HttpPost("confirm")]
-    public async Task<ActionResult<APIResponse<bool>>> Confirm(EnquiryConfirmDTO enquiryConfirmDTO)
+    public async Task<ActionResult<APIResponse<ProjectDTO>>> Confirm(EnquiryConfirmDTO enquiryConfirmDTO)
     {
         var result = await enquiryService.ConfirmAsync(enquiryConfirmDTO);
 
@@ -50,20 +51,6 @@ public class EnquiryController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(result));
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
     [HttpPost("send-message")]
     public ActionResult<APIResponse<MessageDTO>> SendMessage(

@@ -40,11 +40,20 @@ public class ProjectController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(success));
     }
-    
+
     [HttpGet("completed")]
-    public async Task<ActionResult<APIResponse<ProjectCompletedDTO>>> GetCompletedProject(int projectId)
+    public async Task<ActionResult<APIResponse<ProjectCompletedDTO>>> GetCompletedProject(
+        int projectId
+    )
     {
         var project = await projectService.GetCompletedProjectByIdAsync(projectId);
+        return Ok(APIResponseFactory.CreateSuccess(project));
+    }
+
+    [HttpGet("getByRole")]
+    public async Task<ActionResult<APIResponse<ProjectDTO>>> GetByRoleId(int projectRoleId)
+    {
+        var project = await projectService.GetProjectByRoleIdAsync(projectRoleId);
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
 

@@ -16,6 +16,7 @@ public class ProjectService : IProjectService
     private readonly IMessageStorageService messageStorageService;
     private readonly IReviewService reviewService;
     private readonly IChatHubService chatHubService;
+    private readonly IUserRepository userRepository;
 
     public ProjectService(
         IProjectRepository projectRepository,
@@ -23,7 +24,8 @@ public class ProjectService : IProjectService
         IMessageStorageService messageStorageService,
         IExperienceRepository experienceRepository,
         IReviewService reviewService,
-        IChatHubService chatHubService
+        IChatHubService chatHubService,
+        IUserRepository userRepository
     )
     {
         this.projectRepository = projectRepository;
@@ -32,6 +34,7 @@ public class ProjectService : IProjectService
         this.reviewService = reviewService;
         this.experienceRepository = experienceRepository;
         this.chatHubService = chatHubService;
+        this.userRepository = userRepository;
     }
 
     public async Task<ProjectDTO> CreateAsync(ProjectCreateDTO projectCreateDTO)
@@ -98,6 +101,10 @@ public class ProjectService : IProjectService
             .Reviews.Select(review => review.ToEntity(project.ProjectManagerId))
             .ToList();
 
+        var coinsRefunded = project
+            .ProjectRoles.Where(pr => pr.AssigneeId != null)
+            .Sum(pr => pr.Cost);
+
         ValidateAndCleanReviews(project, reviews);
 
         await reviewService.CreateRangeFromEntitiesAsync(reviews);
@@ -105,6 +112,8 @@ public class ProjectService : IProjectService
         await experienceRepository.CreateAsync(experience);
 
         await projectRepository.UpdateAsync(project);
+
+        await userRepository.AddCoinsByIdAsync(project.ProjectManagerId, coinsRefunded);
 
         await chatHubService.SendCompleteProject(project);
 
@@ -126,6 +135,18 @@ public class ProjectService : IProjectService
         }
 
         return project.ToCompletedDTO();
+    }
+
+    public async Task<ProjectDTO?> GetProjectByRoleIdAsync(int roleId)
+    {
+        var project = await projectRepository.GetProjectByRoleIdAsync(roleId);
+
+        if (project is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return project.ToDTO();
     }
 
     private static void ValidateAndCleanReviews(Project project, List<Review> reviews)

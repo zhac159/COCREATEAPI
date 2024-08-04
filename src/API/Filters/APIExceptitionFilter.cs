@@ -29,6 +29,7 @@ public class APIExceptitionFilter : IExceptionFilter
             InvalidPasswordException => StatusCodes.Status401Unauthorized,
             InsufficientFundsException => StatusCodes.Status400BadRequest,
             UnauthorizedAccessException => StatusCodes.Status403Forbidden,
+            TokenExpiredException => StatusCodes.Status401Unauthorized,
             EntityNotFoundException => StatusCodes.Status404NotFound,
             EntityAlreadyExistsException => StatusCodes.Status409Conflict,
             UsernameNotFoundException => StatusCodes.Status404NotFound,

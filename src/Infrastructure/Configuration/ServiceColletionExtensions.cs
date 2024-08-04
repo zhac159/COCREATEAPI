@@ -23,7 +23,12 @@ public static class ServiceColletionExtensions
         }
 
         services.AddDbContext<CoCreateDbContext>(options =>
-            options.UseNpgsql(connectionString, x => x.UseNetTopologySuite())
+            options.UseNpgsql(
+                connectionString,
+                x =>
+                    x.UseNetTopologySuite()
+                        .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
+            )
         );
 
         services.AddScoped<IUserRepository, UserRepository>();
