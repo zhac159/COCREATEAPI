@@ -102,7 +102,7 @@ public class ProjectService : IProjectService
             .ToList();
 
         var coinsRefunded = project
-            .ProjectRoles.Where(pr => pr.AssigneeId != null)
+            .ProjectRoles.Where(pr => pr.AssigneeId == null)
             .Sum(pr => pr.Cost);
 
         ValidateAndCleanReviews(project, reviews);

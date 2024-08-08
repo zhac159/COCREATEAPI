@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -5,7 +6,9 @@ namespace Application.DTOs.MediaDTOs;
 
 public class MediaCreateDTO
 {
+    [Required]
     public required string Uri { get; set; }
+    [Required]
     public required MediaType MediaType { get; set; }
 
     public AssetMedia ToAssetMediaEntity(int order)

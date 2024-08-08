@@ -24,6 +24,8 @@ public class UserDTO
     public double Latitude { get; set; }
     public double Longitude { get; set; }
     public string? AboutYou { get; set; }
+
+    [Required]
     public int Coins { get; set; } = 0;
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
