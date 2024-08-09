@@ -40,6 +40,7 @@ public class ProjectRoleDTO
 
     [Required]
     public required string Address { get; set; }
+
     [Required]
     public int? ProjectId { get; set; }
 
@@ -48,6 +49,8 @@ public class ProjectRoleDTO
     public required bool Remote { get; set; }
     public bool Completed { get; set; }
     public UserInformationDTO? Assignee { get; set; }
+
+    [Required]
     public List<MediaDTO> Medias { get; set; } = new List<MediaDTO>();
     public List<EnquiryDTO> Enquiries { get; set; } = new List<EnquiryDTO>();
 }

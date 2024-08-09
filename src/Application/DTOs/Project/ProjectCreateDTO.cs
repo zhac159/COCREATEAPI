@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Application.DTOs.MediaDTOs;
 using Domain.Entities;
 
@@ -5,9 +6,12 @@ namespace Application.DTOs.ProjectDTOs;
 
 public class ProjectCreateDTO
 {
+    [Required]
     public required string Name { get; set; }
+    [Required]
     public required string Description { get; set; }
-    public required List<MediaCreateDTO> Medias { get; set; }
+    [Required]
+    public required List<MediaCreateDTO> Medias { get; set; } = [];
 
     public Project ToEntity(int projectManagerId)
     {
