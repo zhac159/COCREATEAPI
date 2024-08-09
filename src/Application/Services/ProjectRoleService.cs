@@ -36,15 +36,9 @@ public class ProjectRoleService : IProjectRoleService
         this.userService = userService;
     }
 
-    public async Task<ProjectRoleDTO> CreateAsync(
-        ProjectRoleCreateDTO projectRoleCreateDTO
-    )
+    public async Task<ProjectRoleDTO> CreateAsync(ProjectRoleCreateDTO projectRoleCreateDTO)
     {
-
-
-        var project = await projectRepository.GetByIdAsync(
-            projectRoleCreateDTO.ProjectId
-        );
+        var project = await projectRepository.GetByIdAsync(projectRoleCreateDTO.ProjectId);
 
         if (project is null)
         {
@@ -65,22 +59,16 @@ public class ProjectRoleService : IProjectRoleService
         return createdProjectRole.ToDTO();
     }
 
-    public async Task<ProjectRoleDTO> UpdateAsync(
-        ProjectRoleUpdateDTO projectRoleUpdateDTO
-    )
+    public async Task<ProjectRoleDTO> UpdateAsync(ProjectRoleUpdateDTO projectRoleUpdateDTO)
     {
-        var projectRole = await projectRoleRepository.GetByIdAsync(
-            projectRoleUpdateDTO.Id
-        );
+        var projectRole = await projectRoleRepository.GetByIdAsync(projectRoleUpdateDTO.Id);
 
         if (projectRole is null)
         {
             throw new EntityNotFoundException();
         }
 
-        var project = await projectRepository.GetByIdAsync(
-            projectRole.ProjectId
-        );
+        var project = await projectRepository.GetByIdAsync(projectRole.ProjectId);
 
         if (project is null)
         {
@@ -99,11 +87,9 @@ public class ProjectRoleService : IProjectRoleService
         return projectRole.ToDTO();
     }
 
-    public async Task<bool> CompleteAsync(
-        ProjectRoleCompleteDTO projectRoleCompleteDTO
-    )
+    public async Task<bool> CompleteAsync(ProjectRoleCompleteDTO projectRoleCompleteDTO)
     {
-        var userId =  currentUserContextService.GetUserId(); 
+        var userId = currentUserContextService.GetUserId();
 
         var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
             projectRoleCompleteDTO.Id
@@ -119,12 +105,12 @@ public class ProjectRoleService : IProjectRoleService
             throw new UnauthorizedAccessException();
         }
 
-        if(projectRole.Completed)
+        if (projectRole.Completed)
         {
             throw new ProjectRoleAlreadyCompletedException();
         }
 
-        if(!projectRole.Project!.Completed)
+        if (!projectRole.Project!.Completed)
         {
             throw new ProjectNotCompletedExeption();
         }
@@ -132,7 +118,7 @@ public class ProjectRoleService : IProjectRoleService
         projectRole.Completed = true;
 
         var experience = projectRoleCompleteDTO.ToExperienceEntity(userId);
-    
+
         var reviews = projectRoleCompleteDTO
             .Reviews.Select(review => review.ToEntity(userId))
             .ToList();
@@ -147,9 +133,18 @@ public class ProjectRoleService : IProjectRoleService
         return true;
     }
 
+    public async Task<ProjectRoleDTO> GetAsync(int id)
+    {
+        var projectRole =
+            await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(id)
+            ?? throw new EntityNotFoundException();
+       
+        return projectRole.ToDTO();
+    }
+
     private static void ValidateAndCleanReviews(ProjectRole projectRole, List<Review> reviews)
     {
-        if(!reviews.Any(review => review.ReviewedUserId == projectRole.Project!.ProjectManagerId))
+        if (!reviews.Any(review => review.ReviewedUserId == projectRole.Project!.ProjectManagerId))
         {
             throw new MissingReviewException();
         }

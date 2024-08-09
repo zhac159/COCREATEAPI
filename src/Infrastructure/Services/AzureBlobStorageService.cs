@@ -100,7 +100,7 @@ public class AzureBlobStorageService : IStorageService
             BlobName = blobClient.Name,
             Resource = "b",
             ContentType = contentType,
-            StartsOn = DateTimeOffset.UtcNow,
+            StartsOn = DateTimeOffset.UtcNow.AddMinutes(-5),
             ExpiresOn = DateTimeOffset.UtcNow.AddDays(30),
         };
 
