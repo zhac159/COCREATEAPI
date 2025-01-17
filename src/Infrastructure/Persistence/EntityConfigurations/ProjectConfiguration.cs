@@ -16,6 +16,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(e => e.Description).HasMaxLength(500).IsRequired();
         builder.Property(e => e.Completed).HasDefaultValue(false);
         builder.Property(e => e.CompletedAt).HasDefaultValue(null);
+        builder.Property(e => e.Date).IsRequired();
+        builder.Property(e => e.Location).IsRequired();
+        builder.Property(e => e.Address).IsRequired();
 
         builder
             .HasOne(e => e.ProjectManager)
@@ -23,5 +26,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasForeignKey(e => e.ProjectManagerId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(e => e.Location).HasDatabaseName("IX_Project_Location");
     }
 }

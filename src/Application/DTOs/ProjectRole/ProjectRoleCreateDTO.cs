@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Application.DTOs.MediaDTOs;
 using Domain.Entities;
 using Domain.Enums;
@@ -7,20 +8,20 @@ namespace Application.DTOs.ProjectRoleDTOs;
 
 public class ProjectRoleCreateDTO
 {
+    [Required] 
     public required string Name { get; set; }
+
+    [Required]
     public required string Description { get; set; }
+
+    [Required]
     public required int Cost { get; set; }
-    public required int Effort { get; set; }
-    public required DateTime StartDate { get; set; }
-    public required DateTime EndDate { get; set; }
+
+    [Required]
     public required SkillType SkillType { get; set; }
-    public required double Longitude { get; set; }
-    public required double Latitude { get; set; }
-    public required string Address { get; set; }
-    public List<string> Keywords { get; set; } = new List<string>();
+
+    [Required]
     public required bool Remote { get; set; }
-    public int ProjectId { get; set; }
-    public required List<MediaCreateDTO> Medias { get; set; }
 
     public ProjectRole ToEntity()
     {
@@ -29,16 +30,12 @@ public class ProjectRoleCreateDTO
             Name = Name,
             Description = Description,
             Cost = Cost,
-            Effort = Effort,
-            StartDate = StartDate,
-            EndDate = EndDate,
+            Effort = 0,
             SkillType = SkillType,
-            Location = new Point(Longitude, Latitude) { SRID = 4326 },
-            Address = Address,
-            Keywords = Keywords,
             Remote = Remote,
-            ProjectId = ProjectId,
-            Medias = Medias.Select((m, order) => m.ToProjectRoleMediaEntity(order)).ToList()
+            Location = new Point(0, 0) { SRID = 4326 },
+            Address = "Address",
+            Keywords = [],
         };
     }
 }

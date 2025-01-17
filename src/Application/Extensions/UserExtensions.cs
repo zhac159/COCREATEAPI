@@ -1,4 +1,5 @@
 using Application.DTOs.AssetOfferDTOs;
+using Application.DTOs.Chat;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
@@ -81,6 +82,35 @@ public static class UserExtensions
                 .Assets.SelectMany(a => a.AssetOffers)
                 .Select(ao => ao.ToDTO())
                 .ToList()
+        };
+    }
+
+    public static ChatMemberDTO ToChatMemberDTO(this User user)
+    {
+        return new ChatMemberDTO
+        {
+            UserId = user.UserId,
+            UserName = user.Username,
+            ProfilePicture = user.ProfilePictureSrc ?? "",
+            PublicKey = user.PublicKey ?? ""
+        };
+    }
+
+    public static UserLoginResponseDTO ToUserLoginResponseDTO(this User user)
+    {
+
+        var chats = user.EnquiriesReceived.Select(e => e.ToEnquiriesReceivedChatDTO()).ToList();
+
+        return new UserLoginResponseDTO
+        {
+            UserId = user.UserId,
+            Username = user.Username,
+            Email = user.Email,
+            PublicKey = user.PublicKey,
+            BannerPictureSrc = user.BannerPictureSrc,
+            Coins = user.Coins,
+            Chats = chats,
+            ProjectsManaging = user.Projects.Select(p => p.ToInfoDTO()).ToList(),
         };
     }
 

@@ -6,8 +6,10 @@ using NetTopologySuite.Geometries;
 
 namespace Application.DTOs.ProjectDTOs;
 
-public class ProjectCreateDTO
+public class ProjectUpdateDTO
 {
+    public int Id { get; set; }
+
     [Required]
     public required string Name { get; set; }
 
@@ -21,15 +23,16 @@ public class ProjectCreateDTO
     public required LocationDTO Location { get; set; }
 
     [Required]
-    public required List<MediaCreateDTO> Medias { get; set; } = [];
+    public required List<MediaUpdateDTO> Medias { get; set; } = [];
 
     [Required]
-    public required List<ProjectRoleCreateDTO> ProjectRoles { get; set; } = [];
+    public required List<ProjectRoleUpdateDTO> ProjectRoles { get; set; } = [];
 
     public Project ToEntity(int projectManagerId)
     {
         return new Project
         {
+            Id = Id,
             ProjectManagerId = projectManagerId,
             Medias = Medias.Select((m, order) => m.ToProjectMediaEntity(order)).ToList(),
             Name = Name,

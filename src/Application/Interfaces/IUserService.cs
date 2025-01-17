@@ -6,9 +6,10 @@ namespace Application.Interfaces;
 
 public interface IUserService
 {
-    Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO);
-    Task<UserDTO> CreateAsync(UserCreateDTO user);
+    Task<UserLoginResponseDTO> AuthenticateAsync(UserLoginDTO userLoginDTO);
+    Task<UserLoginResponseDTO> CreateAsync(UserCreateDTO user);
     Task<UserDTO> GetByIdAsync(int id);
+    Task<UserLoginResponseDTO> GetUserLoginResponseByIdAsync(int id);
     Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId);
     Task<List<SkillDTO>> UpdateSkillsAsync(List<SkillUpdateDTO> userUpdateDTO, int userId);
     Task<UserLocationDTO> UpdateLocationAsync(UserLocationUpdateDTO location, int userId);
@@ -26,4 +27,5 @@ public interface IUserService
     Task UpdateAndVerifyEmailAsync(UserUpdateEmailDTO userUpdateEmailDTO);
     Task<bool> ChangePasswordAsync(UserChangePasswordDTO userChangePasswordDTO);
     Task<bool> DeleteAsync();
+    Task<UserLoginResponseDTO> GetByIdUserLoginInfoAsync(int id);
 }

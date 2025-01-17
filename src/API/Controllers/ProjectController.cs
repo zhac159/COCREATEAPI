@@ -31,6 +31,16 @@ public class ProjectController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(project));
     }
 
+    [HttpPost("update")]
+    public async Task<ActionResult<APIResponse<ProjectDTO>>> Update(
+        ProjectUpdateDTO projectUpdateDTO
+    )
+    {
+        var project = await projectService.UpdateAsync(projectUpdateDTO);
+
+        return Ok(APIResponseFactory.CreateSuccess(project));
+    }
+
     [HttpPost("complete")]
     public async Task<ActionResult<APIResponse<bool>>> Complete(
         ProjectCompleteDTO projectCompleteDTO

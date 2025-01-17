@@ -1,4 +1,3 @@
-using Application.DTOs.EmailDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
@@ -37,24 +36,21 @@ public class UserService : IUserService
         this.messageStorageService = messageStorageService;
     }
 
-    public async Task<UserDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
+    public async Task<UserLoginResponseDTO> AuthenticateAsync(UserLoginDTO userLoginDTO)
     {
-        var user = await userRepository.GetByUsernameOrEmailAsync(userLoginDTO.UsernameOrEmail);
-
-        if (user is null)
-        {
-            throw new UsernameNotFoundException();
-        }
-
+        var user =
+            await userRepository.GetByUsernameOrEmailAsync(userLoginDTO.UsernameOrEmail)
+            ?? throw new UsernameNotFoundException();
+            
         if (user.Password != userLoginDTO.Password)
         {
             throw new InvalidPasswordException();
         }
 
-        return user.ToDTO();
+        return user.ToUserLoginResponseDTO();
     }
 
-    public async Task<UserDTO> CreateAsync(UserCreateDTO userCreateDTO)
+    public async Task<UserLoginResponseDTO> CreateAsync(UserCreateDTO userCreateDTO)
     {
         var user = userCreateDTO.ToEntity();
 
@@ -65,12 +61,12 @@ public class UserService : IUserService
 
         Random random = new Random();
         user.Coins = random.Next(10, 101);
-        
+
         var createdUser = await userRepository.CreateAsync(user);
 
         await emailService.SendAndCacheEmailVerificationAsync(user.Email, createdUser.UserId);
 
-        return createdUser.ToDTO();
+        return createdUser.ToUserLoginResponseDTO();
     }
 
     public async Task<UserDTO> GetByIdAsync(int id)
@@ -83,6 +79,30 @@ public class UserService : IUserService
         }
 
         return user.ToDTO();
+    }
+
+    public async Task<UserLoginResponseDTO> GetByIdUserLoginInfoAsync(int id)
+    {
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(id);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return user.ToUserLoginResponseDTO();
+    }
+
+    public async Task<UserLoginResponseDTO> GetUserLoginResponseByIdAsync(int id)
+    {
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(id);
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return user.ToUserLoginResponseDTO();
     }
 
     public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)

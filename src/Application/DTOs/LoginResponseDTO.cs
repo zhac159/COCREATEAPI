@@ -9,5 +9,5 @@ public class LoginResponseDTO
     public required string Token { get; set; }
 
     [Required]
-    public required UserDTO User { get; set; }
+    public required UserLoginResponseDTO User { get; set; }
 }

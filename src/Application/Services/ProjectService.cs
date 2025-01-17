@@ -58,6 +58,27 @@ public class ProjectService : IProjectService
         return createdProjectDTO;
     }
 
+    public async Task<ProjectDTO> UpdateAsync(ProjectUpdateDTO projectUpdateDTO)
+    {
+        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(projectUpdateDTO.Id);
+
+        if (project is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        if (project.ProjectManagerId != currentUserContextService.GetUserId())
+        {
+            throw new UnauthorizedAccessException();
+        }
+
+        var updatedProject = await projectRepository.UpdateAsync(
+            projectUpdateDTO.ToEntity(currentUserContextService.GetUserId())
+        ) ?? throw new EntityNotFoundException();
+        
+        return updatedProject.ToDTO();
+    }
+
     public async Task<ProjectDTO?> GetByIdAsync(int id)
     {
         var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(id);

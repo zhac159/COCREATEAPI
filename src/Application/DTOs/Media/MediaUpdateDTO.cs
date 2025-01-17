@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
 using Domain.Enums;
 
@@ -6,7 +7,11 @@ namespace Application.DTOs.MediaDTOs;
 public class MediaUpdateDTO
 {
     public int Id { get; set; }
+
+    [Required]
     public required string Uri { get; set; }
+
+    [Required]
     public required MediaType MediaType { get; set; }
 
     public AssetMedia ToAssetMediaEntity(int order)
@@ -19,7 +24,7 @@ public class MediaUpdateDTO
             Order = order
         };
     }
-    
+
     public PortofolioContentMedia ToPortofolioContentMediaEntity(int order)
     {
         return new PortofolioContentMedia

@@ -17,7 +17,7 @@ public class AuthenticationService : IAuthenticationService
         this.config = config;
     }
 
-    public string CreateJWTTokenAsync(UserDTO user)
+    public string CreateJWTTokenAsync(UserLoginResponseDTO user)
     {
         var claims = new[]
         {

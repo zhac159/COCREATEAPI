@@ -64,7 +64,7 @@ namespace JwtInDotnetCore.Controllers
                 tokenLoginDTO.Token
             );
 
-            var user = await userService.GetByIdAsync(userId);
+            var user = await userService.GetByIdUserLoginInfoAsync(userId);
 
             var token = authenticationService.CreateJWTTokenAsync(user);
 

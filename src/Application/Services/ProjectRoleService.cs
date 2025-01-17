@@ -38,7 +38,7 @@ public class ProjectRoleService : IProjectRoleService
 
     public async Task<ProjectRoleDTO> CreateAsync(ProjectRoleCreateDTO projectRoleCreateDTO)
     {
-        var project = await projectRepository.GetByIdAsync(projectRoleCreateDTO.ProjectId);
+        var project = await projectRepository.GetByIdAsync(1);
 
         if (project is null)
         {
@@ -80,9 +80,9 @@ public class ProjectRoleService : IProjectRoleService
             throw new UnauthorizedAccessException();
         }
 
-        await projectRole.UpdateFromDTOAsync(projectRoleUpdateDTO, storageService);
+        // await projectRole.UpdateFromDTOAsync(projectRoleUpdateDTO, storageService);
 
-        await projectRoleRepository.UpdateAsync(projectRole);
+        // await projectRoleRepository.UpdateAsync(projectRole);
 
         return projectRole.ToDTO();
     }

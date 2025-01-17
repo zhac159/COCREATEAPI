@@ -24,12 +24,6 @@ public class ProjectRoleDTO
     public required int Effort { get; set; }
 
     [Required]
-    public required DateTime StartDate { get; set; }
-
-    [Required]
-    public required DateTime EndDate { get; set; }
-
-    [Required]
     public required SkillType SkillType { get; set; }
 
     [Required]

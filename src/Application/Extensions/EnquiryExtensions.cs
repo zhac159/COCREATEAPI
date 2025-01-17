@@ -1,5 +1,7 @@
+using Application.DTOs.Chat;
 using Application.DTOs.EnquiryDTOs;
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.Extensions;
 
@@ -16,6 +18,16 @@ public static class EnquiryExtensions
             ProjectManager = enquiry.ProjectManager?.ToInformationDTO(),
             Shortlisted = enquiry.Shortlisted,
             ProjectId = enquiry.ProjectRole?.ProjectId
+        };
+    }
+
+    public static ChatDTO ToEnquiriesReceivedChatDTO(this Enquiry enquiry)
+    {
+        return new ChatDTO
+        {
+            ChatType = ChatType.Enquiry,
+            ChatIdType = enquiry.Id,
+            ChatMembers = [enquiry.Enquirer!.ToChatMemberDTO()]
         };
     }
 }

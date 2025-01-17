@@ -48,6 +48,7 @@ public static class ServiceColletionExtensions
         return services;
     }
 
+
     public static IServiceCollection AddAzureBlobStorageService(
         this IServiceCollection services,
         IConfiguration configuration

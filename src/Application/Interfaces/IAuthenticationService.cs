@@ -4,6 +4,6 @@ namespace Application.Interfaces;
 
 public interface IAuthenticationService
 {
-    string CreateJWTTokenAsync(UserDTO user);
+    string CreateJWTTokenAsync(UserLoginResponseDTO user);
     int AuthenticateJWTTokenAndGetUserId(string token);
 }

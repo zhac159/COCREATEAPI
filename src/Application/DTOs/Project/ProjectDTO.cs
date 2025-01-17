@@ -15,6 +15,12 @@ public class ProjectDTO
     public required string Name { get; set; }
 
     [Required]
+    public required DateTime Date { get; set; }
+
+    [Required]
+    public required LocationDTO Location { get; set; }
+
+    [Required]
     public required string Description { get; set; }
 
     [Required]

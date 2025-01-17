@@ -16,8 +16,6 @@ public class ProjectRoleConfiguration : IEntityTypeConfiguration<ProjectRole>
         builder.Property(e => e.Description).IsRequired();
         builder.Property(e => e.Cost).IsRequired();
         builder.Property(e => e.Effort).IsRequired();
-        builder.Property(e => e.StartDate).IsRequired();
-        builder.Property(e => e.EndDate).IsRequired();
         builder.Property(e => e.SkillType).IsRequired();
         builder.Property(e => e.Location).IsRequired();
         builder.Property(e => e.Address).IsRequired();
