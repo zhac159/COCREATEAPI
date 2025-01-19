@@ -58,6 +58,22 @@ public class ChatHubService : Hub, IChatHubService
         await messageStorageService.AddEncryptedKeyExchangeAsync(encryptedKeyExchanges);
     }
 
+    
+    public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
+    {
+        var userId = GetUserId();
+
+        var messages = messageCreateDTO.ToEntity(userId);
+
+        await messageStorageService.AddMessagesAsync(messages);
+
+        // var messageDTO = new List<MessageDTO> { message.ToDTO() };
+
+        // await hubContext
+        //     .Clients.User(messageCreateDTO.TargetId.ToString())
+        //     .SendAsync("ReceiveMessages", messageDTO);
+    }
+
     public async Task GetEncryptedKeyExchangesAsync()
     {
         var userId = GetUserId();
@@ -69,27 +85,6 @@ public class ChatHubService : Hub, IChatHubService
         var encryptedKeyExchangesDTO = encryptedKeyExchanges.Select(e => e.ToDTO());
 
         await Clients.Caller.SendAsync("ReceiveEncryptedKeysExchange", encryptedKeyExchangesDTO);
-    }
-
-    public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
-    {
-        var userId = GetUserId();
-
-        var message = messageCreateDTO.ToEntity(userId);
-
-        if (message.ChatType == ChatType.Project)
-        {
-            await SendGroupMessage(message);
-            return;
-        }
-
-        await messageStorageService.AddMessageAsync(message, messageCreateDTO.TargetId);
-
-        var messageDTO = new List<MessageDTO> { message.ToDTO() };
-
-        await hubContext
-            .Clients.User(messageCreateDTO.TargetId.ToString())
-            .SendAsync("ReceiveMessages", messageDTO);
     }
 
     public async Task SendMessageReactionAsync(MessageReactionCreateDTO messageReactionCreateDTO)
@@ -177,30 +172,6 @@ public class ChatHubService : Hub, IChatHubService
         var userId = GetUserId();
 
         await messageStorageService.DeleteMessageAsync(messageIds, userId);
-    }
-
-    private async Task SendGroupMessage(Message message)
-    {
-        var recipientIds = await messageStorageService.GetChatMemebersAsync(message.ChatId);
-
-        if (recipientIds == null || !recipientIds.Contains(message.SenderId))
-        {
-            throw new UnauthorizedAccessException();
-        }
-
-        foreach (var recipientId in recipientIds)
-        {
-            if (recipientId.ToString() != Context.UserIdentifier)
-            {
-                await messageStorageService.AddMessageAsync(message, recipientId);
-
-                var messageDTO = new List<MessageDTO> { message.ToDTO() };
-
-                await hubContext
-                    .Clients.User(recipientId.ToString())
-                    .SendAsync("ReceiveMessages", messageDTO);
-            }
-        }
     }
 
     public async Task SendNewEnquiry(EnquiryDTO enquiryDTO)

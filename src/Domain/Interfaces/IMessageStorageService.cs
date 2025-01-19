@@ -6,7 +6,7 @@ namespace Domain.Interfaces;
 public interface IMessageStorageService
 {
     Task AddMemberToGroupChatAsync(string chatId, int userId);
-    Task AddMessageAsync(Message message, int userId);
+    Task AddMessagesAsync(List<Message> message);
     Task AddMessageReactionAsync(MessageReaction messageReaction, int userId);
     Task AddEncryptedKeyExchangeAsync(List<EncryptedKeyExchange> encryptedKeyExchange);
     Task<IEnumerable<Message>> GetMessagesAsync(int userId);

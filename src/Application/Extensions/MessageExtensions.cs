@@ -10,15 +10,13 @@ public static class MessageExtensions
         return new MessageDTO
         {
             Id = message.Id,
+            Salt = message.Salt,
+            ChatId = message.ChatId,
             SenderId = message.SenderId,
-            TargetId = message.TargetId,
-            ChatType = message.ChatType,
             Content = message.Content,
             Uri = message.Uri,
-            MediaType = message.MediaType,
-            ReplyMessageId = message.ReplyMessageId,
             Date = message.Date,
-            ChatId = message.ChatId
+            ReplyMessageId = message.ReplyMessageId
         };
     }
 

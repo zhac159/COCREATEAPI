@@ -10,39 +10,38 @@ public class MessageCreateDTO
     public required Guid Id { get; set; }
 
     [Required]
-    public required int TargetId { get; set; }
+    public required string Salt { get; set; }
 
     [Required]
-    public ChatType ChatType { get; set; }
+    public required int ChatId { get; set; }
+
+    [Required]
+    public required List<int> TargetUserIds { get; set; } = [];
 
     public string? Content { get; set; }
 
     public string? Uri { get; set; }
-
-    public MediaType? MediaType { get; set; }
 
     [Required]
     public required DateTime Date { get; set; }
 
     public Guid? ReplyMessageId { get; set; }
 
-    [Required]
-    public required string ChatId { get; set; }
-
-    public Message ToEntity(int userId)
+    public List<Message> ToEntity(int userId)
     {
-        return new Message
-        {
-            Id = Id,
-            SenderId = userId,
-            TargetId = TargetId,
-            ChatType = ChatType,
-            Content = Content,
-            ReplyMessageId = ReplyMessageId,
-            Uri = Uri,
-            MediaType = MediaType,
-            Date = Date,
-            ChatId = ChatId
-        };
+        return TargetUserIds
+            .Select(targetUserId => new Message
+            {
+                Id = Id,
+                Salt = Salt,
+                ChatId = ChatId,
+                SenderId = userId,
+                TargetUserId = targetUserId,
+                Content = Content,
+                Uri = Uri,
+                Date = Date,
+                ReplyMessageId = ReplyMessageId,
+            })
+            .ToList();
     }
 }

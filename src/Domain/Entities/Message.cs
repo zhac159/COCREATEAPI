@@ -4,15 +4,14 @@ namespace Domain.Entities
 {
     public class Message
     {
-        public Guid Id { get; set; }
-        public int SenderId { get; set; }
+        public required Guid Id { get; set; }
+        public required string Salt { get; set; }
+        public required int ChatId { get; set; }
+        public required int SenderId { get; set; }
+        public required int TargetUserId { get; set; }
         public string? Content { get; set; }
         public string? Uri { get; set; }
-        public MediaType? MediaType { get; set; }
         public DateTime Date { get; set; }
-        public ChatType ChatType { get; set; }
-        public int TargetId { get; set; }
         public Guid? ReplyMessageId { get; set; }
-        public required string ChatId { get; set; }
     }
 }

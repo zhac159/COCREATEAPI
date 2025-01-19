@@ -28,11 +28,14 @@ public class RedisMessageStorage : IMessageStorageService
         return values.Select(value => (int)value).ToArray();
     }
 
-    public async Task AddMessageAsync(Message message, int userId)
+    public async Task AddMessagesAsync(List<Message> message)
     {
-        var key = $"user:{userId}:messages";
-        var messageString = JsonConvert.SerializeObject(message);
-        await database.HashSetAsync(key, message.Id.ToString(), messageString);
+        foreach (var m in message)
+        {
+            var key = $"user:{m.TargetUserId}:messages";
+            var messageString = JsonConvert.SerializeObject(m);
+            await database.HashSetAsync(key, m.Id.ToString(), messageString);
+        }
     }
 
     public async Task AddMessageReactionAsync(MessageReaction messageReaction, int userId)
