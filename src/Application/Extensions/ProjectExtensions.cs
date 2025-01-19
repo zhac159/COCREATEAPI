@@ -49,8 +49,8 @@ public static class ProjectExtensions
             Id = project.Id,
             Name = project.Name,
             Description = project.Description,
-            ProjectManager = project.ProjectManager?.ToInformationDTO(),
-            ProjectRoles = project.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
+            ProjectManager = project.ProjectManager!.ToInformationDTO()!,
+            ProjectRoles = project!.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
             Medias = project.Medias.Select(media => media.ToDTO()).ToList(),
             ExperiencesMedias = project
                 .Experiences.Concat(project.ProjectRoles.SelectMany(role => role.Experiences))

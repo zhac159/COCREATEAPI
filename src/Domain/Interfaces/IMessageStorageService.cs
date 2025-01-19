@@ -8,7 +8,7 @@ public interface IMessageStorageService
     Task AddMemberToGroupChatAsync(string chatId, int userId);
     Task AddMessageAsync(Message message, int userId);
     Task AddMessageReactionAsync(MessageReaction messageReaction, int userId);
-    Task AddEncryptedKeyExchangeAsync(EncryptedKeyExchange encryptedKeyExchange);
+    Task AddEncryptedKeyExchangeAsync(List<EncryptedKeyExchange> encryptedKeyExchange);
     Task<IEnumerable<Message>> GetMessagesAsync(int userId);
     Task<IEnumerable<int>?> GetChatMemebersAsync(string chatId);
     Task<IEnumerable<EncryptedKeyExchange>> GetEncryptedKeyExchangesAsync(int userId);

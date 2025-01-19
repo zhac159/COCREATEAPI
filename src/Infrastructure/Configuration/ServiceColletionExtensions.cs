@@ -44,10 +44,10 @@ public static class ServiceColletionExtensions
         services.AddScoped<IVoucherCodeRepository, VoucherCodeRepository>();
         services.AddScoped<ISeenMatchesRepository, SeenMatchesRepository>();
         services.AddScoped<ISurveyAnswerRepository, SurveyAnswerRepository>();
+        services.AddScoped<IChatRepository, ChatRepository>();
 
         return services;
     }
-
 
     public static IServiceCollection AddAzureBlobStorageService(
         this IServiceCollection services,

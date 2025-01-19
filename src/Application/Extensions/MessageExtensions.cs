@@ -24,16 +24,16 @@ public static class MessageExtensions
 
     public static EncryptedKeyExchangeDTO ToDTO(this EncryptedKeyExchange encryptedKeyExchange)
     {
-        return new EncryptedKeyExchangeDTO
+        var a = new EncryptedKeyExchangeDTO
         {
             Id = encryptedKeyExchange.Id,
             Nonce = encryptedKeyExchange.Nonce,
             PublicKey = encryptedKeyExchange.PublicKey,
             EncryptedSymmetricKey = encryptedKeyExchange.EncryptedSymmetricKey,
-            TargetId = encryptedKeyExchange.TargetId,
-            SenderId = encryptedKeyExchange.SenderId,
             ChatId = encryptedKeyExchange.ChatId
         };
+
+        return a;
     }
 
     public static MessageReactionDTO ToDTO(this MessageReaction messageReaction)

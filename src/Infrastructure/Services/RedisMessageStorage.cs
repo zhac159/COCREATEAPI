@@ -43,15 +43,14 @@ public class RedisMessageStorage : IMessageStorageService
         await database.HashSetAsync(key, guid, messageReactionString);
     }
 
-    public async Task AddEncryptedKeyExchangeAsync(EncryptedKeyExchange encryptedKeyExchange)
+    public async Task AddEncryptedKeyExchangeAsync(List<EncryptedKeyExchange> encryptedKeyExchange)
     {
-        var key = $"user:{encryptedKeyExchange.TargetId}:encryptedKeyExchanges";
-        var encryptedKeyExchangeString = JsonConvert.SerializeObject(encryptedKeyExchange);
-        await database.HashSetAsync(
-            key,
-            encryptedKeyExchange.Id.ToString(),
-            encryptedKeyExchangeString
-        );
+        foreach (var exchange in encryptedKeyExchange)
+        {
+            var key = $"user:{exchange.TargetUserId}:encryptedKeyExchanges";
+            var encryptedKeyExchangeString = JsonConvert.SerializeObject(exchange);
+            await database.HashSetAsync(key, exchange.Id.ToString(), encryptedKeyExchangeString);
+        }
     }
 
     public async Task<IEnumerable<EncryptedKeyExchange>> GetEncryptedKeyExchangesAsync(int userId)

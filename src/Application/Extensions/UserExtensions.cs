@@ -98,9 +98,6 @@ public static class UserExtensions
 
     public static UserLoginResponseDTO ToUserLoginResponseDTO(this User user)
     {
-
-        var chats = user.EnquiriesReceived.Select(e => e.ToEnquiriesReceivedChatDTO()).ToList();
-
         return new UserLoginResponseDTO
         {
             UserId = user.UserId,
@@ -109,7 +106,7 @@ public static class UserExtensions
             PublicKey = user.PublicKey,
             BannerPictureSrc = user.BannerPictureSrc,
             Coins = user.Coins,
-            Chats = chats,
+            Chats = user.ChatMemberships.Select(cm => cm.Chat.ToDTO()).ToList(),
             ProjectsManaging = user.Projects.Select(p => p.ToInfoDTO()).ToList(),
         };
     }

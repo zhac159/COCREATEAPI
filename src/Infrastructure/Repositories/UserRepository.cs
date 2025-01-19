@@ -69,6 +69,9 @@ public class UserRepository : IUserRepository
             .ThenInclude(e => e.Medias)
             .Include(u => u.ReviewsReceived)
             .ThenInclude(r => r.ReviewerUser)
+            .Include(u => u.ChatMemberships)
+            .ThenInclude(cm => cm.Chat)
+            .ThenInclude(c => c.ChatMemberships)
             .FirstOrDefaultAsync();
 
         FilterCompletedProjects(user);

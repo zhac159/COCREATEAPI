@@ -1,3 +1,4 @@
+using Application.DTOs.Chat;
 using Application.DTOs.ProjectDTOs;
 using Application.Extensions;
 using Application.Interfaces;
@@ -8,54 +9,41 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class ProjectService : IProjectService
+public class ProjectService(
+    IProjectRepository projectRepository,
+    ICurrentUserContextService currentUserContextService,
+    IMessageStorageService messageStorageService,
+    IExperienceRepository experienceRepository,
+    IReviewService reviewService,
+    IChatHubService chatHubService,
+    IUserRepository userRepository,
+    IChatService chatService
+) : IProjectService
 {
-    private readonly IProjectRepository projectRepository;
-    private readonly ICurrentUserContextService currentUserContextService;
-    private readonly IExperienceRepository experienceRepository;
-    private readonly IMessageStorageService messageStorageService;
-    private readonly IReviewService reviewService;
-    private readonly IChatHubService chatHubService;
-    private readonly IUserRepository userRepository;
-
-    public ProjectService(
-        IProjectRepository projectRepository,
-        ICurrentUserContextService currentUserContextService,
-        IMessageStorageService messageStorageService,
-        IExperienceRepository experienceRepository,
-        IReviewService reviewService,
-        IChatHubService chatHubService,
-        IUserRepository userRepository
-    )
-    {
-        this.projectRepository = projectRepository;
-        this.currentUserContextService = currentUserContextService;
-        this.messageStorageService = messageStorageService;
-        this.reviewService = reviewService;
-        this.experienceRepository = experienceRepository;
-        this.chatHubService = chatHubService;
-        this.userRepository = userRepository;
-    }
-
-    public async Task<ProjectDTO> CreateAsync(ProjectCreateDTO projectCreateDTO)
+    public async Task<EntityWithChatDTO<ProjectDTO>> CreateAsync(ProjectCreateDTO projectCreateDTO)
     {
         var project = projectCreateDTO.ToEntity(currentUserContextService.GetUserId());
 
-        var createdProject = await projectRepository.CreateAsync(project);
+        var createdProject =
+            await projectRepository.CreateAsync(project) ?? throw new EntityNotFoundException();
 
-        if (createdProject is null)
-        {
-            throw new EntityNotFoundException();
-        }
-
-        await messageStorageService.AddMemberToGroupChatAsync(
-            messageStorageService.GetChatId(ChatType.Project, createdProject.Id),
-            currentUserContextService.GetUserId()
-        );
+        // await messageStorageService.AddMemberToGroupChatAsync(
+        //     messageStorageService.GetChatId(ChatType.Project, createdProject.Id),
+        //     currentUserContextService.GetUserId()
+        // );
 
         var createdProjectDTO = createdProject.ToDTO();
+        
+        var chatDTO = await chatService.CreateAsync(
+            new()
+            {
+                ChatType = ChatType.Project,
+                ChatTypeId = createdProject.Id,
+                GroupChatName = createdProject.Name
+            }
+        );
 
-        return createdProjectDTO;
+        return new EntityWithChatDTO<ProjectDTO> { Entity = createdProjectDTO, Chat = chatDTO };
     }
 
     public async Task<ProjectDTO> UpdateAsync(ProjectUpdateDTO projectUpdateDTO)
@@ -72,10 +60,11 @@ public class ProjectService : IProjectService
             throw new UnauthorizedAccessException();
         }
 
-        var updatedProject = await projectRepository.UpdateAsync(
-            projectUpdateDTO.ToEntity(currentUserContextService.GetUserId())
-        ) ?? throw new EntityNotFoundException();
-        
+        var updatedProject =
+            await projectRepository.UpdateAsync(
+                projectUpdateDTO.ToEntity(currentUserContextService.GetUserId())
+            ) ?? throw new EntityNotFoundException();
+
         return updatedProject.ToDTO();
     }
 

@@ -21,6 +21,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISeenMatchesService, SeenMatchesService>();
         services.AddScoped<ISurveyAnswerService, SurveyAnswerService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IChatService, ChatService>();
 
         return services;
     }

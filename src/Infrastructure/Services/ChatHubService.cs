@@ -47,22 +47,15 @@ public class ChatHubService : Hub, IChatHubService
         await base.OnDisconnectedAsync(exception);
     }
 
-    public async Task KeyExchangeAsync(EncryptedKeyExchangeCreateDTO encryptedKeyExchangeCreateDTO)
+    public async Task KeyExchangeAsync(
+        List<EncryptedKeyExchangeCreateDTO> encryptedKeyExchangeCreateDTO
+    )
     {
-        var userId = GetUserId();
+        var encryptedKeyExchanges = encryptedKeyExchangeCreateDTO
+            .Select(e => e.ToEntity())
+            .ToList();
 
-        var encryptedKeyExchange = encryptedKeyExchangeCreateDTO.ToEntity(userId);
-
-        await messageStorageService.AddEncryptedKeyExchangeAsync(encryptedKeyExchange);
-
-        var encryptedKeyExchangeDTO = new List<EncryptedKeyExchangeDTO>
-        {
-            encryptedKeyExchange.ToDTO()
-        };
-
-        await hubContext
-            .Clients.User(encryptedKeyExchangeCreateDTO.TargetId.ToString())
-            .SendAsync("ReceiveEncryptedKeysExchange", encryptedKeyExchangeDTO);
+        await messageStorageService.AddEncryptedKeyExchangeAsync(encryptedKeyExchanges);
     }
 
     public async Task GetEncryptedKeyExchangesAsync()
@@ -249,5 +242,5 @@ public class ChatHubService : Hub, IChatHubService
     private int GetUserId()
     {
         return int.Parse(Context.UserIdentifier ?? throw new Exception("User id is null"));
-    }   
+    }
 }

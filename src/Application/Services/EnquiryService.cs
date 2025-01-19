@@ -8,35 +8,17 @@ using Domain.Interfaces;
 
 namespace Application.Services;
 
-public class EnquiryService : IEnquiryService
+public class EnquiryService(
+    IEnquiryRepository enquiryRepository,
+    IProjectRoleRepository projectRoleRepository,
+    IUserRepository userRepository,
+    ICurrentUserContextService currentUserContextService,
+    IMessageStorageService messageStorageService,
+    IChatHubService chatHubService,
+    IProjectRepository projectRepository,
+    IChatService chatService
+) : IEnquiryService
 {
-    private readonly IEnquiryRepository enquiryRepository;
-    private readonly IProjectRoleRepository projectRoleRepository;
-    private readonly IUserRepository userRepository;
-    private readonly ICurrentUserContextService currentUserContextService;
-    private readonly IMessageStorageService messageStorageService;
-    private readonly IChatHubService chatHubService;
-    private readonly IProjectRepository projectRepository;
-
-    public EnquiryService(
-        IEnquiryRepository enquiryRepository,
-        IProjectRoleRepository projectRoleRepository,
-        IUserRepository userRepository,
-        ICurrentUserContextService currentUserContextService,
-        IMessageStorageService messageStorageService,
-        IChatHubService chatHubService,
-        IProjectRepository projectRepository
-    )
-    {
-        this.enquiryRepository = enquiryRepository;
-        this.projectRoleRepository = projectRoleRepository;
-        this.userRepository = userRepository;
-        this.currentUserContextService = currentUserContextService;
-        this.messageStorageService = messageStorageService;
-        this.chatHubService = chatHubService;
-        this.projectRepository = projectRepository;
-    }
-
     public async Task<EnquiryDTO> CreateAsync(EnquiryCreateDTO enquiryDTO)
     {
         var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
@@ -98,13 +80,24 @@ public class EnquiryService : IEnquiryService
 
         await chatHubService.SendNewShortlist(enquiry);
 
+        await chatService.CreateAsync(
+            new()
+            {
+                ChatType = ChatType.Enquiry,
+                ChatTypeId = enquiry.Id,
+                AdditionalUserId = enquiry.EnquirerId
+            }
+        );
+
         return true;
     }
 
     public async Task<ProjectDTO> ConfirmAsync(EnquiryConfirmDTO enquiryConfirmDTO)
     {
-        var enquiry = await enquiryRepository.GetByIdAsync(enquiryConfirmDTO.EnquiryId) ?? throw new EntityNotFoundException();
-        
+        var enquiry =
+            await enquiryRepository.GetByIdAsync(enquiryConfirmDTO.EnquiryId)
+            ?? throw new EntityNotFoundException();
+
         var projectRole = await projectRoleRepository.GetByIdIncludeAllPropertiesAsync(
             enquiry.ProjectRoleId
         );
@@ -140,7 +133,9 @@ public class EnquiryService : IEnquiryService
             enquiry.EnquirerId
         );
 
-        var project = await projectRepository.GetByIdIncludeAllPropertiesAsync(projectRole.ProjectId) ?? throw new EntityNotFoundException();
+        var project =
+            await projectRepository.GetByIdIncludeAllPropertiesAsync(projectRole.ProjectId)
+            ?? throw new EntityNotFoundException();
 
         return project.ToDTO();
     }

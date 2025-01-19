@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Domain.Enums;
 
 namespace Application.DTOs.MessageDTOs;
 
@@ -18,11 +17,5 @@ public class EncryptedKeyExchangeDTO
     public required string EncryptedSymmetricKey { get; set; }
 
     [Required]
-    public int TargetId { get; set; }
-
-    [Required]
-    public required string ChatId { get; set; }
-
-    [Required]
-    public int SenderId { get; set; }
+    public required int ChatId { get; set; }
 }

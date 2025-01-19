@@ -6,11 +6,17 @@ namespace Application.DTOs.Chat;
 public class ChatDTO
 {
     [Required]
+    public required int Id { get; set; }
+
+    [Required]
     public required ChatType ChatType { get; set; }
 
     [Required]
-    public required int ChatIdType { get; set; }
+    public required int ChatTypeId { get; set; }
 
     [Required]
-    public required ChatMemberDTO[] ChatMembers { get; set; }
+    public string? GroupChatName { get; set; }
+
+    [Required]
+    public required List<ChatMemberDTO> ChatMembers { get; set; }
 }

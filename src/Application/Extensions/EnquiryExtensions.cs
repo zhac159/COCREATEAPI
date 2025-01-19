@@ -20,14 +20,4 @@ public static class EnquiryExtensions
             ProjectId = enquiry.ProjectRole?.ProjectId
         };
     }
-
-    public static ChatDTO ToEnquiriesReceivedChatDTO(this Enquiry enquiry)
-    {
-        return new ChatDTO
-        {
-            ChatType = ChatType.Enquiry,
-            ChatIdType = enquiry.Id,
-            ChatMembers = [enquiry.Enquirer!.ToChatMemberDTO()]
-        };
-    }
 }

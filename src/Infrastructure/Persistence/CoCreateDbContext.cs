@@ -21,6 +21,8 @@ namespace Infrastructure.Persistence
         public DbSet<AssetOffer> AssetOffers { get; set; }
         public DbSet<VoucherCode> VoucherCode { get; set; }
         public DbSet<SurveyAnswer> SurveyAnswers { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMembership> ChatMemberships { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoCreateDbContext).Assembly);

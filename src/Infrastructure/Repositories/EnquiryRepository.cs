@@ -33,7 +33,9 @@ public class EnquiryRepository : IEnquiryRepository
 
     public async Task<Enquiry?> GetByIdAsync(int id)
     {
-        return await context.Enquiries.FindAsync(id);
+        return await context
+            .Enquiries.Include(enquiry => enquiry.Enquirer)
+            .FirstOrDefaultAsync(enquiry => enquiry.Id == id);
     }
 
     public async Task<Enquiry?> GetByIdIncludeAllAsync(int id)

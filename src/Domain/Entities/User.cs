@@ -29,4 +29,5 @@ public class User
     public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
     public List<Enquiry> EnquiriesReceived { get; set; } = new List<Enquiry>();
     public List<Experience> Experiences { get; set; } = new List<Experience>();
+    public List<ChatMembership> ChatMemberships { get; set; } = new List<ChatMembership>();
 }

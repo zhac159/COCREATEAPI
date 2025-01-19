@@ -16,15 +16,12 @@ public class EncryptedKeyExchangeCreateDTO
     public required string EncryptedSymmetricKey { get; set; }
 
     [Required]
-    public int TargetId { get; set; }
+    public required int TargetUserId { get; set; }
 
     [Required]
-    public ChatType ChatType { get; set; }
+    public required int ChatId { get; set; }
 
-    [Required]
-    public required string ChatId { get; set; }
-
-    public EncryptedKeyExchange ToEntity(int userId)
+    public EncryptedKeyExchange ToEntity()
     {
         return new EncryptedKeyExchange
         {
@@ -32,9 +29,8 @@ public class EncryptedKeyExchangeCreateDTO
             PublicKey = PublicKey,
             Nonce = Nonce,
             EncryptedSymmetricKey = EncryptedSymmetricKey,
-            TargetId = TargetId,
-            SenderId = userId,
             ChatId = ChatId,
+            TargetUserId = TargetUserId
         };
     }
 }
