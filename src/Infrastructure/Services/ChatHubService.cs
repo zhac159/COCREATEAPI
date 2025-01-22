@@ -58,7 +58,6 @@ public class ChatHubService : Hub, IChatHubService
         await messageStorageService.AddEncryptedKeyExchangeAsync(encryptedKeyExchanges);
     }
 
-    
     public async Task SendMessageAsync(MessageCreateDTO messageCreateDTO)
     {
         var userId = GetUserId();
@@ -67,11 +66,24 @@ public class ChatHubService : Hub, IChatHubService
 
         await messageStorageService.AddMessagesAsync(messages);
 
-        // var messageDTO = new List<MessageDTO> { message.ToDTO() };
+        foreach (var message in messages)
+        {
+            var messagesDTO = new List<MessageDTO> { message.ToDTO() };
+            await hubContext
+                .Clients.User(message.TargetUserId.ToString())
+                .SendAsync("ReceiveMessages", messagesDTO);
+        }
+    }
 
-        // await hubContext
-        //     .Clients.User(messageCreateDTO.TargetId.ToString())
-        //     .SendAsync("ReceiveMessages", messageDTO);
+    public async Task GetMessagesAsync()
+    {
+        var userId = GetUserId();
+
+        var messages = await messageStorageService.GetMessagesAsync(userId);
+
+        var messagesDTO = messages.Select(m => m.ToDTO());
+
+        await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
     }
 
     public async Task GetEncryptedKeyExchangesAsync()
@@ -145,17 +157,6 @@ public class ChatHubService : Hub, IChatHubService
         );
     }
 
-    public async Task GetMessagesAsync()
-    {
-        var userId = GetUserId();
-
-        var messages = await messageStorageService.GetMessagesAsync(userId);
-
-        var messagesDTO = messages.Select(m => m.ToDTO());
-
-        await Clients.Caller.SendAsync("ReceiveMessages", messagesDTO);
-    }
-
     public async Task GetMessagesReactionsAsync()
     {
         var userId = GetUserId();
@@ -167,7 +168,7 @@ public class ChatHubService : Hub, IChatHubService
         await Clients.Caller.SendAsync("ReceiveMessagesReactions", messagesReactionsDTO);
     }
 
-    public async Task AknowledgeMessageAsync(IEnumerable<Guid> messageIds)
+    public async Task AknowledgeMessagesAsync(IEnumerable<Guid> messageIds)
     {
         var userId = GetUserId();
 
