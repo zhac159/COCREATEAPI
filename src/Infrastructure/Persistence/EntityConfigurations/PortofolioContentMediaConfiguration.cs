@@ -16,9 +16,9 @@ public class PortofolioContentMediaConfiguration : IEntityTypeConfiguration<Port
         builder.Property(e => e.Order).IsRequired();
 
         builder
-            .HasOne(e => e.PortofolioContent)
-            .WithMany(e => e.Medias)
-            .HasForeignKey(e => e.PortofolioContentId)
+            .HasOne(e => e.User)
+            .WithMany(e => e.PortofolioMedias)
+            .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -119,6 +119,14 @@ public class UserController : COCREATEAPIControllerBase
         return Ok(APIResponseFactory.CreateSuccess(profile));
     }
 
+    [HttpGet("profile-details")]
+    public async Task<ActionResult<APIResponse<UserProfileDetailsDTO>>> GetProfileDetails()
+    {
+        var profile = await userService.GetProfileDetails();
+
+        return Ok(APIResponseFactory.CreateSuccess(profile));
+    }
+
     [HttpPost("verify-email")]
     public async Task<ActionResult<APIResponse<bool>>> VerifyEmail(
         UserVerifyEmailDTO userVerifyEmailDTO
@@ -156,7 +164,7 @@ public class UserController : COCREATEAPIControllerBase
 
         return Ok(APIResponseFactory.CreateSuccess(successfull));
     }
-    
+
     [HttpPost("authenticate-token")]
     public async Task<ActionResult<APIResponse<UserDTO>>> GetAuthenticatedUser()
     {

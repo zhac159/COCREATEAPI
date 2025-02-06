@@ -4,7 +4,7 @@ using Application.DTOs.SkillDTOs;
 
 namespace Application.DTOs.UserDtos;
 
-public class UserUpdateDTO
+public class UserProfileDetailsDTO
 {
     [Required]
     public required string Username { get; set; }
@@ -14,16 +14,16 @@ public class UserUpdateDTO
     public required string Email { get; set; }
 
     [Required]
-    public required string AboutYou { get; set; }
+    public string? AboutYou { get; set; } = "";
 
     [Required]
-    public required LocationDTO Location { get; set; }
+    public required LocationDTO? Location { get; set; }
 
     [Required]
-    public required MediaCreateDTO ProfilePicture { get; set; }
+    public required MediaDTO ProfilePicture { get; set; }
 
     [Required]
-    public List<SkillUpdateDTO> Skills { get; set; } = [];
+    public List<SkillDTO> Skills { get; set; } = [];
 
     [Required]
     public List<MediaUpdateDTO> PortofolioMedias { get; set; } = [];

@@ -1,10 +1,12 @@
-using Application.DTOs.AssetOfferDTOs;
+using Application.DTOs;
 using Application.DTOs.Chat;
-using Application.DTOs.ProjectDTOs;
+using Application.DTOs.MediaDTOs;
 using Application.DTOs.SkillDTOs;
 using Application.DTOs.UserDtos;
 using Application.Interfaces;
 using Domain.Entities;
+using Domain.Enums;
+using NetTopologySuite.Geometries;
 
 namespace Application.Extensions;
 
@@ -15,6 +17,11 @@ public static class UserExtensions
         user.Username = userUpdateDTO.Username;
         user.Email = userUpdateDTO.Email;
         user.AboutYou = userUpdateDTO.AboutYou;
+        user.Location = new Point(userUpdateDTO.Location.Longitude, userUpdateDTO.Location.Latitude)
+        {
+            SRID = 4326
+        };
+        user.Address = userUpdateDTO.Location.Address;
 
         if (userUpdateDTO.Skills is not null)
         {
@@ -122,9 +129,21 @@ public static class UserExtensions
         };
     }
 
-    public static UserLocationDTO ToLocationDTO(this User user)
+    public static UserLocationDTO ToUserLocationDTO(this User user)
     {
         return new UserLocationDTO { Address = user.Address };
+    }
+
+    public static LocationDTO? ToLocationDTO(this User user)
+    {
+        if (user.Location is null)
+            return null;
+        return new LocationDTO
+        {
+            Address = user.Address ?? "",
+            Latitude = user.Location.Y,
+            Longitude = user.Location.X
+        };
     }
 
     public static async Task UpdatePortofolioFromDTOAsync(
@@ -191,6 +210,23 @@ public static class UserExtensions
             ReviewsReceived = user.ReviewsReceived.Select(r => r.ToDTO()).ToList(),
             PortofolioContents = user.PortofolioContents.Select(pc => pc.ToDTO()).ToList(),
             Experiences = user.Experiences.Select(e => e.ToDTO()).ToList()
+        };
+    }
+
+    public static UserProfileDetailsDTO ToUserProfileDetailsDTO(this User user)
+    {
+        return new UserProfileDetailsDTO
+        {
+            Username = user.Username,
+            Email = user.Email,
+            AboutYou = user.AboutYou,
+            Location = user.ToLocationDTO(),
+            Skills = user.Skills.Select(s => s.ToDTO()).ToList(),
+            ProfilePicture = new MediaDTO
+            {
+                Uri = user.ProfilePictureSrc ?? "",
+                MediaType = MediaType.Image
+            },
         };
     }
 }

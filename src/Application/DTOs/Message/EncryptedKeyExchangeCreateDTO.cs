@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Domain.Entities;
-using Domain.Enums;
 
 namespace Application.DTOs.MessageDTOs;
 

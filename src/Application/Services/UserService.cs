@@ -41,7 +41,7 @@ public class UserService : IUserService
         var user =
             await userRepository.GetByUsernameOrEmailAsync(userLoginDTO.UsernameOrEmail)
             ?? throw new UsernameNotFoundException();
-            
+
         if (user.Password != userLoginDTO.Password)
         {
             throw new InvalidPasswordException();
@@ -165,7 +165,7 @@ public class UserService : IUserService
 
         var updatedUser = await userRepository.UpdateAsync(user);
 
-        return updatedUser.ToLocationDTO();
+        return updatedUser.ToUserLocationDTO();
     }
 
     public async Task<ProjectWithMatchingRolesListDTO> GetMatchingProjectRolesAsync(
@@ -293,6 +293,20 @@ public class UserService : IUserService
         }
 
         return user.ToUserProfileDTO();
+    }
+
+    public async Task<UserProfileDetailsDTO> GetProfileDetails()
+    {
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(
+            currentUserContextService.GetUserId()
+        );
+
+        if (user is null)
+        {
+            throw new EntityNotFoundException();
+        }
+
+        return user.ToUserProfileDetailsDTO();
     }
 
     public async Task<bool> VerifyEmailAsync(UserVerifyEmailDTO userVerifyEmailDTO)

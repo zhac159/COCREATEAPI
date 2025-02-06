@@ -33,7 +33,7 @@ public class ProjectService(
         // );
 
         var createdProjectDTO = createdProject.ToDTO();
-        
+
         var chatDTO = await chatService.CreateAsync(
             new()
             {
@@ -60,12 +60,11 @@ public class ProjectService(
             throw new UnauthorizedAccessException();
         }
 
-        var updatedProject =
-            await projectRepository.UpdateAsync(
-                projectUpdateDTO.ToEntity(currentUserContextService.GetUserId())
-            ) ?? throw new EntityNotFoundException();
+        project.UpdateFromDTO(projectUpdateDTO);
 
-        return updatedProject.ToDTO();
+        await projectRepository.UpdateAsync(project);
+
+        return project.ToDTO();
     }
 
     public async Task<ProjectDTO?> GetByIdAsync(int id)

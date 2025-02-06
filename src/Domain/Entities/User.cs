@@ -8,7 +8,7 @@ public class User
     public required string Username { get; set; }
     public required string Password { get; set; }
     public required string Email { get; set; }
-    public  bool IsEmailVerified { get; set; } = false;
+    public bool IsEmailVerified { get; set; } = false;
     public string? Address { get; set; }
     public Point? Location { get; set; }
     public double Rating { get; set; } = 0;
@@ -21,6 +21,8 @@ public class User
     public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
     public List<Skill> Skills { get; set; } = new List<Skill>();
     public List<PortofolioContent> PortofolioContents { get; set; } = new List<PortofolioContent>();
+    public List<PortofolioContentMedia> PortofolioMedias { get; set; } =
+        new List<PortofolioContentMedia>();
     public List<Review> ReviewsGiven { get; set; } = new List<Review>();
     public List<Review> ReviewsReceived { get; set; } = new List<Review>();
     public List<Asset> Assets { get; set; } = new List<Asset>();

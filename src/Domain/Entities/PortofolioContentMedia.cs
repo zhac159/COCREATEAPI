@@ -8,6 +8,6 @@ public class PortofolioContentMedia
     public required string Uri { get; set; }
     public required MediaType MediaType { get; set; }
     public required int Order { get; set; }
-    public int PortofolioContentId { get; set; }
-    public PortofolioContent? PortofolioContent { get; set; }
+    public int UserId { get; set; }
+    public User? User { get; set; }
 }

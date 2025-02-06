@@ -35,19 +35,31 @@ public static class ProjectRoleeExtensions
 
     public static void UpdateFromDTO(
         this ProjectRole projectRole,
-        ProjectRoleUpdateDTO? projectRoleUpdateDTO
+        ProjectRoleUpdateDTO projectRoleUpdateDTO
     )
     {
-        if (projectRoleUpdateDTO is null) return;
-        
+        if (projectRoleUpdateDTO is null)
+            return;
         projectRole.Name = projectRoleUpdateDTO.Name;
         projectRole.Description = projectRoleUpdateDTO.Description;
         projectRole.Cost = projectRoleUpdateDTO.Cost;
+        projectRole.Effort = 0; // or set to 0 if that is required
         projectRole.SkillType = projectRoleUpdateDTO.SkillType;
-        projectRole.Location = new Point(0, 0) { SRID = 4326 };
-        projectRole.Address = "";
-        projectRole.Keywords = [];
         projectRole.Remote = projectRoleUpdateDTO.Remote;
+        // Adjust the point coordinates based on your DTO (assuming Longitude and Latitude exist)
+        projectRole.Location = new Point(0, 0) { SRID = 4326 };
+        projectRole.Address = "Address";
+        projectRole.Medias = [];
+        projectRole.Keywords = [];
+
+        // projectRole.Name = projectRoleUpdateDTO.Name;
+        // projectRole.Description = projectRoleUpdateDTO.Description;
+        // projectRole.Cost = projectRoleUpdateDTO.Cost;
+        // projectRole.SkillType = projectRoleUpdateDTO.SkillType;
+        // projectRole.Location = new Point(0, 0) { SRID = 4326 };
+        // projectRole.Address = "";
+        // projectRole.Keywords = [];
+        // projectRole.Remote = projectRoleUpdateDTO.Remote;
 
         // if (projectRoleUpdateDTO.Medias is not null)
         // {
