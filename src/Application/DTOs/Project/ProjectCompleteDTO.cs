@@ -20,7 +20,7 @@ public class ProjectCompleteDTO
             ExperienceType = ExperienceType.Project,
             UserId = userId,
             Description = Description,
-            Medias = Medias.Select((media, order) => media.ToExperienceMediaEntity(order)).ToList()
+            Medias = [.. Medias.Select((media, order) => media.ToExperienceMediaEntity(order))]
         };
     }
 }

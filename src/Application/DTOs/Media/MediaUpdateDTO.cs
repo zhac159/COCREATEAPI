@@ -25,9 +25,9 @@ public class MediaUpdateDTO
         };
     }
 
-    public PortofolioContentMedia ToPortofolioContentMediaEntity(int order)
+    public PortfolioContentMedia ToPortfolioContentMediaEntity(int order)
     {
-        return new PortofolioContentMedia
+        return new PortfolioContentMedia
         {
             Id = Id,
             Uri = Uri,

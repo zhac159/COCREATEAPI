@@ -22,13 +22,22 @@ public static class UserExtensions
             SRID = 4326
         };
         user.Address = userUpdateDTO.Location.Address;
+        user.ProfilePictureSrc = userUpdateDTO.ProfilePicture?.Uri;
+
+        user.PortfolioMedias =
+        [
+            .. userUpdateDTO.PortfolioMedias.Select(
+                (pm, index) => pm.ToPortfolioContentMediaEntity(index)
+            )
+        ];
 
         if (userUpdateDTO.Skills is not null)
         {
             user.Skills?.RemoveAll(s => !userUpdateDTO.Skills.Any(su => su.Id == s.Id));
 
-            user.Skills = userUpdateDTO
-                .Skills.Select(su =>
+            user.Skills =
+            [
+                .. userUpdateDTO.Skills.Select(su =>
                 {
                     var skill = user.Skills?.FirstOrDefault(s => s.Id == su.Id);
                     if (skill is not null)
@@ -38,7 +47,7 @@ public static class UserExtensions
                     }
                     return su.ToEntity();
                 })
-                .ToList();
+            ];
         }
     }
 
@@ -46,8 +55,9 @@ public static class UserExtensions
     {
         user.Skills?.RemoveAll(s => !skillUpdateDTOs.Any(su => su.Id == s.Id));
 
-        user.Skills = skillUpdateDTOs
-            .Select(su =>
+        user.Skills =
+        [
+            .. skillUpdateDTOs.Select(su =>
             {
                 var skill = user.Skills?.FirstOrDefault(s => s.Id == su.Id);
                 if (skill is not null)
@@ -57,7 +67,7 @@ public static class UserExtensions
                 }
                 return su.ToEntity();
             })
-            .ToList();
+        ];
     }
 
     public static UserDTO ToDTO(this User user)
@@ -77,18 +87,14 @@ public static class UserExtensions
             Latitude = user.Location != null ? user.Location.Y : 0,
             BannerPictureSrc = user.BannerPictureSrc,
             PublicKey = user.PublicKey,
-            Skills = user.Skills.Select(s => s.ToDTO()).ToList(),
-            PortofolioContents = user.PortofolioContents.Select(pc => pc.ToDTO()).ToList(),
-            ReviewsReceived = user.ReviewsReceived.Select(r => r.ToDTO()).ToList(),
-            Experiences = user.Experiences.Select(e => e.ToDTO()).ToList(),
-            Assets = user.Assets.Select(a => a.ToDTO()).ToList(),
-            Projects = user.Projects.Select(p => p.ToDTO()).ToList(),
-            Enquiries = user.Enquiries.Select(e => e.ToDTO()).ToList(),
-            AssignedProjects = user.ProjectRoles.Select(pr => pr.Project!.ToDTO()).ToList(),
-            AssetOffers = user
-                .Assets.SelectMany(a => a.AssetOffers)
-                .Select(ao => ao.ToDTO())
-                .ToList()
+            Skills = [.. user.Skills.Select(s => s.ToDTO())],
+            ReviewsReceived = [.. user.ReviewsReceived.Select(r => r.ToDTO())],
+            Experiences = [.. user.Experiences.Select(e => e.ToDTO())],
+            Assets = [.. user.Assets.Select(a => a.ToDTO())],
+            Projects = [.. user.Projects.Select(p => p.ToDTO())],
+            Enquiries = [.. user.Enquiries.Select(e => e.ToDTO())],
+            AssignedProjects = [.. user.ProjectRoles.Select(pr => pr.Project!.ToDTO())],
+            AssetOffers = [.. user.Assets.SelectMany(a => a.AssetOffers).Select(ao => ao.ToDTO())]
         };
     }
 
@@ -111,10 +117,10 @@ public static class UserExtensions
             Username = user.Username,
             Email = user.Email,
             PublicKey = user.PublicKey,
-            BannerPictureSrc = user.BannerPictureSrc,
+            ProfilePicture = user.ProfilePictureSrc,
             Coins = user.Coins,
-            Chats = user.ChatMemberships.Select(cm => cm.Chat.ToDTO()).ToList(),
-            ProjectsManaging = user.Projects.Select(p => p.ToInfoDTO()).ToList(),
+            Chats = [.. user.ChatMemberships.Select(cm => cm.Chat.ToDTO())],
+            ProjectsManaging = [.. user.Projects.Select(p => p.ToInfoDTO())],
         };
     }
 
@@ -146,57 +152,6 @@ public static class UserExtensions
         };
     }
 
-    public static async Task UpdatePortofolioFromDTOAsync(
-        this User user,
-        UserPortofolioUpdateDTO userPortofolioUpdateDTO,
-        IStorageService storageService
-    )
-    {
-        if (userPortofolioUpdateDTO.AboutYou is not null)
-        {
-            user.AboutYou = userPortofolioUpdateDTO.AboutYou;
-        }
-
-        if (userPortofolioUpdateDTO.PortofolioContents is not null)
-        {
-            user.PortofolioContents?.RemoveAll(pc =>
-                !userPortofolioUpdateDTO.PortofolioContents.Any(pcu => pcu.Id == pc.Id)
-            );
-
-            var portofolioContentTasks = userPortofolioUpdateDTO.PortofolioContents.Select(
-                async (portofolioContentUpdateDTO, order) =>
-                {
-                    var portofolioContent = user.PortofolioContents?.FirstOrDefault(pc =>
-                        pc.Id == portofolioContentUpdateDTO.Id
-                    );
-                    if (portofolioContent is not null)
-                    {
-                        await portofolioContent.UpdateFromDTOAsync(
-                            portofolioContentUpdateDTO,
-                            storageService
-                        );
-                        return portofolioContent;
-                    }
-                    return portofolioContentUpdateDTO.ToPortofolioContentEntity();
-                }
-            );
-
-            user.PortofolioContents = (await Task.WhenAll(portofolioContentTasks)).ToList();
-        }
-    }
-
-    public static UserPortofolioDTO ToPortofolioDTO(this User user)
-    {
-        return new UserPortofolioDTO
-        {
-            AboutYou = user.AboutYou,
-            PortofolioContents =
-                user.PortofolioContents != null
-                    ? user.PortofolioContents.Select(pc => pc.ToDTO()).ToList()
-                    : null
-        };
-    }
-
     public static UserProfileDTO ToUserProfileDTO(this User user)
     {
         return new UserProfileDTO
@@ -206,10 +161,9 @@ public static class UserExtensions
             AboutYou = user.AboutYou,
             Rating = user.Rating,
             TotalReviews = user.TotalReviews,
-            Skills = user.Skills.Select(s => s.ToDTO()).ToList(),
-            ReviewsReceived = user.ReviewsReceived.Select(r => r.ToDTO()).ToList(),
-            PortofolioContents = user.PortofolioContents.Select(pc => pc.ToDTO()).ToList(),
-            Experiences = user.Experiences.Select(e => e.ToDTO()).ToList()
+            Skills = [.. user.Skills.Select(s => s.ToDTO())],
+            ReviewsReceived = [.. user.ReviewsReceived.Select(r => r.ToDTO())],
+            Experiences = [.. user.Experiences.Select(e => e.ToDTO())]
         };
     }
 
@@ -221,12 +175,13 @@ public static class UserExtensions
             Email = user.Email,
             AboutYou = user.AboutYou,
             Location = user.ToLocationDTO(),
-            Skills = user.Skills.Select(s => s.ToDTO()).ToList(),
+            Skills = [.. user.Skills.Select(s => s.ToDTO())],
             ProfilePicture = new MediaDTO
             {
                 Uri = user.ProfilePictureSrc ?? "",
                 MediaType = MediaType.Image
             },
+            PortfolioMedias = [.. user.PortfolioMedias.Select(pm => pm.ToDTO())]
         };
     }
 }

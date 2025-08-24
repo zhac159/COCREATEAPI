@@ -15,7 +15,7 @@ public class SkillUpdateDTO
     public required SkillGroupType SkillGroupType { get; set; }
     public string? Description { get; set; }
     public int Level { get; set; }
-    public required List<string> Keywords { get; set; }
+    public List<string> Keywords { get; set; } = [];
 
     public Skill ToEntity()
     {

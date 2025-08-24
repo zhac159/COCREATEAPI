@@ -9,24 +9,11 @@ namespace JwtInDotnetCore.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : ControllerBase
+    public class LoginController(
+        IUserService userService,
+        IAuthenticationService authenticationService
+        ) : ControllerBase
     {
-        private readonly IUserService userService;
-
-        private readonly ILogger<LoginController> logger;
-        private readonly IAuthenticationService authenticationService;
-
-        public LoginController(
-            IUserService userService,
-            ILogger<LoginController> logger,
-            IAuthenticationService authenticationService
-        )
-        {
-            this.userService = userService;
-            this.logger = logger;
-            this.authenticationService = authenticationService;
-        }
-
         [HttpPost]
         public async Task<ActionResult<APIResponse<LoginResponseDTO>>> Post(
             UserLoginDTO userLoginDTO

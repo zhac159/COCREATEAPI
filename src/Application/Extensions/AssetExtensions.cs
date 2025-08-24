@@ -13,10 +13,9 @@ public static class AssetExtensions
             Name = asset.Name,
             Description = asset.Description,
             AssetType = asset.AssetType,
-            Medias = asset
+            Medias = [.. asset
                 .Medias.OrderBy(media => media.Order)
-                .Select(media => media.ToDTO())
-                .ToList()
+                .Select(media => media.ToDTO())]
         };
     }
 
@@ -30,7 +29,7 @@ public static class AssetExtensions
         {
             asset.Medias?.RemoveAll(m => !assetUpdateDTO.Medias.Any(mu => mu.Id == m.Id));
 
-            asset.Medias = assetUpdateDTO
+            asset.Medias = [.. assetUpdateDTO
                 .Medias.Select(
                     (mediaUpdateDTO, order) =>
                     {
@@ -42,8 +41,7 @@ public static class AssetExtensions
                         }
                         return mediaUpdateDTO.ToAssetMediaEntity(order);
                     }
-                )
-                .ToList();
+                )];
         }
     }
 

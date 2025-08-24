@@ -59,7 +59,7 @@ public class UserService : IUserService
             throw new EntityAlreadyExistsException();
         }
 
-        Random random = new Random();
+        Random random = new();
         user.Coins = random.Next(10, 101);
 
         var createdUser = await userRepository.CreateAsync(user);
@@ -105,9 +105,11 @@ public class UserService : IUserService
         return user.ToUserLoginResponseDTO();
     }
 
-    public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId)
+    public async Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO)
     {
-        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(userId);
+        var user = await userRepository.GetByIdIncludeAllPropertiesAsync(
+            currentUserContextService.GetUserId()
+        );
 
         if (user is null)
         {
@@ -142,7 +144,7 @@ public class UserService : IUserService
             return new List<SkillDTO>();
         }
 
-        return updatedUser.Skills.Select(s => s.ToDTO()).ToList();
+        return [.. updatedUser.Skills.Select(s => s.ToDTO())];
     }
 
     public async Task<UserLocationDTO> UpdateLocationAsync(
@@ -215,26 +217,6 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<UserPortofolioDTO> UpdatePortofolio(
-        UserPortofolioUpdateDTO userPortofolioUpdateDTO
-    )
-    {
-        var user = await userRepository.GetByIdIncludePortofolioAsync(
-            currentUserContextService.GetUserId()
-        );
-
-        if (user is null)
-        {
-            throw new EntityNotFoundException();
-        }
-
-        await user.UpdatePortofolioFromDTOAsync(userPortofolioUpdateDTO, storageService);
-
-        var updatedUser = await userRepository.UpdateAsync(user);
-
-        return updatedUser.ToPortofolioDTO();
-    }
-
     public async Task<bool> UpdatePublicKeyAsync(UserPublicKeyUpdateDTO userPublicKeyUpdateDTO)
     {
         var user = await userRepository.GetByIdIncludeAllPropertiesAsync(
@@ -299,13 +281,8 @@ public class UserService : IUserService
     {
         var user = await userRepository.GetByIdIncludeAllPropertiesAsync(
             currentUserContextService.GetUserId()
-        );
-
-        if (user is null)
-        {
-            throw new EntityNotFoundException();
-        }
-
+        ) ?? throw new EntityNotFoundException();
+        
         return user.ToUserProfileDetailsDTO();
     }
 

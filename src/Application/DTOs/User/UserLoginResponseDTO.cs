@@ -19,7 +19,7 @@ public class UserLoginResponseDTO
     public required string Email { get; set; }
 
     [Required]
-    public string? BannerPictureSrc { get; set; }
+    public string? ProfilePicture { get; set; }
 
     [Required]
     public required int Coins { get; set; } = 0;

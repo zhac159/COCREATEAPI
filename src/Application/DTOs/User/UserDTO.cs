@@ -3,7 +3,6 @@ using Application.DTOs.AssetDTOs;
 using Application.DTOs.AssetOfferDTOs;
 using Application.DTOs.EnquiryDTOs;
 using Application.DTOs.ExperienceDTOs;
-using Application.DTOs.PortofolioContentDTOs;
 using Application.DTOs.ProjectDTOs;
 using Application.DTOs.ReviewDTOs;
 using Application.DTOs.SkillDTOs;
@@ -39,9 +38,6 @@ public class UserDTO
 
     [Required]
     public List<SkillDTO> Skills { get; set; } = new List<SkillDTO>();
-
-    [Required]
-    public List<PortofolioContentDTO>? PortofolioContents { get; set; }
 
     [Required]
     public List<ProjectDTO> AssignedProjects { get; set; } = new List<ProjectDTO>();

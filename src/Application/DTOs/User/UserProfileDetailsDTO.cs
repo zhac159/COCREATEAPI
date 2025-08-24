@@ -26,5 +26,5 @@ public class UserProfileDetailsDTO
     public List<SkillDTO> Skills { get; set; } = [];
 
     [Required]
-    public List<MediaUpdateDTO> PortofolioMedias { get; set; } = [];
+    public List<MediaDTO> PortfolioMedias { get; set; } = [];
 }

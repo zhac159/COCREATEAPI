@@ -33,7 +33,6 @@ public static class ServiceColletionExtensions
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IAssetRepository, AssetRepository>();
-        services.AddScoped<IPortofolioContentRepository, PortofolioContentRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IProjectRoleRepository, ProjectRoleRepostiory>();
         services.AddScoped<IEnquiryRepository, EnquiryRepository>();

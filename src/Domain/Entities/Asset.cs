@@ -10,7 +10,7 @@ public class Asset
     public required AssetType AssetType { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
-    public List<AssetMedia> Medias { get; set; } = new List<AssetMedia>();
-    public List<AssetOffer> AssetOffers { get; set; } = new List<AssetOffer>();
+    public List<AssetMedia> Medias { get; set; } = [];
+    public List<AssetOffer> AssetOffers { get; set; } = [];
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

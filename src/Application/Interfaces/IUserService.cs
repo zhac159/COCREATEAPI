@@ -10,14 +10,13 @@ public interface IUserService
     Task<UserLoginResponseDTO> CreateAsync(UserCreateDTO user);
     Task<UserDTO> GetByIdAsync(int id);
     Task<UserLoginResponseDTO> GetUserLoginResponseByIdAsync(int id);
-    Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO, int userId);
+    Task<UserDTO> UpdateAsync(UserUpdateDTO userUpdateDTO);
     Task<List<SkillDTO>> UpdateSkillsAsync(List<SkillUpdateDTO> userUpdateDTO, int userId);
     Task<UserLocationDTO> UpdateLocationAsync(UserLocationUpdateDTO location, int userId);
     Task<ProjectWithMatchingRolesListDTO> GetMatchingProjectRolesAsync(
         UserGetMatchingProjectRolesDTO userGetMatchingProjectRolesDTO,
         int userId
     );
-    Task<UserPortofolioDTO> UpdatePortofolio(UserPortofolioUpdateDTO userPortofolioUpdateDTO);
     Task<bool> UpdatePublicKeyAsync(UserPublicKeyUpdateDTO userPublicKeyUpdateDTO);
     Task<UserProfilesDTO> GetUserProfilesAsync(UserGetProfilesDTO userGetProfilesDTO);
     Task<bool> AdjustUserCoinsAsync(int coins);

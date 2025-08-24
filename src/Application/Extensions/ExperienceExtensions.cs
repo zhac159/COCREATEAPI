@@ -11,7 +11,7 @@ public static class ExperienceExtensions
         {
             Id = experience.Id,
             Description = experience.Description,
-            Medias = experience.Medias.Select(media => media.ToDTO()).ToList(),
+            Medias = [.. experience.Medias.Select(media => media.ToDTO())],
             ExperienceType = experience.ExperienceType,
             ProjectId = experience.ProjectId,
             ProjectRoleId = experience.ProjectRoleId,

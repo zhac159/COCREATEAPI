@@ -24,12 +24,11 @@ public static class ProjectRoleeExtensions
             ProjectId = projectRole.ProjectId,
             Completed = projectRole.Completed,
             Remote = projectRole.Remote,
-            Enquiries = projectRole.Enquiries.Select(enquiry => enquiry.ToDTO()).ToList(),
+            Enquiries = [.. projectRole.Enquiries.Select(enquiry => enquiry.ToDTO())],
             Assignee = projectRole.Assignee?.ToInformationDTO(),
-            Medias = projectRole
+            Medias = [.. projectRole
                 .Medias.OrderBy(media => media.Order)
-                .Select(media => media.ToDTO())
-                .ToList()
+                .Select(media => media.ToDTO())]
         };
     }
 

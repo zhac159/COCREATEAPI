@@ -2,7 +2,7 @@ using Domain.Enums;
 
 namespace Domain.Entities;
 
-public class PortofolioContentMedia
+public class PortfolioContentMedia
 {
     public int Id { get; set; }
     public required string Uri { get; set; }

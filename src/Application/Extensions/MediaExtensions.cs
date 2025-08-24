@@ -15,7 +15,7 @@ public static class MediaExtensions
         };
     }
 
-    public static MediaDTO ToDTO(this PortofolioContentMedia media)
+    public static MediaDTO ToDTO(this PortfolioContentMedia media)
     {
         return new MediaDTO
         {
@@ -67,7 +67,7 @@ public static class MediaExtensions
     }
 
     public static void UpdateFromDTO(
-        this PortofolioContentMedia media,
+        this PortfolioContentMedia media,
         MediaUpdateDTO mediaUpdateDto,
         int order
     )

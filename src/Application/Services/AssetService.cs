@@ -115,7 +115,7 @@ public class AssetService : IAssetService
         
         var assetSearchResults = new AssetSearchResultDTO
         {
-            Assets = assets.Select(asset => asset.ToDTO()).ToList()
+            Assets = [.. assets.Select(asset => asset.ToDTO())]
         };
 
         return assetSearchResults;

@@ -20,11 +20,11 @@ public class UserUpdateDTO
     public required LocationDTO Location { get; set; }
 
     [Required]
-    public required MediaCreateDTO ProfilePicture { get; set; }
+    public required MediaUpdateDTO ProfilePicture { get; set; }
 
     [Required]
     public List<SkillUpdateDTO> Skills { get; set; } = [];
 
     [Required]
-    public List<MediaUpdateDTO> PortofolioMedias { get; set; } = [];
+    public List<MediaUpdateDTO> PortfolioMedias { get; set; } = [];
 }

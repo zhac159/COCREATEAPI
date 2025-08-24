@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using Application.DTOs.ExperienceDTOs;
-using Application.DTOs.PortofolioContentDTOs;
 using Application.DTOs.ReviewDTOs;
 using Application.DTOs.SkillDTOs;
 
@@ -28,10 +27,6 @@ public class UserProfileDTO
 
     [Required]
     public List<SkillDTO> Skills { get; set; } = new List<SkillDTO>();
-
-    [Required]
-    public List<PortofolioContentDTO>? PortofolioContents { get; set; } =
-        new List<PortofolioContentDTO>();
 
     [Required]
     public List<ExperienceDTO>? Experiences { get; set; } = new List<ExperienceDTO>();

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.EntityConfigurations;
 
-public class PortofolioContentMediaConfiguration : IEntityTypeConfiguration<PortofolioContentMedia>
+public class PortfolioContentMediaConfiguration : IEntityTypeConfiguration<PortfolioContentMedia>
 {
-    public void Configure(EntityTypeBuilder<PortofolioContentMedia> builder)
+    public void Configure(EntityTypeBuilder<PortfolioContentMedia> builder)
     {
-        builder.ToTable("PortofolioContentMedias");
+        builder.ToTable("PortfolioContentMedias");
 
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Uri).IsRequired();
@@ -17,7 +17,7 @@ public class PortofolioContentMediaConfiguration : IEntityTypeConfiguration<Port
 
         builder
             .HasOne(e => e.User)
-            .WithMany(e => e.PortofolioMedias)
+            .WithMany(e => e.PortfolioMedias)
             .HasForeignKey(e => e.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

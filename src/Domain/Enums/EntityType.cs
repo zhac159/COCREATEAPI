@@ -3,7 +3,7 @@ namespace Domain.Enums;
 public enum EntityType
 {
     Asset,
-    PortofolioContent,
+    PortfolioContent,
     Project,
     ProjectRole,
     Chat,

@@ -8,7 +8,7 @@ public class Experience
     public string? Description { get; set; }
     public int UserId { get; set; }
     public User? User { get; set; }
-    public List<ExperienceMedia> Medias { get; set; } = new();
+    public List<ExperienceMedia> Medias { get; set; } = [];
     public ExperienceType ExperienceType { get; set; }
     public int? ProjectRoleId { get; set; }
     public ProjectRole? ProjectRole { get; set; }

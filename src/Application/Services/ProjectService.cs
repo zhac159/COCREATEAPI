@@ -27,10 +27,10 @@ public class ProjectService(
         var createdProject =
             await projectRepository.CreateAsync(project) ?? throw new EntityNotFoundException();
 
-        // await messageStorageService.AddMemberToGroupChatAsync(
-        //     messageStorageService.GetChatId(ChatType.Project, createdProject.Id),
-        //     currentUserContextService.GetUserId()
-        // );
+        await messageStorageService.AddMemberToGroupChatAsync(
+            messageStorageService.GetChatId(ChatType.Project, createdProject.Id),
+            currentUserContextService.GetUserId()
+        );
 
         var createdProjectDTO = createdProject.ToDTO();
 

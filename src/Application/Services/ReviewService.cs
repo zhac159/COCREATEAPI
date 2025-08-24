@@ -33,7 +33,7 @@ public class ReviewService : IReviewService
         await reviewRepository.CreateRangeAsync(reviews);
 
         var users = await userRepository.GetRangeAsync(
-            reviews.Select(r => r.ReviewedUserId).ToList()
+            [.. reviews.Select(r => r.ReviewedUserId)]
         );
 
         foreach (var user in users)

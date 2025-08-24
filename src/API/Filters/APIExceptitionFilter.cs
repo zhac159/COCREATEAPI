@@ -5,15 +5,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace API.Filters;
 
-public class APIExceptitionFilter : IExceptionFilter
+public class APIExceptitionFilter(ILogger<APIExceptitionFilter> logger) : IExceptionFilter
 {
-    private readonly ILogger<APIExceptitionFilter> logger;
-
-    public APIExceptitionFilter(ILogger<APIExceptitionFilter> logger)
-    {
-        this.logger = logger;
-    }
-
     public void OnException(ExceptionContext context)
     {
         var exception = context.Exception;

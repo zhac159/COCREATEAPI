@@ -9,21 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 
-public class UserController : COCREATEAPIControllerBase
+public class UserController(
+    IUserService userService,
+    ICurrentUserContextService currentUserContextService
+) : COCREATEAPIControllerBase
 {
-    private readonly IUserService userService;
-
-    private readonly ICurrentUserContextService currentUserContextService;
-
-    public UserController(
-        IUserService userService,
-        ICurrentUserContextService currentUserContextService
-    )
-    {
-        this.userService = userService;
-        this.currentUserContextService = currentUserContextService;
-    }
-
     [AllowAnonymous]
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<APIResponse<UserDTO>>> Post(int userId)
@@ -35,10 +25,7 @@ public class UserController : COCREATEAPIControllerBase
     [HttpPut()]
     public async Task<ActionResult<APIResponse<UserDTO>>> Update(UserUpdateDTO userUpdateDTO)
     {
-        var user = await userService.UpdateAsync(
-            userUpdateDTO,
-            currentUserContextService.GetUserId()
-        );
+        var user = await userService.UpdateAsync(userUpdateDTO);
         return Ok(APIResponseFactory.CreateSuccess(user));
     }
 
@@ -78,16 +65,6 @@ public class UserController : COCREATEAPIControllerBase
         );
 
         return Ok(APIResponseFactory.CreateSuccess(matchingProjects));
-    }
-
-    [HttpPut("portofolio")]
-    public async Task<ActionResult<APIResponse<UserPortofolioDTO>>> UpdatePortofolio(
-        UserPortofolioUpdateDTO userPortofolioUpdateDTO
-    )
-    {
-        var updatedPortfolio = await userService.UpdatePortofolio(userPortofolioUpdateDTO);
-
-        return Ok(APIResponseFactory.CreateSuccess(updatedPortfolio));
     }
 
     [HttpPut("public-key")]

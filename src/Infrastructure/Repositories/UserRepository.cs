@@ -22,8 +22,6 @@ public class UserRepository : IUserRepository
                 EF.Functions.ILike(u.Username, nameOrEmail)
                 || EF.Functions.ILike(u.Email, nameOrEmail)
             )
-            .Include(u => u.PortofolioContents)
-            .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
@@ -106,8 +104,7 @@ public class UserRepository : IUserRepository
         var user = await context
             .Users.AsSplitQuery()
             .Where(u => u.UserId == id)
-            .Include(u => u.PortofolioContents)
-            .ThenInclude(pc => pc.Medias)
+            .Include(u => u.PortfolioMedias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsGiven)
             .Include(u => u.ReviewsReceived)
@@ -165,8 +162,6 @@ public class UserRepository : IUserRepository
         var users = await context
             .Users.AsSplitQuery()
             .Where(u => ids.Contains(u.UserId))
-            .Include(u => u.PortofolioContents)
-            .ThenInclude(pc => pc.Medias)
             .Include(u => u.Skills)
             .Include(u => u.ReviewsReceived)
             .ThenInclude(r => r.ReviewerUser)
@@ -238,12 +233,10 @@ public class UserRepository : IUserRepository
         return user.Coins;
     }
 
-    public async Task<User?> GetByIdIncludePortofolioAsync(int id)
+    public async Task<User?> GetByIdIncludePortfolioAsync(int id)
     {
         var user = await context
             .Users.Where(u => u.UserId == id)
-            .Include(u => u.PortofolioContents)
-            .ThenInclude(pc => pc.Medias)
             .FirstOrDefaultAsync();
 
         return user;

@@ -12,7 +12,7 @@ public static class ChatExtensions
             Id = chat.Id,
             ChatType = chat.ChatType,
             ChatTypeId = chat.ChatTypeId,
-            ChatMembers = chat.ChatMemberships.Select(cm => cm.User.ToChatMemberDTO()).ToList(),
+            ChatMembers = [.. chat.ChatMemberships.Select(cm => cm.User.ToChatMemberDTO())],
             GroupChatName = chat.GroupChatName,
         };
     }

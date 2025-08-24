@@ -29,7 +29,7 @@ public class MessageCreateDTO
 
     public List<Message> ToEntity(int userId)
     {
-        return TargetUserIds
+        return [.. TargetUserIds
             .Select(targetUserId => new Message
             {
                 Id = Id,
@@ -41,7 +41,6 @@ public class MessageCreateDTO
                 Uri = Uri,
                 Date = Date,
                 ReplyMessageId = ReplyMessageId,
-            })
-            .ToList();
+            })];
     }
 }

@@ -17,7 +17,7 @@ public class ExperienceCreateDTO
         {
             Description = Description,
             UserId = userId,
-            Medias = Medias.Select((m, order) => m.ToExperienceMediaEntity(order)).ToList(),
+            Medias = [.. Medias.Select((m, order) => m.ToExperienceMediaEntity(order))],
             ExperienceType = ExperienceType,
             ProjectId = ExperienceType.Equals(ExperienceType.Project) ? ExperienceId : null,
             ProjectRoleId = ExperienceType.Equals(ExperienceType.ProjectRole) ? ExperienceId : null

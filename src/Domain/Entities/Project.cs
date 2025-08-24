@@ -14,8 +14,8 @@ public class Project
     public bool Completed { get; set; }
     public int ProjectManagerId { get; set; }
     public User? ProjectManager { get; set; }
-    public List<ProjectRole> ProjectRoles { get; set; } = new List<ProjectRole>();
-    public List<ProjectMedia> Medias { get; set; } = new List<ProjectMedia>();
-    public List<Experience> Experiences { get; set; } = new List<Experience>();
-    public List<AssetOffer> AssetOffers { get; set; } = new List<AssetOffer>();
+    public List<ProjectRole> ProjectRoles { get; set; } = [];
+    public List<ProjectMedia> Medias { get; set; } = [];
+    public List<Experience> Experiences { get; set; } = [];
+    public List<AssetOffer> AssetOffers { get; set; } = [];
 }

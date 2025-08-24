@@ -16,7 +16,7 @@ public static class ProjectExtensions
             Completed = project.Completed,
             Description = project.Description,
             ProjectManager = project.ProjectManager?.ToInformationDTO(),
-            ProjectRoles = project.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
+            ProjectRoles = [.. project.ProjectRoles.Select(pr => pr.ToDTO())],
             Date = project.Date,
             Location = new LocationDTO
             {
@@ -24,11 +24,10 @@ public static class ProjectExtensions
                 Latitude = project.Location.Y,
                 Address = project.Address,
             },
-            Medias = project
+            Medias = [.. project
                 .Medias.OrderBy(media => media.Order)
-                .Select(media => media.ToDTO())
-                .ToList(),
-            AssetOffers = project.AssetOffers.Select(assetOffer => assetOffer.ToDTO()).ToList(),
+                .Select(media => media.ToDTO())],
+            AssetOffers = [.. project.AssetOffers.Select(assetOffer => assetOffer.ToDTO())],
         };
     }
 
@@ -50,13 +49,12 @@ public static class ProjectExtensions
             Name = project.Name,
             Description = project.Description,
             ProjectManager = project.ProjectManager!.ToInformationDTO()!,
-            ProjectRoles = project!.ProjectRoles.Select(pr => pr.ToDTO()).ToList(),
-            Medias = project.Medias.Select(media => media.ToDTO()).ToList(),
-            ExperiencesMedias = project
+            ProjectRoles = [.. project!.ProjectRoles.Select(pr => pr.ToDTO())],
+            Medias = [.. project.Medias.Select(media => media.ToDTO())],
+            ExperiencesMedias = [.. project
                 .Experiences.Concat(project.ProjectRoles.SelectMany(role => role.Experiences))
                 .SelectMany(e => e.Medias)
-                .Select(media => media.ToDTO())
-                .ToList(),
+                .Select(media => media.ToDTO())],
         };
     }
 
@@ -82,18 +80,16 @@ public static class ProjectExtensions
         if (projectUpdateDTO.Medias is not null)
         {
             project.Medias?.Clear();
-            project.Medias = projectUpdateDTO
-                .Medias.Select((media, order) => media.ToProjectMediaEntity(order))
-                .ToList();
+            project.Medias = [.. projectUpdateDTO
+                .Medias.Select((media, order) => media.ToProjectMediaEntity(order))];
         }
 
-        project.ProjectRoles = projectUpdateDTO
+        project.ProjectRoles = [.. projectUpdateDTO
             .ProjectRoles.Select(prudto =>
             {
                 var projectRole = project.ProjectRoles.First(pr => pr.Id == prudto.Id);
                 projectRole.UpdateFromDTO(prudto);
                 return projectRole;
-            })
-            .ToList();
+            })];
     }
 }

@@ -34,13 +34,13 @@ public class ProjectUpdateDTO
         {
             Id = Id,
             ProjectManagerId = projectManagerId,
-            Medias = Medias.Select((m, order) => m.ToProjectMediaEntity(order)).ToList(),
+            Medias = [.. Medias.Select((m, order) => m.ToProjectMediaEntity(order))],
             Name = Name,
             Description = Description,
             Date = Date,
             Location = new Point(Location.Longitude, Location.Latitude) { SRID = 4326 },
             Address = Location.Address,
-            ProjectRoles = ProjectRoles.Select(pr => pr.ToEntity()).ToList()
+            ProjectRoles = [.. ProjectRoles.Select(pr => pr.ToEntity())]
         };
     }
 }

@@ -18,18 +18,16 @@ public class User
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
     public string? PublicKey { get; set; }
-    public List<SeenMatches> SeenMatches { get; set; } = new List<SeenMatches>();
-    public List<Skill> Skills { get; set; } = new List<Skill>();
-    public List<PortofolioContent> PortofolioContents { get; set; } = new List<PortofolioContent>();
-    public List<PortofolioContentMedia> PortofolioMedias { get; set; } =
-        new List<PortofolioContentMedia>();
-    public List<Review> ReviewsGiven { get; set; } = new List<Review>();
-    public List<Review> ReviewsReceived { get; set; } = new List<Review>();
-    public List<Asset> Assets { get; set; } = new List<Asset>();
-    public List<Project> Projects { get; set; } = new List<Project>();
-    public List<ProjectRole> ProjectRoles { get; set; } = new List<ProjectRole>();
-    public List<Enquiry> Enquiries { get; set; } = new List<Enquiry>();
-    public List<Enquiry> EnquiriesReceived { get; set; } = new List<Enquiry>();
-    public List<Experience> Experiences { get; set; } = new List<Experience>();
-    public List<ChatMembership> ChatMemberships { get; set; } = new List<ChatMembership>();
+    public List<SeenMatches> SeenMatches { get; set; } = [];
+    public List<Skill> Skills { get; set; } = [];
+    public List<PortfolioContentMedia> PortfolioMedias { get; set; } = [];
+    public List<Review> ReviewsGiven { get; set; } = [];
+    public List<Review> ReviewsReceived { get; set; } = [];
+    public List<Asset> Assets { get; set; } = [];
+    public List<Project> Projects { get; set; } = [];
+    public List<ProjectRole> ProjectRoles { get; set; } = [];
+    public List<Enquiry> Enquiries { get; set; } = [];
+    public List<Enquiry> EnquiriesReceived { get; set; } = [];
+    public List<Experience> Experiences { get; set; } = [];
+    public List<ChatMembership> ChatMemberships { get; set; } = [];
 }
