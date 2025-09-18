@@ -1,74 +1,54 @@
-using System.Text;
-using API.Configuration;
-using Application.Configuration;
-using Infrastructure.Configuration;
-using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
 
-try
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenApi();
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
 {
-    var builder = WebApplication.CreateBuilder(args);
+    app.MapOpenApi();
+    app.MapScalarApiReference();
+}
 
-    builder.Configuration.AddEnvironmentVariables();
+app.UseHttpsRedirection();
 
-    var jwtIssuer = builder.Configuration.GetSection("Jwt:Issuer").Get<string>();
-    var jwtKey = builder.Configuration.GetSection("Jwt:Key").Get<string>();
+var summaries = new[]
+{
+    "Freezing",
+    "Bracing",
+    "Chilly",
+    "Cool",
+    "Mild",
+    "Warm",
+    "Balmy",
+    "Hot",
+    "Sweltering",
+    "Scorching",
+};
 
-    builder
-        .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
+app.MapGet(
+        "/weatherforecast",
+        () =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtIssuer,
-                ValidAudience = jwtIssuer,
-                IssuerSigningKey =
-                    jwtKey != null ? new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)) : null
-            };
-        });
+            var forecast = Enumerable
+                .Range(1, 5)
+                .Select(index => new WeatherForecast(
+                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+                    Random.Shared.Next(-20, 55),
+                    summaries[Random.Shared.Next(summaries.Length)]
+                ))
+                .ToArray();
+            return forecast;
+        }
+    )
+    .WithName("GetWeatherForecast")
+    .WithOpenApi();
 
-    builder
-        .Services.AddDatabaseInfrastracture(builder.Configuration)
-        .AddApplicationServices()
-        .AddAPI();
+app.Run();
 
-    if (builder.Environment.IsDevelopment())
-    {
-        builder.Services.AddEndpointsApiExplorer().AddCustomSwaggerGen();
-    }
-
-    var app = builder.Build();
-
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoCreateAPI v1"));
-    }
-
-    using (var scope = app.Services.CreateScope())
-    {
-        var dbContext = scope.ServiceProvider.GetRequiredService<CoCreateDbContext>(); // Replace YourDbContext with your actual DbContext class
-        dbContext.Database.Migrate();
-    }
-
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    app.Run();
-}
-catch (Exception ex)
+record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
-    Console.WriteLine(ex.Message);
-}
-finally
-{
-    Console.WriteLine("Finally");
+    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
 }

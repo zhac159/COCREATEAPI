@@ -1,0 +1,15 @@
+{
+  "C# Class Template": {
+    "scope": "csharp",
+    "prefix": "class",
+    "body": [
+       "namespace ${RELATIVE_FILEPATH/^src[\\\\\\/]([^\\\\\\/]+)[\\\\\\/]|([^\\\\\\/]+)[\\\\\\/]|(?:[^\\\\\\/]+\\.[^\\\\\\/]+)/$1${2:+.}$2/g};",
+      "",
+      "public class ${TM_FILENAME_BASE}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Creates a C# class with correct namespace"
+  }
+}
