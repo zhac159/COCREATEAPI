@@ -1,8 +1,15 @@
+using Application.Features.Forecast;
+using Mediator;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddMediator(options =>
+{
+    options.Assemblies = [typeof(GetWeatherForecasts).Assembly];
+});
 
 var app = builder.Build();
 
@@ -30,8 +37,10 @@ var summaries = new[]
 
 app.MapGet(
         "/weatherforecast",
-        () =>
+        async (IMediator mediator) =>
         {
+            var hello = await mediator.Send(new GetWeatherForecasts());
+
             var forecast = Enumerable
                 .Range(1, 5)
                 .Select(index => new WeatherForecast(
