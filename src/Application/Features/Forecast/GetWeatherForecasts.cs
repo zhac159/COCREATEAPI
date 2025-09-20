@@ -1,26 +1,24 @@
+using FluentValidation;
 using Mediator;
 
 namespace Application.Features.Forecast;
 
-public sealed record GetWeatherForecasts : IQuery<IEnumerable<WeatherForecast>>;
+public sealed record GetWeatherForecasts : IQuery<IEnumerable<WeatherForecast>>
+{
+    public int UserId { get; init; }
+}
+
+public class GetWeatherForecastsValidator : AbstractValidator<GetWeatherForecasts>
+{
+    public GetWeatherForecastsValidator()
+    {
+        RuleFor(x => x.UserId).GreaterThan(0).WithMessage("UserId must be greater than 0");
+    }
+}
 
 public sealed record GetWeatherForecastsHandler
     : IQueryHandler<GetWeatherForecasts, IEnumerable<WeatherForecast>>
 {
-    private static readonly string[] Summaries = new[]
-    {
-        "Freezing",
-        "Bracing",
-        "Chilly",
-        "Cool",
-        "Mild",
-        "Warm",
-        "Balmy",
-        "Hot",
-        "Sweltering",
-        "Scorching",
-    };
-
     public ValueTask<IEnumerable<WeatherForecast>> Handle(
         GetWeatherForecasts query,
         CancellationToken cancellationToken
@@ -32,7 +30,7 @@ public sealed record GetWeatherForecastsHandler
             {
                 Date = DateTime.Now.AddDays(index),
                 TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)],
+                Summary = "hello",
             })
             .ToArray();
 
