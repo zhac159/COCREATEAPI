@@ -33,14 +33,7 @@ public sealed class GetJwtTokenRequestHandler(IOptionsSnapshot<JwtOptions> jwtOp
     {
         var options = jwtOptions.Value;
 
-        // Create signing key with proper padding for HMAC (consistent with validation)
         var keyBytes = Encoding.UTF8.GetBytes(options.Key);
-
-        // Ensure key is long enough for HMAC256 (minimum 32 bytes) as per RFC2104
-        if (keyBytes.Length < 32)
-        {
-            Array.Resize(ref keyBytes, 32); // Pad with zeros to 32 bytes
-        }
 
         var securityKey = new SymmetricSecurityKey(keyBytes);
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
