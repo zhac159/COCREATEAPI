@@ -12,9 +12,9 @@ public static class TokenEndpoint
         group
             .MapPost(
                 "/token",
-                async (IMediator mediator, TokenRequest tokenRequest) =>
+                async (IMediator mediator) =>
                 {
-                    var tokenResponse = await mediator.Send(tokenRequest);
+                    var tokenResponse = await mediator.Send(new TokenRequest());
                     return Results.Ok(tokenResponse);
                 }
             )

@@ -67,11 +67,14 @@ public sealed class RegisterRequestHandler(CoCreateDbContext coCreateDbContext, 
 
         return new LoginResponse
         {
-            UserId = user.UserId,
-            Username = user.Username,
-            Email = user.Email,
-            Coins = user.Coins,
             Token = jwtToken.AccessToken,
+            User = new AuthenticatedUser
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                Coins = user.Coins,
+            },
         };
     }
 }

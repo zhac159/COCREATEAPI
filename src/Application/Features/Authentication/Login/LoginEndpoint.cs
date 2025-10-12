@@ -1,3 +1,4 @@
+using Application.Features.Authentication.Common;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -19,6 +20,7 @@ public static class LoginEndpoint
                 }
             )
             .WithTags("Authentication")
+            .Produces<LoginResponse>()
             .AllowAnonymous();
 
         return group;

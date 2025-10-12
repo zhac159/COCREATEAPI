@@ -1,4 +1,5 @@
-﻿using API.Factories;
+﻿using System.Text.Json;
+using API.Factories;
 using Application.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
@@ -27,6 +28,13 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             AppException ae => (
                 APIResponseFactory.CreateError<string>(ae.ErrorCode, ae.Message),
                 (int)ae.StatusCode
+            ),
+            BadHttpRequestException bre => (
+                APIResponseFactory.CreateError<string>(
+                    "json.error",
+                    "Invalid JSON in request body."
+                ),
+                StatusCodes.Status400BadRequest
             ),
             _ => (
                 APIResponseFactory.CreateError<string>(

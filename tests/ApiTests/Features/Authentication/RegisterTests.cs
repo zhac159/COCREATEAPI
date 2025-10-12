@@ -26,9 +26,9 @@ public class RegisterTests(TestingWebAppFactory factory) : BaseIntegrationTest(f
 
         var registerResponse = await resp.Content.ReadFromJsonAsync<LoginResponse>();
         Assert.NotNull(registerResponse);
-        Assert.Equal(request.Username, registerResponse!.Username);
-        Assert.Equal(request.Email, registerResponse.Email);
-        Assert.True(registerResponse.UserId > 0);
+        Assert.Equal(request.Username, registerResponse!.User.Username);
+        Assert.Equal(request.Email, registerResponse.User.Email);
+        Assert.True(registerResponse.User.UserId > 0);
         Assert.False(string.IsNullOrWhiteSpace(registerResponse.Token));
     }
 

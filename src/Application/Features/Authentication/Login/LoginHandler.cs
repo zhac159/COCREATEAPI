@@ -33,21 +33,28 @@ public sealed class LoginRequestHandler(CoCreateDbContext coCreateDbContext, IMe
     {
         var user =
             await coCreateDbContext.Users.FirstOrDefaultAsync(u =>
-                (u.Username == query.UsernameOrEmail || u.Email == query.UsernameOrEmail)
-                && u.PasswordHash == query.Password
-            ) ?? throw new InvalidPasswordException("authentication failed");
+                u.Username == query.UsernameOrEmail || u.Email == query.UsernameOrEmail
+            ) ?? throw new UserNotFoundException("User or email not found");
+
+        if (user.PasswordHash != query.Password)
+        {
+            throw new InvalidPasswordException("Invalid password at login");
+        }
 
         var jwtToken = await mediator.Send(
             new GetJwtTokenRequest() { Email = user.Email, UserId = user.UserId }
         );
 
-        return new()
+        return new LoginResponse
         {
-            Coins = user.Coins,
-            Email = user.Email,
-            UserId = user.UserId,
-            Username = user.Username,
             Token = jwtToken.AccessToken,
+            User = new AuthenticatedUser
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                Coins = user.Coins,
+            },
         };
     }
 }
