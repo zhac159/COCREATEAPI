@@ -31,12 +31,11 @@ public sealed class TokenRequestHandler(
     )
     {
         var user =
-            await coCreateDbContext.Users.FirstOrDefaultAsync(u =>
-                u.UserId == currentUser.GetUserId()
-            ) ?? throw new UserNotFoundException("User not found for token login");
+            await coCreateDbContext.Users.FirstOrDefaultAsync(u => u.Id == currentUser.GetUserId())
+            ?? throw new UserNotFoundException("User not found for token login");
 
         var jwtToken = await mediator.Send(
-            new GetJwtTokenRequest() { Email = user.Email, UserId = user.UserId },
+            new GetJwtTokenRequest() { Email = user.Email, UserId = user.Id },
             cancellationToken
         );
 
@@ -45,7 +44,7 @@ public sealed class TokenRequestHandler(
             Token = jwtToken.AccessToken,
             User = new AuthenticatedUser
             {
-                UserId = user.UserId,
+                UserId = user.Id,
                 Username = user.Username,
                 Email = user.Email,
                 Coins = user.Coins,

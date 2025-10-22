@@ -42,7 +42,7 @@ public sealed class LoginRequestHandler(CoCreateDbContext coCreateDbContext, IMe
         }
 
         var jwtToken = await mediator.Send(
-            new GetJwtTokenRequest() { Email = user.Email, UserId = user.UserId }
+            new GetJwtTokenRequest() { Email = user.Email, UserId = user.Id }
         );
 
         return new LoginResponse
@@ -50,7 +50,7 @@ public sealed class LoginRequestHandler(CoCreateDbContext coCreateDbContext, IMe
             Token = jwtToken.AccessToken,
             User = new AuthenticatedUser
             {
-                UserId = user.UserId,
+                UserId = user.Id,
                 Username = user.Username,
                 Email = user.Email,
                 Coins = user.Coins,

@@ -13,7 +13,7 @@ public static class LoginEndpoint
         group
             .MapPost(
                 "/notification-dummy-endpoint",
-                async (IMediator mediator, NotificationClasses sendMessageRequest) =>
+                (IMediator mediator, NotificationClasses sendMessageRequest) =>
                 {
                     return Results.Ok(sendMessageRequest);
                 }

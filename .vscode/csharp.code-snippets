@@ -12,6 +12,19 @@
     ],
     "description": "Creates a C# class with correct namespace"
   },
+  "C# Record Template": {
+    "scope": "csharp",
+    "prefix": "record",
+    "body": [
+      "namespace ${RELATIVE_FILEPATH/^src[\\\\\\/]([^\\\\\\/]+)[\\\\\\/]|([^\\\\\\/]+)[\\\\\\/]|(?:[^\\\\\\/]+\\.[^\\\\\\/]+)/$1${2:+.}$2/g};",
+      "",
+      "public record ${TM_FILENAME_BASE}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Creates a C# class with correct namespace"
+  },
   "Mediator Query + Validator + Handler": {
     "scope": "csharp",
     "prefix": "query",

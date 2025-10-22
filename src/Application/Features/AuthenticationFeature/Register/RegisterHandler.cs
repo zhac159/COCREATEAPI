@@ -61,7 +61,7 @@ public sealed class RegisterRequestHandler(CoCreateDbContext coCreateDbContext, 
         await coCreateDbContext.SaveChangesAsync(cancellationToken);
 
         var jwtToken = await mediator.Send(
-            new GetJwtTokenRequest() { Email = user.Email, UserId = user.UserId },
+            new GetJwtTokenRequest() { Email = user.Email, UserId = user.Id },
             cancellationToken
         );
 
@@ -70,7 +70,7 @@ public sealed class RegisterRequestHandler(CoCreateDbContext coCreateDbContext, 
             Token = jwtToken.AccessToken,
             User = new AuthenticatedUser
             {
-                UserId = user.UserId,
+                UserId = user.Id,
                 Username = user.Username,
                 Email = user.Email,
                 Coins = user.Coins,

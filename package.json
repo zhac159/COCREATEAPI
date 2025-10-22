@@ -11,7 +11,8 @@
         "migration:create": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef migrations add %npm_config_name% --project src/Infrastructure/Infrastructure.csproj  --startup-project src/API/API.csproj",
         "migration:list": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef migrations list --project src/Infrastructure/Infrastructure.csproj  --startup-project src/API/API.csproj",
         "migration:rollback": "set ASPNETCORE_ENVIRONMENT=%npm_config_env% && dotnet ef database update --project src/Infrastructure/Infrastructure.csproj  --startup-project src/API/API.csproj",
-        "migration:run": "set ASPNETCORE_ENVIRONMENT=Development && dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj"
+        "migration:run": "set ASPNETCORE_ENVIRONMENT=Development && dotnet ef database update --project src/Infrastructure/Infrastructure.csproj --startup-project src/API/API.csproj",
+        "setup": "docker-compose exec -T db psql -U postgres -d postgres -c \"INSERT INTO public.\\\"Users\\\"(\\\"Username\\\", \\\"PasswordHash\\\", \\\"Email\\\", \\\"IsEmailVerified\\\", \\\"CreatedAt\\\") VALUES ('testuser', '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b', 'testemail@gmail.com', false, NOW());\""
     },
     "dependencies": {
         "noble-secp256k1": "^1.2.14"
