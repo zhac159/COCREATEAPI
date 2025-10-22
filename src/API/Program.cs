@@ -2,6 +2,7 @@ using System.Text;
 using API.Configuration;
 using API.Filters;
 using Application.Configuration;
+using Application.Features.Hubs.Notifications;
 using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +37,23 @@ builder
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Issuer,
             IssuerSigningKey = signingKey,
+        };
+
+        // Enable JWT authentication for SignalR
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+                var path = context.HttpContext.Request.Path;
+
+                if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/notifications"))
+                {
+                    context.Token = accessToken;
+                }
+
+                return Task.CompletedTask;
+            },
         };
     });
 
@@ -82,6 +100,7 @@ app.UseAuthorization();
 app.UseExceptionHandler();
 
 app.MapGroup("/api").MapFeatureEndpoints().RequireAuthorization();
+app.MapHub<NotificationHub>("/notifications");
 
 app.Run();
 

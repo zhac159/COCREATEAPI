@@ -1,4 +1,4 @@
-namespace Application.Features.Notifications.Chat.SendMessage;
+namespace Application.Features.Hubs.Notifications.Chat.SendMessage;
 
 public class SendMessageResponse
 {

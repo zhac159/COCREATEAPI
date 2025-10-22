@@ -1,4 +1,4 @@
-namespace Application.Features.Notifications.Chat.Common;
+namespace Application.Features.Hubs.Notifications.Chat.Common;
 
 public class ChatMessage
 {

@@ -1,10 +1,12 @@
 using System.Collections.Concurrent;
-using Application.Features.Notifications.Chat.SendMessage;
+using Application.Features.Hubs.Notifications.Chat.SendMessage;
 using Mediator;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Application.Features.Notifications;
+namespace Application.Features.Hubs.Notifications;
 
+[Authorize]
 public class NotificationHub(IMediator mediator) : Hub
 {
     public ConcurrentDictionary<string, bool> connectedUsers = [];
