@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using API.Factories;
+﻿using API.Factories;
 using Application.Exceptions;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;

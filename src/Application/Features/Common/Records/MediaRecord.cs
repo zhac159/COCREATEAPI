@@ -3,12 +3,15 @@ using Infrastructure.Enums;
 
 namespace Application.Features.Common.Records;
 
-public record MediaRecord
+public record MediaRecordBase
 {
-    public int Id { get; set; }
     public required string Uri { get; set; }
     public required MediaType MediaType { get; set; }
+    public int Id { get; set; }
+}
 
+public record MediaRecord : MediaRecordBase
+{
     public static MediaRecord FromPorfolioContentMedia(PortflioContentMedia media) =>
         new()
         {
@@ -18,5 +21,16 @@ public record MediaRecord
         };
 
     public static MediaRecord FromUri(string uri, MediaType mediaType) =>
-        new() { Uri = uri, MediaType = mediaType };
+        new()
+        {
+            Uri = uri,
+            MediaType = mediaType,
+            Id = 0,
+        };
+}
+
+public record UpdateMediaRecord : MediaRecordBase
+{
+    public new int? Id { get; set; }
+    public int Order { get; set; }
 }
