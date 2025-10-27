@@ -10,6 +10,12 @@ public record MediaRecordBase
     public int Id { get; set; }
 }
 
+public record UpdateMediaRecord : MediaRecordBase
+{
+    public new int? Id { get; set; }
+    public int Order { get; set; }
+}
+
 public record MediaRecord : MediaRecordBase
 {
     public static MediaRecord FromPorfolioContentMedia(PortflioContentMedia media) =>
@@ -27,10 +33,12 @@ public record MediaRecord : MediaRecordBase
             MediaType = mediaType,
             Id = 0,
         };
-}
 
-public record UpdateMediaRecord : MediaRecordBase
-{
-    public new int? Id { get; set; }
-    public int Order { get; set; }
+    public static MediaRecord FromUpdateMediaRecord(UpdateMediaRecord updateMediaRecord) =>
+        new()
+        {
+            Id = updateMediaRecord.Id ?? 0,
+            Uri = updateMediaRecord.Uri,
+            MediaType = updateMediaRecord.MediaType,
+        };
 }

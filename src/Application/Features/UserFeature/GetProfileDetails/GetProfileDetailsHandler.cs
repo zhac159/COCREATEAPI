@@ -1,5 +1,6 @@
 using Application.Exceptions;
 using Application.Features.Common.Records;
+using Application.Features.UserFeature.Common;
 using Application.Interfaces;
 using FluentValidation;
 using Infrastructure.Enums;
@@ -9,14 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.UserFeature.GetProfileDetails;
 
-public sealed record GetProfileDetailsRequest : IQuery<GetProfileDetailsResponse>;
+public sealed record GetProfileDetailsRequest : IQuery<ProfileDetails>;
 
 public sealed class GetProfileDetailsRequestHandler(
     CoCreateDbContext coCreateDbContext,
     ICurrentUser currentUser
-) : IQueryHandler<GetProfileDetailsRequest, GetProfileDetailsResponse>
+) : IQueryHandler<GetProfileDetailsRequest, ProfileDetails>
 {
-    public async ValueTask<GetProfileDetailsResponse> Handle(
+    public async ValueTask<ProfileDetails> Handle(
         GetProfileDetailsRequest query,
         CancellationToken cancellationToken
     )
@@ -28,7 +29,7 @@ public sealed class GetProfileDetailsRequestHandler(
                 .Include(u => u.PortfolioMedias)
                 .FirstOrDefaultAsync() ?? throw new UserNotFoundException("User not found");
 
-        return new GetProfileDetailsResponse
+        return new ProfileDetails
         {
             Username = user.Username,
             Email = user.Email,
@@ -37,7 +38,9 @@ public sealed class GetProfileDetailsRequestHandler(
             Skills = [.. user.Skills.Select(SkillRecord.FromSkill)],
             PortfolioMedias =
             [
-                .. user.PortfolioMedias.Select(MediaRecord.FromPorfolioContentMedia),
+                .. user
+                    .PortfolioMedias.OrderBy(m => m.Order)
+                    .Select(MediaRecord.FromPorfolioContentMedia),
             ],
             ProfilePicture = MediaRecord.FromUri(user.ProfilePictureSrc ?? "", MediaType.Image),
         };

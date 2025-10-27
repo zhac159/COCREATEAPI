@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http.Json;
 using API.Factories;
 using ApiTests.Helpers;
-using Application.Features.UserFeature.GetProfileDetails;
+using Application.Features.UserFeature.Common;
 using Infrastructure.Entities;
 using Infrastructure.Enums;
 using Infrastructure.Persistence;
@@ -21,8 +21,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         // Assert
         resp.EnsureSuccessStatusCode();
 
-        var getProfileDetailsResponse =
-            await resp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
         Assert.NotNull(getProfileDetailsResponse);
         Assert.Equal(TestDataHelper.BaseUser.Username, getProfileDetailsResponse.Username);
         Assert.Equal(TestDataHelper.BaseUser.Email, getProfileDetailsResponse.Email);
@@ -59,8 +58,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         // Assert
         resp.EnsureSuccessStatusCode();
 
-        var getProfileDetailsResponse =
-            await resp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
         Assert.NotNull(getProfileDetailsResponse);
         Assert.Equal(2, getProfileDetailsResponse.Skills.Count);
         Assert.Contains(getProfileDetailsResponse.Skills, s => s.SkillType == SkillType.Editor);
@@ -98,8 +96,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         // Assert
         resp.EnsureSuccessStatusCode();
 
-        var getProfileDetailsResponse =
-            await resp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
         Assert.NotNull(getProfileDetailsResponse);
         Assert.Equal(2, getProfileDetailsResponse.PortfolioMedias.Count);
         Assert.Contains(
@@ -109,6 +106,85 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         Assert.Contains(
             getProfileDetailsResponse.PortfolioMedias,
             m => m.Uri == "https://example.com/video1.mp4" && m.MediaType == MediaType.Video
+        );
+    }
+
+    [Fact]
+    public async Task GetProfileDetails_ReturnsPortfolioMediasInCorrectOrder()
+    {
+        // Arrange - Add portfolio medias in random order
+        var portfolioMedias = new List<PortflioContentMedia>
+        {
+            new()
+            {
+                Uri = "https://example.com/third.jpg",
+                Order = 3,
+                MediaType = MediaType.Image,
+                UserId = BaseUserId,
+            },
+            new()
+            {
+                Uri = "https://example.com/first.jpg",
+                Order = 1,
+                MediaType = MediaType.Image,
+                UserId = BaseUserId,
+            },
+            new()
+            {
+                Uri = "https://example.com/fifth.mp4",
+                Order = 5,
+                MediaType = MediaType.Video,
+                UserId = BaseUserId,
+            },
+            new()
+            {
+                Uri = "https://example.com/second.jpg",
+                Order = 2,
+                MediaType = MediaType.Image,
+                UserId = BaseUserId,
+            },
+            new()
+            {
+                Uri = "https://example.com/fourth.mp4",
+                Order = 4,
+                MediaType = MediaType.Video,
+                UserId = BaseUserId,
+            },
+        };
+
+        await CoCreateDbContext.PortflioContentMedias.AddRangeAsync(portfolioMedias);
+        await CoCreateDbContext.SaveChangesAsync();
+
+        // Act
+        var resp = await AuthenticatedClient.GetAsync("/api/user/profile-details");
+
+        // Assert
+        resp.EnsureSuccessStatusCode();
+
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
+        Assert.NotNull(getProfileDetailsResponse);
+        Assert.Equal(5, getProfileDetailsResponse.PortfolioMedias.Count);
+
+        // Verify the order
+        Assert.Equal(
+            "https://example.com/first.jpg",
+            getProfileDetailsResponse.PortfolioMedias[0].Uri
+        );
+        Assert.Equal(
+            "https://example.com/second.jpg",
+            getProfileDetailsResponse.PortfolioMedias[1].Uri
+        );
+        Assert.Equal(
+            "https://example.com/third.jpg",
+            getProfileDetailsResponse.PortfolioMedias[2].Uri
+        );
+        Assert.Equal(
+            "https://example.com/fourth.mp4",
+            getProfileDetailsResponse.PortfolioMedias[3].Uri
+        );
+        Assert.Equal(
+            "https://example.com/fifth.mp4",
+            getProfileDetailsResponse.PortfolioMedias[4].Uri
         );
     }
 
@@ -150,8 +226,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         // Assert
         resp.EnsureSuccessStatusCode();
 
-        var getProfileDetailsResponse =
-            await resp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
         Assert.NotNull(getProfileDetailsResponse);
         Assert.Equal(user.Username, getProfileDetailsResponse.Username);
         Assert.Equal(user.Email, getProfileDetailsResponse.Email);
@@ -176,8 +251,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         // Assert
         resp.EnsureSuccessStatusCode();
 
-        var getProfileDetailsResponse =
-            await resp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
         Assert.NotNull(getProfileDetailsResponse);
         Assert.Null(getProfileDetailsResponse.AboutYou);
         Assert.NotNull(getProfileDetailsResponse.Location);
@@ -260,10 +334,8 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         firstUserResp.EnsureSuccessStatusCode();
         secondUserResp.EnsureSuccessStatusCode();
 
-        var firstUserProfile =
-            await firstUserResp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
-        var secondUserProfile =
-            await secondUserResp.Content.ReadFromJsonAsync<GetProfileDetailsResponse>();
+        var firstUserProfile = await firstUserResp.Content.ReadFromJsonAsync<ProfileDetails>();
+        var secondUserProfile = await secondUserResp.Content.ReadFromJsonAsync<ProfileDetails>();
 
         // Verify first user gets their own data
         Assert.NotNull(firstUserProfile);

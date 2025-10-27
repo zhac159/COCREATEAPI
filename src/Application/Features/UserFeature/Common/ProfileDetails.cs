@@ -1,8 +1,8 @@
 using Application.Features.Common.Records;
 
-namespace Application.Features.UserFeature.GetProfileDetails;
+namespace Application.Features.UserFeature.Common;
 
-public record GetProfileDetailsResponse
+public record ProfileDetailsBase
 {
     public required string Username { get; set; }
 
@@ -17,4 +17,12 @@ public record GetProfileDetailsResponse
     public List<SkillRecord> Skills { get; set; } = [];
 
     public List<MediaRecord> PortfolioMedias { get; set; } = [];
+}
+
+public record ProfileDetails : ProfileDetailsBase;
+
+public record UpdateProfileDetails : ProfileDetailsBase
+{
+    public new List<UpdateSkillRecord> Skills { get; set; } = [];
+    public new List<UpdateMediaRecord> PortfolioMedias { get; set; } = [];
 }
