@@ -1,9 +1,7 @@
 using Application.Exceptions;
-using Application.Features.Common.Records;
 using Application.Features.UserFeature.Common;
 using Application.Interfaces;
 using FluentValidation;
-using Infrastructure.Enums;
 using Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
@@ -29,20 +27,6 @@ public sealed class GetProfileDetailsRequestHandler(
                 .Include(u => u.PortfolioMedias)
                 .FirstOrDefaultAsync() ?? throw new UserNotFoundException("User not found");
 
-        return new ProfileDetails
-        {
-            Username = user.Username,
-            Email = user.Email,
-            AboutYou = user.AboutYou,
-            Location = LocationRecord.FromUser(user),
-            Skills = [.. user.Skills.Select(SkillRecord.FromSkill)],
-            PortfolioMedias =
-            [
-                .. user
-                    .PortfolioMedias.OrderBy(m => m.Order)
-                    .Select(MediaRecord.FromPorfolioContentMedia),
-            ],
-            ProfilePicture = MediaRecord.FromUri(user.ProfilePictureSrc ?? "", MediaType.Image),
-        };
+        return ProfileDetails.FromUser(user);
     }
 }

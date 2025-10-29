@@ -1,4 +1,5 @@
 using Infrastructure.Entities;
+using NetTopologySuite.Geometries;
 
 namespace Application.Features.Common.Records;
 
@@ -17,4 +18,6 @@ public record LocationRecord
             Latitude = user.Location?.Y ?? 0,
             Address = user.Address ?? "",
         };
+
+    public Point ToPoint() => new(Longitude, Latitude) { SRID = 4326 };
 }
