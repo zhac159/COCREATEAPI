@@ -19,6 +19,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Coins).IsRequired().HasDefaultValue(0);
         builder.Property(e => e.ProfilePictureSrc).HasDefaultValue(null);
         builder.Property(e => e.BannerPictureSrc).HasDefaultValue(null);
-        builder.Property(e => e.CreatedAt).IsRequired().HasDefaultValueSql("NOW()");
+        builder.Property(e => e.CreatedAt).IsRequired();
     }
 }

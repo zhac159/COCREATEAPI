@@ -2,10 +2,14 @@ using Infrastructure.Enums;
 
 namespace Application.Features.Common.Records;
 
-public record MediaRecord
+public abstract record MediaRecordBase
 {
     public required string Uri { get; set; }
     public required MediaType MediaType { get; set; }
+}
+
+public record MediaRecord : MediaRecordBase
+{
     public int Id { get; set; }
 
     public static MediaRecord FromUri(string uri, MediaType mediaType) =>
@@ -17,8 +21,9 @@ public record MediaRecord
         };
 }
 
-public record UpdateMediaRecord : MediaRecord
+public record CreateMediaRecord : MediaRecordBase;
+
+public record UpdateMediaRecord : MediaRecordBase
 {
-    public new int? Id { get; set; }
-    public int Order { get; set; }
+    public int? Id { get; set; }
 }

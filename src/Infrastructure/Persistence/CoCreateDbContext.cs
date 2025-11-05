@@ -7,7 +7,7 @@ namespace Infrastructure.Persistence
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Skill> Skills { get; set; }
-        public DbSet<PortflioContentMedia> PortflioContentMedias { get; set; }
+        public DbSet<PortfolioContentMedia> PortflioContentMedias { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

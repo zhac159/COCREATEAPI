@@ -6,6 +6,7 @@ using Application.Features.UserFeature.Common;
 using Infrastructure.Entities;
 using Infrastructure.Enums;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
 namespace ApiTests.Features.UserFeature;
@@ -69,7 +70,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
     public async Task GetProfileDetails_ReturnsUserWithPortfolioMedias()
     {
         // Arrange
-        var portfolioMedias = new List<PortflioContentMedia>
+        var portfolioMedias = new List<PortfolioContentMedia>
         {
             new()
             {
@@ -113,7 +114,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
     public async Task GetProfileDetails_ReturnsPortfolioMediasInCorrectOrder()
     {
         // Arrange - Add portfolio medias in random order
-        var portfolioMedias = new List<PortflioContentMedia>
+        var portfolioMedias = new List<PortfolioContentMedia>
         {
             new()
             {
@@ -192,7 +193,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
     public async Task GetProfileDetails_ReturnsCompleteUserProfile()
     {
         // Arrange
-        var user = await CoCreateDbContext.Users.FindAsync(BaseUserId);
+        var user = await CoCreateDbContext.Users.FirstOrDefaultAsync(u => u.Id == BaseUserId);
         Assert.NotNull(user);
 
         user.AboutYou = "I am a creative designer";
@@ -208,7 +209,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             UserId = user.Id,
         };
 
-        var portfolioMedia = new PortflioContentMedia
+        var portfolioMedia = new PortfolioContentMedia
         {
             Uri = "https://example.com/portfolio1.jpg",
             Order = 1,
@@ -216,8 +217,10 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             UserId = user.Id,
         };
 
-        await CoCreateDbContext.Skills.AddAsync(skill);
-        await CoCreateDbContext.PortflioContentMedias.AddAsync(portfolioMedia);
+        user.Skills.Add(skill);
+        user.PortfolioMedias.Add(portfolioMedia);
+
+        CoCreateDbContext.Users.Update(user);
         await CoCreateDbContext.SaveChangesAsync();
 
         // Act

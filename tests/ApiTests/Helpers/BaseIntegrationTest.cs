@@ -68,6 +68,8 @@ public abstract class BaseIntegrationTest
         var baseUser = TestDataHelper.BaseUser;
         await CoCreateDbContext.Users.AddAsync(baseUser);
         await CoCreateDbContext.SaveChangesAsync();
+        CoCreateDbContext.ChangeTracker.Clear();
+        CoCreateDbContext.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
         BaseUserId = baseUser.Id;
         AuthenticatedClient = GetAuthenticatedClient(BaseUserId);

@@ -62,13 +62,15 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.RemoveAll<DbContextOptions<CoCreateDbContext>>();
 
             services.AddDbContext<CoCreateDbContext>(options =>
+            {
                 options.UseNpgsql(
                     dbContainer.GetConnectionString(),
-                    x =>
-                        x.UseNetTopologySuite()
+                    npgsqlOptions =>
+                        npgsqlOptions
+                            .UseNetTopologySuite()
                             .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                )
-            );
+                );
+            });
         });
     }
 

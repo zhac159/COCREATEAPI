@@ -3,11 +3,15 @@ using Infrastructure.Enums;
 
 namespace Application.Features.Common.Records;
 
-public record SkillRecord
+public abstract record SkillRecordBase
 {
     public required SkillType SkillType { get; set; }
     public required SkillGroupType SkillGroupType { get; set; }
     public List<string> Keywords { get; set; } = [];
+}
+
+public record SkillRecord : SkillRecordBase
+{
     public int Id { get; set; }
 
     public static SkillRecord FromSkill(Skill skill) =>
@@ -20,7 +24,7 @@ public record SkillRecord
         };
 }
 
-public record UpdateSkillRecord : SkillRecord
+public record UpdateSkillRecord : SkillRecordBase
 {
-    public new int? Id { get; set; }
+    public int? Id { get; set; }
 }

@@ -17,5 +17,7 @@ public class User
     public string? ProfilePictureSrc { get; set; }
     public string? BannerPictureSrc { get; set; }
     public List<Skill> Skills { get; set; } = [];
-    public List<PortflioContentMedia> PortfolioMedias { get; set; } = [];
+    public List<PortfolioContentMedia> PortfolioMedias { get; set; } = [];
+    public List<Project> Projects { get; set; } = [];
+    public List<ProjectRole> ProjectRoles { get; set; } = [];
 }

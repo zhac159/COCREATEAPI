@@ -91,6 +91,62 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         Assert.Equal("error.user-not-found", errorResponse.ErrorCode);
         Assert.Equal("User not found", errorResponse.Error);
     }
+    [Fact]
+    public async Task GetProfileDetails_ReturnsCompleteUserProfile()
+    {
+        // Arrange
+        var user = await CoCreateDbContext.Users.FirstOrDefaultAsync(u => u.Id == BaseUserId);
+        Assert.NotNull(user);
+
+        user.AboutYou = "I am a creative designer";
+        user.Address = "123 Main St, City, Country";
+        user.Location = new Point(-73.935242, 40.730610) { SRID = 4326 };
+        user.ProfilePictureSrc = "https://example.com/profile.jpg";
+
+        var skill = new Skill
+        {
+            SkillType = SkillType.Editor,
+            SkillGroupType = SkillGroupType.Filmmaking,
+            Keywords = ["editing"],
+            UserId = user.Id,
+        };
+
+        var portfolioMedia = new PortfolioContentMedia
+        {
+            Uri = "https://example.com/portfolio1.jpg",
+            Order = 1,
+            MediaType = MediaType.Image,
+            UserId = user.Id,
+        };
+
+        user.Skills.Add(skill);
+        user.PortfolioMedias.Add(portfolioMedia);
+
+        CoCreateDbContext.Users.Update(user);
+        await CoCreateDbContext.SaveChangesAsync();
+
+        // Act
+        var resp = await AuthenticatedClient.GetAsync("/api/user/profile-details");
+
+        // Assert
+        resp.EnsureSuccessStatusCode();
+
+        var getProfileDetailsResponse = await resp.Content.ReadFromJsonAsync<ProfileDetails>();
+        Assert.NotNull(getProfileDetailsResponse);
+        Assert.Equal(user.Username, getProfileDetailsResponse.Username);
+        Assert.Equal(user.Email, getProfileDetailsResponse.Email);
+        Assert.Equal(user.AboutYou, getProfileDetailsResponse.AboutYou);
+        Assert.NotNull(getProfileDetailsResponse.Location);
+        Assert.Equal(user.Address, getProfileDetailsResponse.Location.Address);
+        Assert.Equal(user.Location.X, getProfileDetailsResponse.Location.Longitude);
+        Assert.Equal(user.Location.Y, getProfileDetailsResponse.Location.Latitude);
+        Assert.NotNull(getProfileDetailsResponse.ProfilePicture);
+        Assert.Equal(user.ProfilePictureSrc, getProfileDetailsResponse.ProfilePicture.Uri);
+        Assert.Equal(MediaType.Image, getProfileDetailsResponse.ProfilePicture.MediaType);
+        Assert.Single(getProfileDetailsResponse.Skills);
+        Assert.Single(getProfileDetailsResponse.PortfolioMedias);
+    }
+
 }
 ```
 
@@ -152,3 +208,6 @@ public static class GetProfileDetailsEndpoint
 }
 ```
 
+## N.B.
+
+- Use `FirstOrDefaultAsync()` instead of FindAsync(existingSkill.Id) to fix tracking issues
