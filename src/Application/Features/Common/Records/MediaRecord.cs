@@ -1,22 +1,29 @@
-using Infrastructure.Entities;
 using Infrastructure.Enums;
 
 namespace Application.Features.Common.Records;
 
-public record MediaRecord
+public abstract record MediaRecordBase
 {
-    public int Id { get; set; }
     public required string Uri { get; set; }
     public required MediaType MediaType { get; set; }
+}
 
-    public static MediaRecord FromPorfolioContentMedia(PortflioContentMedia media) =>
-        new()
-        {
-            Id = media.Id,
-            Uri = media.Uri,
-            MediaType = media.MediaType,
-        };
+public record MediaRecord : MediaRecordBase
+{
+    public int Id { get; set; }
 
     public static MediaRecord FromUri(string uri, MediaType mediaType) =>
-        new() { Uri = uri, MediaType = mediaType };
+        new()
+        {
+            Uri = uri,
+            MediaType = mediaType,
+            Id = 0,
+        };
+}
+
+public record CreateMediaRecord : MediaRecordBase;
+
+public record UpdateMediaRecord : MediaRecordBase
+{
+    public int? Id { get; set; }
 }

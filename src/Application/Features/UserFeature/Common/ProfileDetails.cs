@@ -1,4 +1,6 @@
 using Application.Features.Common.Records;
+using Infrastructure.Entities;
+using Infrastructure.Enums;
 
 namespace Application.Features.UserFeature.Common;
 
@@ -17,4 +19,32 @@ public record ProfileDetails
     public List<SkillRecord> Skills { get; set; } = [];
 
     public List<MediaRecord> PortfolioMedias { get; set; } = [];
+
+    public static ProfileDetails FromUser(User user) =>
+        new()
+        {
+            Username = user.Username,
+            Email = user.Email,
+            AboutYou = user.AboutYou,
+            Location = LocationRecord.FromUser(user),
+            Skills = [.. user.Skills.Select(SkillRecord.FromSkill)],
+            PortfolioMedias =
+            [
+                .. user
+                    .PortfolioMedias.OrderBy(m => m.Order)
+                    .Select(pm => new MediaRecord
+                    {
+                        Id = pm.Id,
+                        Uri = pm.Uri,
+                        MediaType = pm.MediaType,
+                    }),
+            ],
+            ProfilePicture = MediaRecord.FromUri(user.ProfilePictureSrc ?? "", MediaType.Image),
+        };
+}
+
+public record UpdateProfileDetails : ProfileDetails
+{
+    public new List<UpdateSkillRecord> Skills { get; set; } = [];
+    public new List<UpdateMediaRecord> PortfolioMedias { get; set; } = [];
 }

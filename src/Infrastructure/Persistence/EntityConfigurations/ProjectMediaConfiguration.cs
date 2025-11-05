@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.EntityConfigurations;
 
-public class PortfolioContentMediaConfiguration : IEntityTypeConfiguration<PortfolioContentMedia>
+public class ProjectMediaConfiguration : IEntityTypeConfiguration<ProjectMedia>
 {
-    public void Configure(EntityTypeBuilder<PortfolioContentMedia> builder)
+    public void Configure(EntityTypeBuilder<ProjectMedia> builder)
     {
         builder.HasKey(e => e.Id);
 
         builder
-            .HasOne(e => e.User)
-            .WithMany(e => e.PortfolioMedias)
-            .HasForeignKey(e => e.UserId)
+            .HasOne(e => e.Project)
+            .WithMany(p => p.ProjectMedias)
+            .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -1,4 +1,5 @@
 using Application.Features.UserFeature.GetProfileDetails;
+using Application.Features.UserFeature.PutProfileDetails;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
@@ -11,6 +12,7 @@ public static class UserEndpointGroup
         var group = routes.MapGroup("/user");
 
         group.MapGetProfileDetailsEndpoint();
+        group.MapPutProfileDetailsEndpoint();
 
         return group;
     }

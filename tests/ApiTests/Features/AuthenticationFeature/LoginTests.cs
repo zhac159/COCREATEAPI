@@ -10,21 +10,13 @@ namespace ApiTests.Features.AuthenticationFeature;
 public class LoginTests(TestingWebAppFactory factory) : BaseIntegrationTest(factory)
 {
     [Fact]
-    public async Task Login_WithValidCredentials_ReturnsTokenAndUser()
+    public async Task Login_WithValidUsernameAndPassword_ReturnsTokenAndUser()
     {
-        // Arrange
-        var user = new User
+        var request = new
         {
-            Username = "john",
-            PasswordHash = "password123",
-            Email = "john@example.com",
-            Coins = 10,
+            UsernameOrEmail = TestDataHelper.BaseUser.Username,
+            Password = TestDataHelper.BaseUser.PasswordHash,
         };
-
-        await CoCreateDbContext.Users.AddAsync(user);
-        await CoCreateDbContext.SaveChangesAsync();
-
-        var request = new { UsernameOrEmail = "john", Password = "password123" };
 
         // Act
         var resp = await Client.PostAsJsonAsync("/api/authentication/login", request);
@@ -34,28 +26,43 @@ public class LoginTests(TestingWebAppFactory factory) : BaseIntegrationTest(fact
 
         var loginResponse = await resp.Content.ReadFromJsonAsync<LoginResponse>();
         Assert.NotNull(loginResponse);
-        Assert.Equal(user.Username, loginResponse!.User.Username);
-        Assert.Equal(user.Email, loginResponse.User.Email);
-        Assert.Equal(user.Coins, loginResponse.User.Coins);
+        Assert.Equal(TestDataHelper.BaseUser.Username, loginResponse!.User.Username);
+        Assert.Equal(TestDataHelper.BaseUser.Email, loginResponse.User.Email);
+        Assert.Equal(TestDataHelper.BaseUser.Coins, loginResponse.User.Coins);
+        Assert.False(string.IsNullOrWhiteSpace(loginResponse.Token));
+    }
+
+    [Fact]
+    public async Task Login_WithValidEmailAndPassword_ReturnsTokenAndUser()
+    {
+        var request = new
+        {
+            UsernameOrEmail = TestDataHelper.BaseUser.Email,
+            Password = TestDataHelper.BaseUser.PasswordHash,
+        };
+
+        // Act
+        var resp = await Client.PostAsJsonAsync("/api/authentication/login", request);
+
+        // Assert
+        resp.EnsureSuccessStatusCode();
+
+        var loginResponse = await resp.Content.ReadFromJsonAsync<LoginResponse>();
+        Assert.NotNull(loginResponse);
+        Assert.Equal(TestDataHelper.BaseUser.Username, loginResponse!.User.Username);
+        Assert.Equal(TestDataHelper.BaseUser.Email, loginResponse.User.Email);
+        Assert.Equal(TestDataHelper.BaseUser.Coins, loginResponse.User.Coins);
         Assert.False(string.IsNullOrWhiteSpace(loginResponse.Token));
     }
 
     [Fact]
     public async Task Login_WithInvalidPassword_ReturnsUnauthorized()
     {
-        // Arrange
-        var user = new User
+        var request = new
         {
-            Username = "jane",
-            PasswordHash = "correct",
-            Email = "jane@example.com",
-            Coins = 5,
+            UsernameOrEmail = TestDataHelper.BaseUser.Username,
+            Password = "wrongpassword",
         };
-
-        await CoCreateDbContext.Users.AddAsync(user);
-        await CoCreateDbContext.SaveChangesAsync();
-
-        var request = new { UsernameOrEmail = "jane", Password = "wrong" };
 
         // Act
         var resp = await Client.PostAsJsonAsync("/api/authentication/login", request);

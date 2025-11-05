@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Testcontainers.PostgreSql;
 
 namespace ApiTests.Helpers;
@@ -12,6 +13,8 @@ namespace ApiTests.Helpers;
 public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer dbContainer;
+    public static readonly string testJwtKey = "YourSecretKeyForAuthenticationOfApplication";
+    public static readonly string testJwtIssuer = "youtCompanyIssuer.com";
 
     public TestingWebAppFactory()
     {
@@ -27,6 +30,19 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+            logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.None);
+            logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.None);
+            logging.AddFilter(
+                "Microsoft.AspNetCore.Diagnostics.ExceptionHandlerMiddleware",
+                LogLevel.None
+            );
+            logging.AddFilter("API.Filters.GlobalExceptionHandler", LogLevel.None);
+            logging.SetMinimumLevel(LogLevel.Critical);
+        });
+
         builder.ConfigureAppConfiguration(
             (context, config) =>
             {
@@ -34,6 +50,8 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 {
                     ["ConnectionStrings:PostGresConnectionString"] =
                         dbContainer.GetConnectionString(),
+                    ["JwtSettings:Key"] = testJwtKey,
+                    ["JwtSettings:Issuer"] = testJwtIssuer,
                 };
                 config.AddInMemoryCollection(settings!);
             }
@@ -44,13 +62,15 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
             services.RemoveAll<DbContextOptions<CoCreateDbContext>>();
 
             services.AddDbContext<CoCreateDbContext>(options =>
+            {
                 options.UseNpgsql(
                     dbContainer.GetConnectionString(),
-                    x =>
-                        x.UseNetTopologySuite()
+                    npgsqlOptions =>
+                        npgsqlOptions
+                            .UseNetTopologySuite()
                             .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
-                )
-            );
+                );
+            });
         });
     }
 
