@@ -7,7 +7,7 @@ using Mediator;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Application.Features.Authentication.GetJwtToken;
+namespace Application.Features.AuthenticationFeature.GetJwtToken;
 
 public sealed record GetJwtTokenRequest : IQuery<GetJwtTokenResponse>
 {

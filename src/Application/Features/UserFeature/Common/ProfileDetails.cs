@@ -1,8 +1,8 @@
 using Application.Features.Common.Records;
 
-namespace Application.Features.Users.GetProfileDetails;
+namespace Application.Features.UserFeature.Common;
 
-public record GetProfileDetailsResponse
+public record ProfileDetails
 {
     public required string Username { get; set; }
 

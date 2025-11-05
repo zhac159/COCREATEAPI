@@ -1,6 +1,6 @@
 using API.Filters;
 using API.Services;
-using Application.Interfaces;
+using Infrastructure.Interfaces;
 
 namespace API.Configuration;
 

@@ -1,9 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using ApiTests.Helpers;
-using Application.Features.Authentication.Common;
+using Application.Features.AuthenticationFeature.Common;
 
-namespace ApiTests.Features.Authentication;
+namespace ApiTests.Features.AuthenticationFeature;
 
 public class RegisterTests(TestingWebAppFactory factory) : BaseIntegrationTest(factory)
 {

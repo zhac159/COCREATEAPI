@@ -1,4 +1,4 @@
-namespace Application.Features.Authentication.GetJwtToken;
+namespace Application.Features.AuthenticationFeature.GetJwtToken;
 
 public record GetJwtTokenResponse
 {

@@ -1,12 +1,12 @@
 using Application.Exceptions;
-using Application.Features.Authentication.Common;
-using Application.Features.Authentication.GetJwtToken;
+using Application.Features.AuthenticationFeature.Common;
+using Application.Features.AuthenticationFeature.GetJwtToken;
 using FluentValidation;
 using Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Authentication.Login;
+namespace Application.Features.AuthenticationFeature.Login;
 
 public sealed record LoginRequest : IQuery<LoginResponse>
 {

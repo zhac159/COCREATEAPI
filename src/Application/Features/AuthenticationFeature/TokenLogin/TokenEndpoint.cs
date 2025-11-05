@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Application.Features.Authentication.TokenLogin;
+namespace Application.Features.AuthenticationFeature.TokenLogin;
 
 public static class TokenEndpoint
 {

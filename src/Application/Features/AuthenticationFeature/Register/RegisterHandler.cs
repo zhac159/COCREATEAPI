@@ -1,13 +1,13 @@
 using Application.Exceptions;
-using Application.Features.Authentication.Common;
-using Application.Features.Authentication.GetJwtToken;
+using Application.Features.AuthenticationFeature.Common;
+using Application.Features.AuthenticationFeature.GetJwtToken;
 using FluentValidation;
 using Infrastructure.Entities;
 using Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Features.Authentication.Register;
+namespace Application.Features.AuthenticationFeature.Register;
 
 public sealed record RegisterRequest : ICommand<LoginResponse>
 {

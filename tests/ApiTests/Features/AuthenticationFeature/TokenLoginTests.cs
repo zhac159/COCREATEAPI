@@ -1,11 +1,11 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using ApiTests.Helpers;
-using Application.Features.Authentication.Common;
+using Application.Features.AuthenticationFeature.Common;
 using Infrastructure.Entities;
 using Infrastructure.Persistence;
 
-namespace ApiTests.Features.Authentication;
+namespace ApiTests.Features.AuthenticationFeature;
 
 public class TokenLoginTests(TestingWebAppFactory factory) : BaseIntegrationTest(factory)
 {

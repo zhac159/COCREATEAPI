@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 
-namespace Application.Interfaces;
+namespace Infrastructure.Interfaces;
 
 public interface ICurrentHubUser
 {

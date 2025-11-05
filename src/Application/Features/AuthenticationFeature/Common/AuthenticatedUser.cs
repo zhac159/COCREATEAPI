@@ -1,4 +1,4 @@
-namespace Application.Features.Authentication.Common;
+namespace Application.Features.AuthenticationFeature.Common;
 
 public record AuthenticatedUser
 {

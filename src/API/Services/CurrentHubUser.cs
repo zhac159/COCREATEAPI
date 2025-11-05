@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using Application.Interfaces;
+using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.SignalR;
 
 namespace API.Services;

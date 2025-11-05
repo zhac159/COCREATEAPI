@@ -1,10 +1,10 @@
-using Application.Features.Authentication.Common;
+using Application.Features.AuthenticationFeature.Common;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Application.Features.Authentication.Login;
+namespace Application.Features.AuthenticationFeature.Login;
 
 public static class LoginEndpoint
 {

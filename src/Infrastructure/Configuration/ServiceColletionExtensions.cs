@@ -1,7 +1,6 @@
-﻿using Infrastructure.Persistence;
+﻿using Azure.Storage.Blobs;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Configuration;
 
@@ -36,6 +35,11 @@ public static class ServiceColletionExtensions
                         .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
             )
         );
+
+        services.AddSingleton(sp => new BlobServiceClient(
+            sp.GetRequiredService<IConfiguration>()
+                .GetConnectionString("AzureBlobContainerConnectionString")
+        ));
 
         return services;
     }

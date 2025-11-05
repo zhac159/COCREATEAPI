@@ -1,10 +1,10 @@
-using Application.Features.Authentication.Login;
-using Application.Features.Authentication.Register;
-using Application.Features.Authentication.TokenLogin;
+using Application.Features.AuthenticationFeature.Login;
+using Application.Features.AuthenticationFeature.Register;
+using Application.Features.AuthenticationFeature.TokenLogin;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 
-namespace Application.Features.Authentication;
+namespace Application.Features.AuthenticationFeature;
 
 public static class AuthenticationEndpointGroup
 {

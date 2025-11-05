@@ -1,7 +1,7 @@
 using Application.Exceptions;
 using Application.Features.Hubs.Notifications.Chat.Common;
-using Application.Interfaces;
 using FluentValidation;
+using Infrastructure.Interfaces;
 using Mediator;
 using Microsoft.AspNetCore.SignalR;
 

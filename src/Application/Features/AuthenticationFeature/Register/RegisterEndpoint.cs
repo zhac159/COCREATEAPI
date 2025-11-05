@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 
-namespace Application.Features.Authentication.Register;
+namespace Application.Features.AuthenticationFeature.Register;
 
 public static class RegisterEndpoint
 {
