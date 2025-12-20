@@ -1,4 +1,6 @@
+using Application.Interfaces;
 using Application.Pipeline;
+using Application.Services;
 using FluentValidation;
 using Mediator;
 using Microsoft.Extensions.Configuration;
@@ -20,6 +22,7 @@ public static class ServiceCollectionExtensions
             options.ServiceLifetime = ServiceLifetime.Scoped;
         });
 
+        services.AddScoped<ICoinsService, CoinsService>();
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(MessageValidatorBehaviour<,>));
 
         return services;

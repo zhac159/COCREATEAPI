@@ -2,8 +2,6 @@ using System.Net.Http.Json;
 using API.Factories;
 using ApiTests.Helpers;
 using Application.Features.AuthenticationFeature.Common;
-using Infrastructure.Entities;
-using Infrastructure.Persistence;
 
 namespace ApiTests.Features.AuthenticationFeature;
 
@@ -85,7 +83,7 @@ public class LoginTests(TestingWebAppFactory factory) : BaseIntegrationTest(fact
 
         var errorResponse = await resp.Content.ReadFromJsonAsync<APIResponse<string>>();
         Assert.NotNull(errorResponse);
-        Assert.Equal("error.user-not-found", errorResponse.ErrorCode);
+        Assert.Equal("error.username-or-email-not-found", errorResponse.ErrorCode);
         Assert.Equal("User or email not found", errorResponse.Error);
     }
 }

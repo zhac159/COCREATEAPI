@@ -1,6 +1,7 @@
 using Application.Features.AuthenticationFeature;
 using Application.Features.Hubs.Notifications.Common;
 using Application.Features.MediaFeature;
+using Application.Features.ProjectFeature;
 using Application.Features.UserFeature;
 using Microsoft.AspNetCore.Routing;
 
@@ -13,6 +14,7 @@ public static class FeatureGroupExtensions
         group.MapAuthenticationEndpoints().MapNotificationDummyEndpoint();
         group.MapUserEndpoints();
         group.MapMediaEndpoints();
+        group.MapProjectEndpoints();
 
         return group;
     }

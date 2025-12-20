@@ -280,7 +280,7 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
 
         // Verify database state
         var medias = await CoCreateDbContext
-            .PortflioContentMedias.Where(m => m.UserId == BaseUserId)
+            .PortfolioContentMedias.Where(m => m.UserId == BaseUserId)
             .ToListAsync();
         Assert.Equal(2, medias.Count);
     }
@@ -296,7 +296,7 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             Order = 1,
             UserId = BaseUserId,
         };
-        await CoCreateDbContext.PortflioContentMedias.AddAsync(existingMedia);
+        await CoCreateDbContext.PortfolioContentMedias.AddAsync(existingMedia);
         await CoCreateDbContext.SaveChangesAsync();
 
         var updateRequest = new UpdateProfileDetails
@@ -333,7 +333,7 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         Assert.Equal(MediaType.Image, result.PortfolioMedias[0].MediaType);
 
         // Verify database state
-        var updatedMedia = await CoCreateDbContext.PortflioContentMedias.FirstOrDefaultAsync(m =>
+        var updatedMedia = await CoCreateDbContext.PortfolioContentMedias.FirstOrDefaultAsync(m =>
             m.Id == existingMedia.Id
         );
         Assert.NotNull(updatedMedia);
@@ -359,7 +359,7 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             Order = 2,
             UserId = BaseUserId,
         };
-        await CoCreateDbContext.PortflioContentMedias.AddRangeAsync([media1, media2]);
+        await CoCreateDbContext.PortfolioContentMedias.AddRangeAsync([media1, media2]);
         await CoCreateDbContext.SaveChangesAsync();
 
         var updateRequest = new UpdateProfileDetails
@@ -395,11 +395,11 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
 
         // Verify database state
         var medias = await CoCreateDbContext
-            .PortflioContentMedias.Where(m => m.UserId == BaseUserId)
+            .PortfolioContentMedias.Where(m => m.UserId == BaseUserId)
             .ToListAsync();
         Assert.Single(medias);
         Assert.Null(
-            await CoCreateDbContext.PortflioContentMedias.FirstOrDefaultAsync(m =>
+            await CoCreateDbContext.PortfolioContentMedias.FirstOrDefaultAsync(m =>
                 m.Id == media2.Id
             )
         );
@@ -439,7 +439,9 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
         };
 
         await CoCreateDbContext.Skills.AddRangeAsync([existingSkill, skillToRemove]);
-        await CoCreateDbContext.PortflioContentMedias.AddRangeAsync([existingMedia, mediaToRemove]);
+        await CoCreateDbContext.PortfolioContentMedias.AddRangeAsync(
+            [existingMedia, mediaToRemove]
+        );
         await CoCreateDbContext.SaveChangesAsync();
 
         var updateRequest = new UpdateProfileDetails
@@ -583,12 +585,6 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
                 new UpdateMediaRecord
                 {
                     Id = null,
-                    Uri = "https://example.com/third.jpg",
-                    MediaType = MediaType.Image,
-                },
-                new UpdateMediaRecord
-                {
-                    Id = null,
                     Uri = "https://example.com/first.jpg",
                     MediaType = MediaType.Image,
                 },
@@ -596,6 +592,12 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
                 {
                     Id = null,
                     Uri = "https://example.com/second.jpg",
+                    MediaType = MediaType.Image,
+                },
+                new UpdateMediaRecord
+                {
+                    Id = null,
+                    Uri = "https://example.com/third.jpg",
                     MediaType = MediaType.Image,
                 },
             ],
@@ -621,7 +623,7 @@ public class PutProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
 
         // Verify database state
         var medias = await CoCreateDbContext
-            .PortflioContentMedias.Where(m => m.UserId == BaseUserId)
+            .PortfolioContentMedias.Where(m => m.UserId == BaseUserId)
             .OrderBy(m => m.Order)
             .ToListAsync();
         Assert.Equal(3, medias.Count);

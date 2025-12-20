@@ -10,10 +10,13 @@ public class Project
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public required DateTime Date { get; set; }
     public required Point Location { get; set; }
+    public required string Address { get; set; }
     public bool Completed { get; set; }
     public DateTime? CompletedAt { get; set; }
     public int ProjectManagerId { get; set; }
     public User? ProjectManager { get; set; }
     public List<ProjectRole> ProjectRoles { get; set; } = [];
     public List<ProjectMedia> ProjectMedias { get; set; } = [];
+
+    public int GetTotalCost() => ProjectRoles.Sum(pr => pr.Cost);
 }

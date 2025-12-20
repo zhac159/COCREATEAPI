@@ -51,7 +51,9 @@ public class AzureBlobStorageService(
             ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
         };
 
-        sasBuilder.SetPermissions(BlobSasPermissions.Create | BlobSasPermissions.Write);
+        sasBuilder.SetPermissions(
+            BlobSasPermissions.Create | BlobSasPermissions.Write | BlobSasPermissions.Read
+        );
 
         if (!blobClient.CanGenerateSasUri)
         {

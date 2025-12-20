@@ -19,5 +19,13 @@ public record LocationRecord
             Address = user.Address ?? "",
         };
 
+    public static LocationRecord FromProject(Project project) =>
+        new()
+        {
+            Longitude = project.Location?.X ?? 0,
+            Latitude = project.Location?.Y ?? 0,
+            Address = project.Address,
+        };
+
     public Point ToPoint() => new(Longitude, Latitude) { SRID = 4326 };
 }

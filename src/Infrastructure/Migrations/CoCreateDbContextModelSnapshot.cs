@@ -50,7 +50,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PortflioContentMedias");
+                    b.ToTable("PortfolioContentMedias");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.Project", b =>
@@ -60,6 +60,11 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<bool>("Completed")
                         .ValueGeneratedOnAdd()
@@ -96,7 +101,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProjectManagerId");
 
-                    b.ToTable("Project");
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.ProjectMedia", b =>
@@ -124,7 +129,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectMedia");
+                    b.ToTable("ProjectMedias");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.ProjectRole", b =>
@@ -169,7 +174,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectRole");
+                    b.ToTable("ProjectRoles");
                 });
 
             modelBuilder.Entity("Infrastructure.Entities.Skill", b =>

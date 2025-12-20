@@ -34,3 +34,10 @@ uuis-ossp
 
 add the 
 pg_trgm for asset name 
+
+
+###
+
+Create following containers in azure:
+
+media -> public read

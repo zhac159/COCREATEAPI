@@ -12,6 +12,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.Property(e => e.Name).HasMaxLength(200);
         builder.Property(e => e.Description).HasMaxLength(2000);
         builder.Property(e => e.Completed).HasDefaultValue(false);
+        builder.Property(e => e.Address).HasMaxLength(500);
 
         builder
             .HasOne(e => e.ProjectManager)

@@ -1,8 +1,8 @@
 using Application.Exceptions;
 using Application.Features.UserFeature.Common;
-using Application.Interfaces;
 using FluentValidation;
 using Infrastructure.Entities;
+using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +25,8 @@ public sealed class UpdateProfileDetailsRequestValidator
 
 public sealed class UpdateProfileDetailsRequestHandler(
     CoCreateDbContext coCreateDbContext,
-    ICurrentUser currentUser
+    ICurrentUser currentUser,
+    IStorageService storageService
 ) : ICommandHandler<UpdateProfileDetailsRequest, ProfileDetails>
 {
     public async ValueTask<ProfileDetails> Handle(
@@ -71,6 +72,15 @@ public sealed class UpdateProfileDetailsRequestHandler(
             }
         }
 
+        var deletedMedias = user
+            .PortfolioMedias.Where(m =>
+                !command.ProfileDetails.PortfolioMedias.Any(pdm => pdm.Id == m.Id)
+            )
+            .ToList();
+        foreach (var media in deletedMedias)
+        {
+            await storageService.DeleteFileAsync(media.Uri);
+        }
         user.PortfolioMedias.RemoveAll(m =>
             !command.ProfileDetails.PortfolioMedias.Any(pdm => pdm.Id == m.Id)
         );

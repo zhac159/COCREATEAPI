@@ -1,7 +1,7 @@
 using Application.Exceptions;
 using Application.Features.UserFeature.Common;
-using Application.Interfaces;
 using FluentValidation;
+using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;

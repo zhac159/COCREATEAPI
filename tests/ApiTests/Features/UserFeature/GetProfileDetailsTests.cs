@@ -88,7 +88,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             },
         };
 
-        await CoCreateDbContext.PortflioContentMedias.AddRangeAsync(portfolioMedias);
+        await CoCreateDbContext.PortfolioContentMedias.AddRangeAsync(portfolioMedias);
         await CoCreateDbContext.SaveChangesAsync();
 
         // Act
@@ -153,7 +153,7 @@ public class GetProfileDetailsTests(TestingWebAppFactory factory) : BaseIntegrat
             },
         };
 
-        await CoCreateDbContext.PortflioContentMedias.AddRangeAsync(portfolioMedias);
+        await CoCreateDbContext.PortfolioContentMedias.AddRangeAsync(portfolioMedias);
         await CoCreateDbContext.SaveChangesAsync();
 
         // Act

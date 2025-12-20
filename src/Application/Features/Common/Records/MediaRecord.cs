@@ -1,3 +1,4 @@
+using Infrastructure.Entities;
 using Infrastructure.Enums;
 
 namespace Application.Features.Common.Records;

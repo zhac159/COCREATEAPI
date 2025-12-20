@@ -45,6 +45,6 @@ public record ProfileDetails
 
 public record UpdateProfileDetails : ProfileDetails
 {
-    public new List<UpdateSkillRecord> Skills { get; set; } = [];
-    public new List<UpdateMediaRecord> PortfolioMedias { get; set; } = [];
+    public new required List<UpdateSkillRecord> Skills { get; set; } = [];
+    public new required List<UpdateMediaRecord> PortfolioMedias { get; set; } = [];
 }

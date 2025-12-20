@@ -1,5 +1,7 @@
 ﻿using Azure.Storage.Blobs;
+using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Configuration;
@@ -12,6 +14,7 @@ public static class ServiceColletionExtensions
     )
     {
         services.AddDatabaseInfrastracture(configuration);
+        services.AddServices();
 
         return services;
     }
@@ -40,6 +43,13 @@ public static class ServiceColletionExtensions
             sp.GetRequiredService<IConfiguration>()
                 .GetConnectionString("AzureBlobContainerConnectionString")
         ));
+
+        return services;
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        services.AddScoped<IStorageService, AzureBlobStorageService>();
 
         return services;
     }

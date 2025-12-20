@@ -1,3 +1,4 @@
+using Application.Features.UserFeature.Common;
 using Mediator;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -20,7 +21,7 @@ public static class GetProfileDetailsEndpoint
                     return Results.Ok(getProfileDetailsResponse);
                 }
             )
-            .Produces<GetProfileDetailsResponse>()
+            .Produces<ProfileDetails>()
             .WithTags("User");
 
         return group;

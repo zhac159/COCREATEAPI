@@ -34,7 +34,7 @@ public sealed class LoginRequestHandler(CoCreateDbContext coCreateDbContext, IMe
         var user =
             await coCreateDbContext.Users.FirstOrDefaultAsync(u =>
                 u.Username == query.UsernameOrEmail || u.Email == query.UsernameOrEmail
-            ) ?? throw new UserNotFoundException("User or email not found");
+            ) ?? throw new UsernameOrEmailNotFoundException("User or email not found");
 
         if (user.PasswordHash != query.Password)
         {

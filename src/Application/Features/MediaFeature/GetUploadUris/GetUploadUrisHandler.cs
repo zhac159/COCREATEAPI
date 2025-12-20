@@ -1,6 +1,5 @@
 using Infrastructure.Enums;
 using Infrastructure.Interfaces;
-using Infrastructure.Persistence;
 using Mediator;
 
 namespace Application.Features.MediaFeature.GetUploadUris;
