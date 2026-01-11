@@ -1,0 +1,8 @@
+namespace Application.DTOs.EmailDTOs;
+
+public class SendEmailDTO
+{
+    public required string To { get; set; }
+    public required string Subject { get; set; }
+    public required string Body { get; set; }
+}

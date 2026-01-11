@@ -1,0 +1,22 @@
+using Domain.Entities;
+
+namespace Domain.Interfaces;
+
+public interface IUserRepository
+{
+    Task<User?> GetByUsernameOrEmailAsync(string nameOrEmail);
+    Task<User> CreateAsync(User user);
+    Task<bool> ExistsByNameAsync(string name);
+    Task<User?> GetByIdAsync(int id);
+    Task<User?> GetByIdIncludeAllPropertiesAsync(int id);
+    Task<User?> GetByIdIncludeSkillsAsync(int id);
+    Task<User?> GetByIdIncludePortfolioAsync(int id);
+    Task<int?> GetCoinByIdAsync(int id);
+    Task<int?> UpdateCoinByIdAsync(int id, int coin);
+    Task<int> AddCoinsByIdAsync(int id, int coin);
+    Task<User> UpdateAsync(User user);
+    Task<List<User>> GetUsersProfileAsync(List<int> ids);
+    Task<bool> UpdateRangeAsync(List<User> users);
+    Task<List<User>> GetRangeAsync(List<int> ids);
+    Task<bool> DeleteByIdAsync(int userId);
+}

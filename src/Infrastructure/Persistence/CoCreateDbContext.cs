@@ -1,0 +1,28 @@
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
+namespace Infrastructure.Persistence
+{
+    public class CoCreateDbContext(DbContextOptions<CoCreateDbContext> options) : DbContext(options)
+    {
+        public DbSet<User> Users { get; set; }
+        public DbSet<Skill> Skills { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Asset> Assets { get; set; }
+        public DbSet<Project> Projects { get; set; }
+        public DbSet<ProjectRole> ProjectRoles { get; set; }
+        public DbSet<SeenMatches> SeenMatches { get; set; }
+        public DbSet<Enquiry> Enquiries { get; set; }
+        public DbSet<Experience> Experiences { get; set; }
+        public DbSet<AssetOffer> AssetOffers { get; set; }
+        public DbSet<VoucherCode> VoucherCode { get; set; }
+        public DbSet<SurveyAnswer> SurveyAnswers { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMembership> ChatMemberships { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CoCreateDbContext).Assembly);
+        }
+    }
+}
