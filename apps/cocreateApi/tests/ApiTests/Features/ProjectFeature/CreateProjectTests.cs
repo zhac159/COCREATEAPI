@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using ApiTests.Helpers;
 using Application.Features.Common.Records;
 using Infrastructure.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiTests.Features.ProjectFeature;
 
@@ -15,6 +16,7 @@ public class CreateProjectTests(TestingWebAppFactory factory) : BaseIntegrationT
         var user = await CoCreateDbContext.Users.FindAsync(BaseUserId);
         Assert.NotNull(user);
         user.Coins = 2000;
+        CoCreateDbContext.Users.Update(user);
         await CoCreateDbContext.SaveChangesAsync();
 
         var request = new
@@ -61,7 +63,10 @@ public class CreateProjectTests(TestingWebAppFactory factory) : BaseIntegrationT
         Assert.True(projectRecord.Id > 0);
 
         // Check database
-        var project = await CoCreateDbContext.Projects.FindAsync(projectRecord.Id);
+        var project = await CoCreateDbContext
+            .Projects.Include(p => p.ProjectMedias)
+            .Include(p => p.ProjectRoles)
+            .FirstOrDefaultAsync(p => p.Id == projectRecord.Id);
         Assert.NotNull(project);
         Assert.Equal(BaseUserId, project.ProjectManagerId);
         Assert.Equal(request.Project.Location.Address, project.Address);

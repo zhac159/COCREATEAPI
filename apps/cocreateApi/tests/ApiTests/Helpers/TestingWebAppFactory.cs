@@ -1,3 +1,4 @@
+using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -50,8 +51,8 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                 {
                     ["ConnectionStrings:PostGresConnectionString"] =
                         dbContainer.GetConnectionString(),
-                    ["JwtSettings:Key"] = testJwtKey,
-                    ["JwtSettings:Issuer"] = testJwtIssuer,
+                    ["Jwt:Key"] = testJwtKey,
+                    ["Jwt:Issuer"] = testJwtIssuer,
                 };
                 config.AddInMemoryCollection(settings!);
             }
@@ -71,6 +72,10 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
                             .UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)
                 );
             });
+
+            // Stub out storage deletes so tests don't require Azurite to be running.
+            services.RemoveAll<IStorageService>();
+            services.AddScoped<IStorageService, TestStorageService>();
         });
     }
 
