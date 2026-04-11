@@ -2,32 +2,31 @@ using Application.Exceptions;
 using Application.Interfaces;
 using Infrastructure.Interfaces;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
 public class CoinsService(ICurrentUser currentUser, CoCreateDbContext context) : ICoinsService
 {
-    public Task<bool> CanAfford(int cost)
+    public async Task<bool> CanAfford(int cost)
     {
-        var coins = context
+        var coins = await context
             .Users.Where(up => up.Id == currentUser.GetUserId())
             .Select(up => up.Coins)
-            .FirstOrDefault();
+            .FirstOrDefaultAsync();
 
-        return Task.FromResult(coins >= cost);
+        return coins >= cost;
     }
 
-    public Task DeductCoins(int amount)
+    public async Task DeductCoins(int amount)
     {
         var user =
-            context.Users.FirstOrDefault(u => u.Id == currentUser.GetUserId())
+            await context.Users.FirstOrDefaultAsync(u => u.Id == currentUser.GetUserId())
             ?? throw new UserNotFoundException("User not found when deducting coins.");
 
         user.Coins -= amount;
 
         context.Users.Update(user);
-        context.SaveChanges();
-
-        return Task.CompletedTask;
+        await context.SaveChangesAsync();
     }
 }

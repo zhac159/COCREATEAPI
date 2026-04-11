@@ -25,10 +25,17 @@ local_resource(
 # ── UI — Expo web dev server; needs to know where the API lives ───────────────
 local_resource(
     'ui',
-    serve_cmd='npx expo start --web',
+    serve_cmd='npx expo start',
     serve_dir='apps/cocreateUi',
     env={'EXPO_PUBLIC_API_URL': 'http://localhost:5235'},
     resource_deps=['api'],
     labels=['app'],
     links=[link('http://localhost:8081', 'UI (Web)')],
+)
+
+# ── Android Emulator — Medium Phone ──────────────────────────────────────────
+local_resource(
+    'android-emulator',
+    serve_cmd='C:/Users/abith/AppData/Local/Android/Sdk/emulator/emulator.exe -avd Medium_Phone',
+    labels=['app'],
 )

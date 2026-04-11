@@ -26,7 +26,6 @@ public class TestingWebAppFactory : WebApplicationFactory<Program>, IAsyncLifeti
             .WithUsername("postgres")
             .WithPassword("postgres")
             .Build();
-        dbContainer.StartAsync().GetAwaiter().GetResult();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
